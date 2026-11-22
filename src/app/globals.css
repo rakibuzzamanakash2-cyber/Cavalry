@@ -108,6 +108,15 @@
     text-underline-offset: 0.2em;
   }
 
+  /* Anchor targets clear the sticky header. */
+  [id] {
+    scroll-margin-top: calc(var(--header-h) + 1.25rem);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   :focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 3px;

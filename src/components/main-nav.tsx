@@ -10,7 +10,7 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-/** Desktop link row (md and up) plus a slide-down menu for phones and small tablets. */
+/** Desktop link row (lg and up) plus a full-screen menu for phones and tablets. */
 export function MainNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -34,7 +34,7 @@ export function MainNav() {
     };
     document.addEventListener("keydown", onKey);
     // Close if the window grows to the desktop layout while the menu is open.
-    const desktop = window.matchMedia("(min-width: 48rem)");
+    const desktop = window.matchMedia("(min-width: 64rem)");
     const onResize = (e: MediaQueryListEvent) => e.matches && setOpen(false);
     desktop.addEventListener("change", onResize);
     const previous = document.body.style.overflow;
@@ -52,7 +52,7 @@ export function MainNav() {
 
   return (
     <>
-      <nav aria-label="Main" className="hidden md:block">
+      <nav aria-label="Main" className="hidden lg:block">
         <ul className="tracking-caps flex items-center gap-x-1 text-xs uppercase">
           {site.nav.map((item) => {
             const active = isActive(pathname, item.href);
@@ -80,7 +80,7 @@ export function MainNav() {
         aria-expanded={open}
         aria-controls="mobile-menu"
         aria-label={open ? "Close menu" : "Open menu"}
-        className="text-ink hover:bg-sand inline-flex size-10 items-center justify-center rounded-full transition-colors md:hidden"
+        className="text-ink hover:bg-sand inline-flex size-10 items-center justify-center rounded-full transition-colors lg:hidden"
       >
         <svg
           viewBox="0 0 24 24"
@@ -99,7 +99,7 @@ export function MainNav() {
         ? createPortal(
             <div
               id="mobile-menu"
-              className="bg-surface fixed inset-x-0 top-[var(--header-h)] bottom-0 z-40 overflow-y-auto md:hidden"
+              className="bg-surface fixed inset-x-0 top-[var(--header-h)] bottom-0 z-40 overflow-y-auto lg:hidden"
             >
               <nav aria-label="Mobile" className="mx-auto max-w-6xl px-6 pt-4 pb-10">
                 <ul className="divide-line border-line divide-y border-y">

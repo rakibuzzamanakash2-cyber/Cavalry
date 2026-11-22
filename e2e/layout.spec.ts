@@ -18,7 +18,18 @@ async function measure(page: Page) {
   });
 }
 
+const innerPages = ["/research", "/research/disasters-and-public-spending"];
+
 for (const vp of viewports) {
+  for (const path of innerPages) {
+    test(`${path} header and page fit ${vp.name} width`, async ({ browser }) => {
+      const context = await browser.newContext({ viewport: vp });
+      const page = await context.newPage();
+      await page.goto(path);
+      expect((await measure(page)).horizontalOverflow).toBe(false);
+      await context.close();
+    });
+  }
   for (const colorScheme of ["light", "dark"] as const) {
     test(`home has no sideways scroll on ${vp.name} (${colorScheme})`, async ({ browser }) => {
       const context = await browser.newContext({ viewport: vp, colorScheme });
