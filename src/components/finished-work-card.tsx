@@ -80,7 +80,7 @@ export function FinishedWorkCard({ programmes, outputs }: FinishedWorkCardProps)
 
       <footer className="border-line mt-auto border-t">
         <Link
-          href="/team#join"
+          href="/apply"
           className="tracking-caps text-primary hover:text-accent block px-4 py-3.5 text-xs uppercase transition-colors sm:px-5 lg:py-2.5"
         >
           Work with us →

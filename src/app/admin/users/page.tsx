@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 import { ArticleSkeleton } from "@/components/article-skeleton";
 import { PageHeader } from "@/components/page-header";
@@ -21,7 +22,10 @@ export default function AdminUsersPage() {
     <div className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6">
       <PageHeader eyebrow="Admin" title="Users and roles">
         Members can see the research workspace. Changing someone&apos;s role signs them out so the
-        change applies straight away.
+        change applies straight away.{" "}
+        <Link href="/admin/applications" className="text-ink hover:text-accent underline">
+          Review applications
+        </Link>
       </PageHeader>
       <Suspense fallback={<ArticleSkeleton />}>
         <UserTable />

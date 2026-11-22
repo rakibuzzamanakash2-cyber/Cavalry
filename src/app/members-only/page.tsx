@@ -45,11 +45,11 @@ async function Status() {
       <p className="font-serif text-xl">Signed in as {user.name}</p>
       <p className="text-muted mt-2 leading-relaxed">
         Your account is not a member yet. Members join by an approved application or an invitation
-        from the team. Applications open here soon; until then, see the{" "}
-        <Link href="/team#join" className="text-ink hover:text-accent underline">
-          open roles
-        </Link>
-        .
+        from the team.{" "}
+        <Link href="/apply" className="text-ink hover:text-accent underline">
+          Apply to join
+        </Link>{" "}
+        or check the status of your application.
       </p>
     </div>
   );

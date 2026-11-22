@@ -92,7 +92,13 @@ async function WorkspaceDashboard() {
           ))}
         </ul>
         {user?.role === "admin" ? (
-          <p className="mt-8">
+          <p className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
+            <Link
+              href="/admin/applications"
+              className="text-primary hover:text-accent tracking-caps text-xs uppercase transition-colors"
+            >
+              Review applications →
+            </Link>
             <Link
               href="/admin/users"
               className="text-primary hover:text-accent tracking-caps text-xs uppercase transition-colors"

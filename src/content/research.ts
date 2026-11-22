@@ -25,6 +25,13 @@ export const researchAreas = [
   },
 ] as const;
 
+/** Fields people can apply to work in: the research areas, plus engineering and other. */
+export const applicationFields = [
+  ...researchAreas.map((a) => a.title),
+  "Software and data engineering",
+  "Other",
+] as const;
+
 export const principles = [
   { numeral: "I", title: "Question first", detail: "A written protocol before any model is run." },
   {
