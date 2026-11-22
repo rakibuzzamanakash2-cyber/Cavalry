@@ -44,3 +44,32 @@ test("sitemap and robots are served", async ({ request }) => {
   const robots = await request.get("/robots.txt");
   expect(await robots.text()).toContain("Sitemap:");
 });
+
+test("pages load without console errors", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("console", (m) => {
+    if (m.type() === "error") errors.push(`${page.url()}: ${m.text()}`);
+  });
+  page.on("pageerror", (e) => errors.push(`${page.url()}: ${e.message}`));
+  for (const path of [
+    "/",
+    "/about",
+    "/research",
+    "/research/disasters-and-public-spending",
+    "/publications",
+    "/team",
+    "/news",
+    "/news/cavalry-research-begins",
+    "/contact",
+  ]) {
+    await page.goto(path);
+    await page.waitForLoadState("networkidle");
+  }
+  expect(errors).toEqual([]);
+});
+
+test("theme script is in the document head exactly once", async ({ request }) => {
+  const html = await (await request.get("/about")).text();
+  const head = html.slice(0, html.indexOf("</head>"));
+  expect(head.match(/id="theme-init"/g)?.length).toBe(1);
+});

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import { ArticleSkeleton } from "@/components/article-skeleton";
 import { SectionHeading } from "@/components/page-header";
 import { StageTracker } from "@/components/stage-tracker";
 import { stageStatus } from "@/content/research";
@@ -37,7 +39,18 @@ const sections = [
   { id: "outputs", label: "Outputs & integrity" },
 ];
 
-export default async function ProgrammePage({ params }: PageProps<"/research/[slug]">) {
+// The slug-dependent work sits inside <Suspense> so client navigations show a
+// placeholder immediately (Next.js "instant navigation"); known programmes are
+// still fully prerendered via generateStaticParams.
+export default function ProgrammePage({ params }: PageProps<"/research/[slug]">) {
+  return (
+    <Suspense fallback={<ArticleSkeleton />}>
+      <ProgrammeContent params={params} />
+    </Suspense>
+  );
+}
+
+async function ProgrammeContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const p = await getProgramme(slug);
   if (!p) notFound();

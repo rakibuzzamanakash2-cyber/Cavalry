@@ -26,7 +26,8 @@ export function Logo({
   title = "CAVALRY research",
 }: LogoProps) {
   const file = withTagline ? FILES.full : FILES.wordmark;
-  preload(file.src, { as: "image", fetchPriority: "high" });
+  // CSS masks fetch in CORS mode, so the preload must match or the browser ignores it.
+  preload(file.src, { as: "image", fetchPriority: "high", crossOrigin: "anonymous" });
 
   return (
     <span
