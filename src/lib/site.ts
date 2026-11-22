@@ -9,6 +9,11 @@ export const site = {
   location: "Dhaka, Bangladesh",
   // Shown in the footer and contact page only when set.
   email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "",
+  // Optional public profiles, shown on the Contact page when set.
+  links: [
+    { label: "LinkedIn", href: process.env.NEXT_PUBLIC_LINKEDIN_URL ?? "" },
+    { label: "GitHub", href: process.env.NEXT_PUBLIC_GITHUB_URL ?? "" },
+  ].filter((l) => l.href),
   nav: [
     { href: "/about", label: "About" },
     { href: "/research", label: "Research" },

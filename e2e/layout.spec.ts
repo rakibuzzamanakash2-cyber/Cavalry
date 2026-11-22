@@ -18,7 +18,16 @@ async function measure(page: Page) {
   });
 }
 
-const innerPages = ["/research", "/research/disasters-and-public-spending"];
+const innerPages = [
+  "/about",
+  "/research",
+  "/research/disasters-and-public-spending",
+  "/publications",
+  "/team",
+  "/news",
+  "/news/cavalry-research-begins",
+  "/contact",
+];
 
 for (const vp of viewports) {
   for (const path of innerPages) {

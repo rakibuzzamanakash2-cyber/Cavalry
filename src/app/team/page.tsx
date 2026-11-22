@@ -1,0 +1,134 @@
+import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { PageHeader, SectionHeading } from "@/components/page-header";
+import { founders, joiningNotes, openRoles, type Person } from "@/content/team";
+
+export const metadata: Metadata = {
+  title: "Team",
+  description:
+    "The founding team of CAVALRY research and the open member roles for the first programme.",
+};
+
+function initials(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(-2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase();
+}
+
+function PersonCard({ person }: { person: Person }) {
+  return (
+    <article className="border-line bg-surface flex h-full flex-col gap-4 border p-5 shadow-[6px_6px_0_0_var(--color-sand)] sm:flex-row sm:p-6">
+      {person.photo ? (
+        <Image
+          src={person.photo}
+          alt=""
+          width={96}
+          height={96}
+          className="size-24 shrink-0 object-cover"
+        />
+      ) : (
+        <span
+          aria-hidden
+          className="bg-primary text-primary-foreground flex size-24 shrink-0 items-center justify-center font-serif text-3xl italic"
+        >
+          {initials(person.name)}
+        </span>
+      )}
+      <div>
+        <h3 className="text-2xl leading-tight">{person.name}</h3>
+        <p className="text-accent-strong tracking-caps mt-1 text-xs uppercase">{person.role}</p>
+        <p className="mt-3 leading-relaxed">{person.bio}</p>
+        <p className="text-muted mt-3 text-sm">
+          <span className="text-ink font-medium">Focus: </span>
+          {person.focus}
+        </p>
+        {person.links?.length ? (
+          <ul className="tracking-caps mt-3 flex flex-wrap gap-4 text-xs uppercase">
+            {person.links.map((l) => (
+              <li key={l.href}>
+                <a href={l.href} className="text-primary hover:text-accent transition-colors">
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </div>
+    </article>
+  );
+}
+
+export default function TeamPage() {
+  return (
+    <div className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6">
+      <PageHeader eyebrow="Team" title="A small team, by design">
+        Two founders with complementary strengths, growing carefully with members who want to do
+        rigorous work.
+      </PageHeader>
+
+      <section aria-labelledby="founders" className="py-10 sm:py-14">
+        <SectionHeading number="01" id="founders">
+          Founders
+        </SectionHeading>
+        <ul className="mt-6 grid gap-6 lg:grid-cols-2">
+          {founders.map((p) => (
+            <li key={p.slug}>
+              <PersonCard person={p} />
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section aria-labelledby="join" className="border-line border-t py-10 sm:py-14">
+        <SectionHeading number="02" id="join">
+          Join the first programme
+        </SectionHeading>
+        <p className="text-muted mt-3 max-w-3xl leading-relaxed">
+          We are looking for three members to work on the disasters and public spending programme.
+        </p>
+        <ul className="border-line mt-6 grid border-t border-l md:grid-cols-3">
+          {openRoles.map((r) => (
+            <li key={r.title} className="border-line border-r border-b p-5 sm:p-6">
+              <p className="text-accent-strong tracking-caps text-xs uppercase">Open role</p>
+              <h3 className="mt-2 text-xl leading-snug">{r.title}</h3>
+              <p className="text-muted mt-3 text-sm leading-relaxed">
+                <span className="text-ink font-medium">Background: </span>
+                {r.background}
+              </p>
+              <p className="text-muted mt-2 text-sm leading-relaxed">
+                <span className="text-ink font-medium">You would own: </span>
+                {r.owns}
+              </p>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-8 grid gap-6 md:grid-cols-12">
+          <ul className="space-y-2 md:col-span-8">
+            {joiningNotes.map((n) => (
+              <li key={n} className="flex gap-3 leading-relaxed">
+                <span
+                  className="text-accent mt-2.5 size-1.5 shrink-0 rotate-45 bg-current"
+                  aria-hidden
+                />
+                {n}
+              </li>
+            ))}
+          </ul>
+          <div className="md:col-span-4 md:text-right">
+            <Link
+              href="/contact"
+              className="bg-primary text-primary-foreground hover:bg-accent tracking-caps inline-block w-full px-5 py-3.5 text-center text-xs uppercase transition-colors md:w-auto"
+            >
+              Express interest
+            </Link>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
