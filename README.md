@@ -13,7 +13,7 @@ The public website of CAVALRY research: an independent research group that inves
 | Database   | PostgreSQL on Supabase                                     |
 | ORM        | Drizzle ORM + drizzle-kit migrations                       |
 | Validation | Zod                                                        |
-| Fonts      | Source Serif 4 (headings), Inter (body), self-hosted       |
+| Fonts      | Cormorant Garamond (headings), Inter (body), self-hosted   |
 | Hosting    | Vercel                                                     |
 | CI         | GitHub Actions: lint, typecheck, format, migrations, build |
 
@@ -49,7 +49,7 @@ npm run dev                  # http://localhost:3000
 ```
 src/
   app/            routes, layout, global styles
-  components/     shared UI (header, footer, wordmark)
+  components/     shared UI (header, footer, logo)
   db/             schema.ts, client (index.ts), cached queries, seed
   lib/            env validation, site settings
 drizzle/          generated SQL migrations (commit these)
@@ -58,15 +58,17 @@ docs/decisions/   architecture decision records
 
 ## Brand
 
-Palette A — Deep Teal & Copper. Use the semantic Tailwind classes, never raw hex values:
+The logo lives in `src/components/logo.tsx` (inline SVG, coloured with `currentColor`) and as a file in `public/brand/cavalry-logo.svg`. Use `<Logo withTagline={false} />` where space is tight.
 
-| Token           | Hex       | Use                        |
-| --------------- | --------- | -------------------------- |
-| `primary`       | `#0E3B43` | backgrounds, headings      |
-| `accent`        | `#C8553D` | large text, icons, buttons |
-| `accent-strong` | `#A8432E` | small text and links       |
-| `surface`       | `#F6F3EC` | page background            |
-| `sand`          | `#EDE6D6` | panels, callouts           |
-| `ink`           | `#1B1F24` | body text                  |
-| `muted`         | `#5B6770` | captions, metadata         |
-| `line`          | `#CFC6B4` | borders                    |
+Palette — Ink & Parchment with an oxblood accent, matched to the calligraphic logo. Use the semantic Tailwind classes, never raw hex values:
+
+| Token           | Hex       | Use                             |
+| --------------- | --------- | ------------------------------- |
+| `primary`       | `#17140F` | logo, headings, dark sections   |
+| `accent`        | `#6E1F28` | rules, hover states, highlights |
+| `accent-strong` | `#5A1820` | small text and links            |
+| `surface`       | `#F4EEE3` | page background (parchment)     |
+| `sand`          | `#E9E0CF` | panels, callouts                |
+| `ink`           | `#17140F` | body text                       |
+| `muted`         | `#6A6155` | captions, metadata              |
+| `line`          | `#D8CDB9` | borders                         |

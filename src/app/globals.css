@@ -1,28 +1,27 @@
 @import "tailwindcss";
 
 /*
- * CAVALRY research — design tokens (Palette A: Deep Teal & Copper).
- * Use these semantic names in components (bg-primary, text-accent, ...),
- * never raw hex values, so the palette can change in one place.
+ * CAVALRY research — design tokens: "Ink & Parchment" with an oxblood accent,
+ * chosen to match the calligraphic logo. Use these semantic names in
+ * components (bg-primary, text-accent, ...), never raw hex values.
  */
 @theme {
-  --color-primary: #0e3b43; /* Deep Teal — backgrounds, headings */
-  --color-primary-hover: #0a2c32;
-  --color-primary-foreground: #f6f3ec;
-  --color-accent: #c8553d; /* Copper — large text, icons, buttons */
-  --color-accent-strong: #a8432e; /* Copper for small text/links (passes AA on light) */
-  --color-accent-foreground: #ffffff;
-  --color-surface: #f6f3ec; /* page background */
-  --color-sand: #ede6d6; /* panels, callouts */
-  --color-ink: #1b1f24; /* body text */
-  --color-muted: #5b6770; /* captions, metadata */
-  --color-line: #cfc6b4; /* borders, dividers */
+  --color-primary: #17140f; /* Ink — logo, headings, dark sections */
+  --color-primary-hover: #2a251d;
+  --color-primary-foreground: #f4eee3;
+  --color-accent: #6e1f28; /* Oxblood — rules, hover states, highlights */
+  --color-accent-strong: #5a1820; /* Oxblood for small text and links */
+  --color-accent-foreground: #f4eee3;
+  --color-surface: #f4eee3; /* Parchment — page background */
+  --color-sand: #e9e0cf; /* panels, callouts */
+  --color-ink: #17140f; /* body text */
+  --color-muted: #6a6155; /* captions, metadata */
+  --color-line: #d8cdb9; /* borders, dividers */
 
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Source Serif 4 Variable", ui-serif, Georgia, serif;
+  --font-serif: "Cormorant Garamond Variable", ui-serif, Georgia, serif;
 
-  --tracking-wordmark: 0.08em;
-  --tracking-descriptor: 0.35em;
+  --tracking-caps: 0.28em;
 }
 
 @layer base {
@@ -37,6 +36,7 @@
   h2,
   h3 {
     font-family: var(--font-serif);
+    font-weight: 600;
     color: var(--color-primary);
     text-wrap: balance;
   }
@@ -51,7 +51,7 @@
   }
 
   ::selection {
-    background-color: var(--color-sand);
-    color: var(--color-primary);
+    background-color: var(--color-accent);
+    color: var(--color-accent-foreground);
   }
 }

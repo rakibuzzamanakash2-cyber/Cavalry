@@ -1,21 +1,19 @@
 import Link from "next/link";
 import { site } from "@/lib/site";
-import { Wordmark } from "./wordmark";
+import { HeaderBrand } from "./header-brand";
 
 export function SiteHeader() {
   return (
-    <header className="border-line bg-surface/90 border-b backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-4">
-        <Link href="/" aria-label={`${site.name} home`}>
-          <Wordmark />
-        </Link>
+    <header className="shrink-0">
+      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-x-6 gap-y-2 px-6 py-4 sm:flex-row">
+        <HeaderBrand />
         <nav aria-label="Main">
-          <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+          <ul className="tracking-caps flex flex-wrap items-center justify-center gap-x-1 text-[0.7rem] uppercase sm:text-xs">
             {site.nav.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className="text-ink hover:text-accent-strong transition-colors"
+                  className="text-ink hover:text-accent block px-2 py-2 transition-colors"
                 >
                   {item.label}
                 </Link>
