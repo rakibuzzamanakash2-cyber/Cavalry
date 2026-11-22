@@ -60,15 +60,15 @@ docs/decisions/   architecture decision records
 
 The logo lives in `src/components/logo.tsx` (inline SVG, coloured with `currentColor`) and as a file in `public/brand/cavalry-logo.svg`. Use `<Logo withTagline={false} />` where space is tight.
 
-Palette — Ink & Parchment with an oxblood accent, matched to the calligraphic logo. Use the semantic Tailwind classes, never raw hex values:
+Palette — Ink & Parchment with an oxblood accent, matched to the calligraphic logo, in light and dark themes. The theme follows the visitor's system setting until they pick one with the toggle (saved in `localStorage`). Use the semantic Tailwind classes, never raw hex values; both themes are defined only in `src/app/globals.css`.
 
-| Token           | Hex       | Use                             |
-| --------------- | --------- | ------------------------------- |
-| `primary`       | `#17140F` | logo, headings, dark sections   |
-| `accent`        | `#6E1F28` | rules, hover states, highlights |
-| `accent-strong` | `#5A1820` | small text and links            |
-| `surface`       | `#F4EEE3` | page background (parchment)     |
-| `sand`          | `#E9E0CF` | panels, callouts                |
-| `ink`           | `#17140F` | body text                       |
-| `muted`         | `#6A6155` | captions, metadata              |
-| `line`          | `#D8CDB9` | borders                         |
+| Token           | Light     | Dark      | Use                     |
+| --------------- | --------- | --------- | ----------------------- |
+| `primary`       | `#17140F` | `#EFE7D8` | logo, headings, buttons |
+| `accent`        | `#6E1F28` | `#B5525C` | rules, hover states     |
+| `accent-strong` | `#5A1820` | `#E0959B` | small text and links    |
+| `surface`       | `#F4EEE3` | `#13110D` | page background         |
+| `sand`          | `#E9E0CF` | `#1F1B16` | panels, callouts        |
+| `ink`           | `#17140F` | `#E9E1D2` | body text               |
+| `muted`         | `#6A6155` | `#A1978A` | captions, metadata      |
+| `line`          | `#D8CDB9` | `#3A342C` | borders                 |

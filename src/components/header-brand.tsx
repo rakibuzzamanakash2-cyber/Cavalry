@@ -8,10 +8,10 @@ import { Logo } from "./logo";
 /** Small logo in the header. Hidden on the home page, where the full logo is the hero. */
 export function HeaderBrand() {
   const pathname = usePathname();
-  if (pathname === "/") return <span aria-hidden className="hidden w-px sm:block" />;
+  if (pathname === "/") return <span aria-hidden />;
   return (
     <Link href="/" aria-label={`${site.name} home`} className="text-primary">
-      <Logo withTagline={false} className="h-9 w-auto sm:h-10" />
+      <Logo withTagline={false} className="h-8 w-auto sm:h-10" />
     </Link>
   );
 }
