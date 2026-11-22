@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { countPendingApplications } from "@/data/applications";
 import { getCurrentUser } from "@/lib/session";
 import { AccountMenu } from "./account-menu";
 
@@ -6,7 +7,16 @@ import { AccountMenu } from "./account-menu";
 export async function AccountArea() {
   const user = await getCurrentUser();
   if (!user) return <SignInLink />;
-  return <AccountMenu name={user.name} email={user.email} role={user.role} variant="desktop" />;
+  const pending = await countPendingApplications(user);
+  return (
+    <AccountMenu
+      name={user.name}
+      email={user.email}
+      role={user.role}
+      pendingApplications={pending}
+      variant="desktop"
+    />
+  );
 }
 
 /** Shown when signed out, and as the loading placeholder. */

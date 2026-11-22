@@ -10,6 +10,8 @@ type AccountMenuProps = {
   name: string;
   email: string;
   role: Role;
+  /** Admins only: applications waiting for review. */
+  pendingApplications?: number;
   variant: "desktop" | "mobile";
 };
 
@@ -23,7 +25,13 @@ function initials(name: string) {
     .toUpperCase();
 }
 
-export function AccountMenu({ name, email, role, variant }: AccountMenuProps) {
+export function AccountMenu({
+  name,
+  email,
+  role,
+  pendingApplications = 0,
+  variant,
+}: AccountMenuProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -54,6 +62,13 @@ export function AccountMenu({ name, email, role, variant }: AccountMenuProps) {
 
   const links = [
     isMember ? { href: "/workspace", label: "Workspace" } : null,
+    role === "user" ? { href: "/apply", label: "Apply to join" } : null,
+    role === "admin"
+      ? {
+          href: "/admin/applications",
+          label: pendingApplications > 0 ? `Applications (${pendingApplications})` : "Applications",
+        }
+      : null,
     role === "admin" ? { href: "/admin/users", label: "Users & roles" } : null,
   ].filter((l): l is { href: string; label: string } => l !== null);
 

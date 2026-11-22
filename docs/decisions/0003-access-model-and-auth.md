@@ -16,7 +16,7 @@ Research in progress is confidential. The public should see only an overview of 
   - `member` — researcher; sees `/workspace`.
   - `admin` — manages users and roles at `/admin/users`.
 - New accounts are always `user`. Emails listed in `ADMIN_EMAILS` become `admin` automatically **only** when the provider has verified the email (e.g. Google); unverified email/password sign-ups are never promoted. `npm run user:role -- <email> <role>` sets a role from the command line.
-- Membership is granted by an admin (role change) or, later, by an approved application or an invitation.
+- Membership is granted by an admin: by accepting an application at `/admin/applications` (signed-in users apply at `/apply`, one pending application at a time) or by changing the role directly. Invitations come with projects.
 - Public data getters return completed programmes, published outputs and public news only. Workspace getters call `requireMember()` before reading. Cached readers are not exported, so no page can skip the check.
 - `src/proxy.ts` redirects requests to `/workspace` and `/admin` without a session cookie straight to sign-in (an optimistic check for speed; the real checks are on the server).
 - Changing a role deletes that user's sessions so the change applies on their next request.

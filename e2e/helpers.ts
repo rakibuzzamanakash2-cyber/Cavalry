@@ -14,7 +14,7 @@ export const PUBLIC_PAGES = [
   "/news",
   "/contact",
 ];
-export const AUTH_PAGES = ["/sign-in", "/sign-up", "/members-only"];
+export const AUTH_PAGES = ["/sign-in", "/sign-up", "/members-only", "/apply"];
 
 /** Text that must never appear on a public page while the flagship is in progress. */
 export const CONFIDENTIAL =

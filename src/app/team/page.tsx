@@ -140,10 +140,10 @@ export default async function TeamPage() {
           </ul>
           <div className="md:col-span-4 md:text-right">
             <Link
-              href="/contact"
+              href="/apply"
               className="bg-primary text-primary-foreground hover:bg-accent tracking-caps inline-block w-full px-5 py-3.5 text-center text-xs uppercase transition-colors md:w-auto"
             >
-              Express interest
+              Apply to join
             </Link>
           </div>
         </div>

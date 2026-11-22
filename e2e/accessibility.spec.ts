@@ -13,6 +13,7 @@ const pages = [
   "/sign-in",
   "/sign-up",
   "/members-only",
+  "/apply",
 ];
 
 for (const path of pages) {
@@ -44,6 +45,8 @@ const privatePages = [
   { path: "/workspace", role: "member" as const },
   { path: `/workspace/research/${PROGRAMME_SLUG}`, role: "member" as const },
   { path: "/admin/users", role: "admin" as const },
+  { path: "/admin/applications", role: "admin" as const },
+  { path: "/apply", role: "user" as const },
 ];
 
 for (const { path, role } of privatePages) {
