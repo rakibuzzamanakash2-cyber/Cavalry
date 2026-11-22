@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import { ArticleSkeleton } from "@/components/article-skeleton";
 import { getPost, getPosts } from "@/data/news";
 import { formatDate } from "@/lib/format";
 import { site } from "@/lib/site";
@@ -21,7 +23,16 @@ export async function generateMetadata({ params }: PageProps<"/news/[slug]">): P
   };
 }
 
-export default async function NewsPostPage({ params }: PageProps<"/news/[slug]">) {
+// Slug-dependent work inside <Suspense>: see the note in research/[slug]/page.tsx.
+export default function NewsPostPage({ params }: PageProps<"/news/[slug]">) {
+  return (
+    <Suspense fallback={<ArticleSkeleton narrow />}>
+      <NewsPostContent params={params} />
+    </Suspense>
+  );
+}
+
+async function NewsPostContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const post = await getPost(slug);
   if (!post) notFound();

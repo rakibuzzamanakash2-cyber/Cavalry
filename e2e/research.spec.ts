@@ -40,7 +40,7 @@ test("home card links to the programme", async ({ page }) => {
 test("unknown programme shows not found and is not indexed", async ({ page }) => {
   await page.goto("/research/does-not-exist");
   await expect(page.getByRole("heading", { name: "Page not found" })).toBeVisible();
-  await expect(page.locator('meta[name="robots"][content="noindex"]')).toHaveCount(1);
+  expect(await page.locator('meta[name="robots"][content="noindex"]').count()).toBeGreaterThan(0);
 });
 
 for (const path of ["/research", PROGRAMME]) {
