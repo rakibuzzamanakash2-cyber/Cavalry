@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader, SectionHeading } from "@/components/page-header";
-import { outputKinds, outputs, type Output } from "@/content/publications";
+import { outputKinds, type Output } from "@/content/publications";
+import { getOutputs } from "@/data/publications";
 
 export const metadata: Metadata = {
   title: "Publications",
@@ -33,7 +34,8 @@ function OutputRow({ output: o }: { output: Output }) {
   );
 }
 
-export default function PublicationsPage() {
+export default async function PublicationsPage() {
+  const outputs = await getOutputs();
   const published = outputs.filter((o) => o.status === "Published");
   const upcoming = outputs.filter((o) => o.status !== "Published");
 

@@ -10,9 +10,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## Project conventions (CAVALRY research website)
 
-- Stack: Next.js 16 App Router + TypeScript, Tailwind v4, Drizzle ORM on Supabase Postgres. See `docs/decisions/`.
+- Stack: Next.js 16 App Router + TypeScript, Tailwind v4, Prisma 7 on Neon Postgres. See `docs/decisions/`.
 - Colours: use semantic tokens from `src/app/globals.css` (`bg-primary`, `text-accent-strong`, …). Never hard-code hex values in components.
-- Data: read through `src/db/queries.ts` (cached with `"use cache"`, `cacheLife`, `cacheTag`). Do not import `src/db/index.ts` into client components.
-- Schema changes: edit `src/db/schema.ts`, then `npm run db:generate` and commit the SQL in `drizzle/`. Keep `.enableRLS()` on every table.
+- Data: pages read through `src/data/*` (cached with `"use cache"`, `cacheLife`, `cacheTag`; falls back to `src/content/*` when `DATABASE_URL` is unset). Never import `src/lib/db.ts` into client components.
+- Schema changes: edit `prisma/schema.prisma`, run `npm run db:migrate:dev -- --name <change>`, and commit `prisma/migrations`. Keep `src/content/*`, the seed and `src/data/*` mappings in step.
 - Before opening a PR run `npm run check` and `npm run build`.
 - Commits: short, natural, human-sounding messages.

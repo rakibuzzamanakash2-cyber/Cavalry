@@ -1,6 +1,6 @@
-// Research content for the home page and the Research section.
-// Kept honest to the current plan: update the stage and wording as each
-// programme moves forward. (Moves to the database once the admin panel exists.)
+// Research content. Research areas and principles are site copy and live here.
+// Programmes are seeded into the database (npm run db:seed) and read through
+// src/data; this file is also the fallback when no database is configured.
 
 export const researchAreas = [
   {
@@ -67,6 +67,9 @@ export type Programme = {
   currentStage: number;
   outputs: string[];
   commitments: string[];
+  /** Short facts for the home page card. */
+  highlights: { term: string; value: string }[];
+  isFeatured: boolean;
 };
 
 export const programmes: Programme[] = [
@@ -250,31 +253,16 @@ export const programmes: Programme[] = [
       "No causal claims beyond what the design supports.",
       "Every source cited and used within its licence.",
     ],
+    highlights: [
+      { term: "Approach", value: "Local projections · event-study design" },
+      { term: "Data", value: "IMF COFOG · IFPRI SPEED · IBTrACS · ERA5" },
+      { term: "Scope", value: "Multi-country panel, sized by the data audit" },
+      { term: "Output", value: "Working paper · open code · replication package" },
+    ],
+    isFeatured: true,
   },
 ];
-
-export function getProgramme(slug: string) {
-  return programmes.find((p) => p.slug === slug) ?? null;
-}
 
 export function stageStatus(index: number, current: number): StageStatus {
   return index < current ? "done" : index === current ? "current" : "next";
 }
-
-// Home page card: a short view of the flagship programme.
-const flagshipProgramme = programmes[0];
-
-export const flagship = {
-  label: flagshipProgramme.label,
-  slug: flagshipProgramme.slug,
-  title: flagshipProgramme.title,
-  question: flagshipProgramme.question,
-  facts: [
-    { term: "Approach", value: "Local projections · event-study design" },
-    { term: "Data", value: "IMF COFOG · IFPRI SPEED · IBTrACS · ERA5" },
-    { term: "Scope", value: "Multi-country panel, sized by the data audit" },
-    { term: "Output", value: "Working paper · open code · replication package" },
-  ],
-  stages: flagshipProgramme.stages.map((s) => s.name),
-  currentStage: flagshipProgramme.currentStage,
-};

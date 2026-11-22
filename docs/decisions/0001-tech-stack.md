@@ -1,6 +1,6 @@
 # ADR 0001 — Tech stack for the CAVALRY research website
 
-- Status: Accepted
+- Status: Accepted — database and ORM superseded by [ADR 0002](0002-neon-and-prisma.md)
 - Date: 2026-11-22
 - Deciders: Rakib, Rubayet
 

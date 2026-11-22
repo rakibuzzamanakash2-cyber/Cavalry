@@ -3,11 +3,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SectionHeading } from "@/components/page-header";
 import { StageTracker } from "@/components/stage-tracker";
-import { getProgramme, programmes, stageStatus } from "@/content/research";
+import { stageStatus } from "@/content/research";
+import { getProgramme, getProgrammes } from "@/data/programmes";
 import { formatDate } from "@/lib/format";
 import { site } from "@/lib/site";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const programmes = await getProgrammes();
   return programmes.map((p) => ({ slug: p.slug }));
 }
 
@@ -15,7 +17,7 @@ export async function generateMetadata({
   params,
 }: PageProps<"/research/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const programme = getProgramme(slug);
+  const programme = await getProgramme(slug);
   if (!programme) return {};
   return {
     title: programme.title,
@@ -37,7 +39,7 @@ const sections = [
 
 export default async function ProgrammePage({ params }: PageProps<"/research/[slug]">) {
   const { slug } = await params;
-  const p = getProgramme(slug);
+  const p = await getProgramme(slug);
   if (!p) notFound();
 
   const jsonLd = {
