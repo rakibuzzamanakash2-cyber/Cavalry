@@ -23,7 +23,7 @@
   --sand: #e9e0cf; /* panels, callouts */
   --ink: #17140f; /* body text */
   --muted: #6a6155; /* captions, metadata */
-  --line: #d8cdb9; /* borders, dividers */
+  --line: #c9bca5; /* borders, dividers */
 }
 
 /* Dark: lamp-lit ink. Parchment becomes the ink, oxblood lifts to claret. */
@@ -32,14 +32,14 @@
   --primary: #efe7d8;
   --primary-hover: #ffffff;
   --primary-foreground: #13110d;
-  --accent: #b5525c;
+  --accent: #cc6b74;
   --accent-strong: #e0959b;
   --accent-foreground: #13110d;
   --surface: #13110d;
   --sand: #1f1b16;
   --ink: #e9e1d2;
   --muted: #a1978a;
-  --line: #3a342c;
+  --line: #4a4238;
 }
 
 /* No-JavaScript fallback: follow the system setting. */
@@ -49,14 +49,14 @@
     --primary: #efe7d8;
     --primary-hover: #ffffff;
     --primary-foreground: #13110d;
-    --accent: #b5525c;
+    --accent: #cc6b74;
     --accent-strong: #e0959b;
     --accent-foreground: #13110d;
     --surface: #13110d;
     --sand: #1f1b16;
     --ink: #e9e1d2;
     --muted: #a1978a;
-    --line: #3a342c;
+    --line: #4a4238;
   }
 }
 

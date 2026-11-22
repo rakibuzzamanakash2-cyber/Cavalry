@@ -9,7 +9,7 @@ export function FlagshipCard() {
       aria-labelledby="flagship-title"
       className="border-line bg-surface flex flex-col border shadow-[6px_6px_0_0_var(--color-sand)]"
     >
-      <header className="border-line tracking-caps flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b px-4 py-2.5 text-[0.6rem] uppercase sm:px-5 sm:text-[0.65rem]">
+      <header className="border-line tracking-caps flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b px-4 py-2.5 text-xs uppercase sm:px-5 sm:text-xs">
         <span className="text-accent-strong whitespace-nowrap">{flagship.label}</span>
         <span className="text-muted flex shrink-0 items-center gap-2 whitespace-nowrap">
           <span className="relative flex size-2">
@@ -29,27 +29,33 @@ export function FlagshipCard() {
         </h2>
 
         <div>
-          <p className="tracking-caps text-muted text-[0.65rem] uppercase">Research question</p>
+          <p className="tracking-caps text-muted text-xs uppercase">Research question</p>
           <p className="border-accent mt-1 border-l-2 pl-3 font-serif text-lg leading-snug italic lg:text-[clamp(1rem,2dvh,1.15rem)]">
             {flagship.question}
           </p>
         </div>
 
-        <dl className="grid grid-cols-1 gap-x-3 gap-y-0.5 text-sm leading-snug min-[400px]:grid-cols-[5.5rem_1fr] min-[400px]:gap-y-1.5 lg:text-[0.8rem]">
-          {flagship.facts.map((f, i) => (
-            <div key={f.term} className="contents">
-              <dt
-                className={`tracking-caps text-muted text-[0.65rem] uppercase min-[400px]:mt-0 ${i > 0 ? "mt-2" : ""}`}
-              >
-                {f.term}
-              </dt>
-              <dd>{f.value}</dd>
-            </div>
-          ))}
-        </dl>
+        <div>
+          <p className="tracking-caps text-muted text-xs uppercase">
+            Planned design{" "}
+            <span className="tracking-normal normal-case">· confirmed in the protocol</span>
+          </p>
+          <dl className="mt-2 grid grid-cols-1 gap-x-3 gap-y-0.5 text-sm leading-snug min-[400px]:grid-cols-[5rem_1fr] min-[400px]:gap-y-1.5 lg:text-[0.8rem]">
+            {flagship.facts.map((f, i) => (
+              <div key={f.term} className="contents">
+                <dt
+                  className={`text-muted text-xs tracking-wider uppercase min-[400px]:mt-0 ${i > 0 ? "mt-2" : ""}`}
+                >
+                  {f.term}
+                </dt>
+                <dd>{f.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
 
         <div>
-          <p className="tracking-caps text-muted text-[0.65rem] uppercase">
+          <p className="tracking-caps text-muted text-xs uppercase">
             Stage {currentStage + 1} of {stages.length} · {stages[currentStage]}
           </p>
           <ol className="mt-2 grid grid-cols-5 gap-1" aria-label="Research stages">
@@ -61,7 +67,7 @@ export function FlagshipCard() {
                     className={`block h-1 ${state === "next" ? "bg-line" : state === "current" ? "bg-accent" : "bg-primary"}`}
                   />
                   <span
-                    className={`mt-1 block text-[0.6rem] tracking-wider uppercase ${state === "current" ? "text-accent-strong" : "text-muted"}`}
+                    className={`mt-1 block text-xs leading-tight uppercase ${state === "current" ? "text-accent-strong" : "text-muted"}`}
                   >
                     {stage}
                   </span>

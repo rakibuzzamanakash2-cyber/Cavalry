@@ -29,7 +29,7 @@ export default function HomePage() {
       />
       <section className="grid flex-1 grid-cols-[minmax(0,1fr)] items-center gap-10 py-8 sm:py-12 lg:grid-cols-12 lg:gap-12 lg:py-[clamp(0.5rem,2dvh,1.5rem)]">
         <div className="flex flex-col items-center gap-5 text-center sm:gap-6 lg:col-span-7 lg:items-start lg:gap-[clamp(0.75rem,2.2dvh,1.5rem)] lg:text-left">
-          <p className="tracking-caps text-accent-strong text-[0.65rem] uppercase">
+          <p className="tracking-caps text-accent-strong text-xs uppercase">
             Independent research group · {site.location}
           </p>
           <h1 className="sr-only">{site.name}</h1>
@@ -40,14 +40,14 @@ export default function HomePage() {
           </p>
 
           <div className="w-full max-w-xl">
-            <p className="tracking-caps text-muted text-[0.65rem] uppercase">Research areas</p>
+            <p className="tracking-caps text-muted text-xs uppercase">Research areas</p>
             <ul className="border-line mt-2 grid grid-cols-1 border-t border-l text-left min-[420px]:grid-cols-2">
               {researchAreas.map((area) => (
                 <li key={area.title} className="border-line border-r border-b px-3 py-2.5">
                   <p className="text-primary font-serif text-base font-semibold sm:text-[1.05rem] lg:text-[clamp(0.95rem,1.9dvh,1.05rem)]">
                     {area.title}
                   </p>
-                  <p className="text-muted text-xs leading-snug lg:text-[0.72rem]">{area.detail}</p>
+                  <p className="text-muted text-xs leading-snug">{area.detail}</p>
                 </li>
               ))}
             </ul>
@@ -80,12 +80,10 @@ export default function HomePage() {
             <li key={p.title} className="flex gap-3">
               <span className="text-accent font-serif text-lg leading-none">{p.numeral}</span>
               <span>
-                <span className="tracking-caps text-primary block text-[0.65rem] uppercase">
+                <span className="tracking-caps text-primary block text-xs uppercase">
                   {p.title}
                 </span>
-                <span className="text-muted block text-xs leading-snug lg:text-[0.72rem]">
-                  {p.detail}
-                </span>
+                <span className="text-muted block text-xs leading-snug">{p.detail}</span>
               </span>
             </li>
           ))}

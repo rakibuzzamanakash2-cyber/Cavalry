@@ -29,3 +29,13 @@ jobs:
         env:
           DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
       - run: npm run build
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+      - name: Browser tests (layout, theme, mobile menu, accessibility)
+        run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-traces
+          path: test-results/
+          retention-days: 7

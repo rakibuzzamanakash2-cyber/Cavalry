@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { THEME_STORAGE_KEY, type Theme } from "@/lib/theme";
 
 function currentTheme(): Theme {
@@ -11,11 +11,24 @@ function applyTheme(theme: Theme) {
   document.documentElement.setAttribute("data-theme", theme);
 }
 
+// Track <html data-theme> so the switch can announce its state to screen readers.
+function subscribe(onChange: () => void) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  return () => observer.disconnect();
+}
+
 /**
  * Switches between light and dark. Both icons are always rendered and CSS shows
  * the right one, so server and client markup match (no hydration mismatch).
  */
 export function ThemeToggle({ className = "" }: { className?: string }) {
+  const isDark = useSyncExternalStore(
+    subscribe,
+    () => currentTheme() === "dark",
+    () => false,
+  );
+
   // Follow system changes until the visitor picks a theme themselves.
   useEffect(() => {
     const media = window.matchMedia("(prefers-color-scheme: dark)");
@@ -40,9 +53,11 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
   return (
     <button
       type="button"
+      role="switch"
+      aria-checked={isDark}
       onClick={toggle}
-      aria-label="Switch between light and dark theme"
-      title="Switch theme"
+      aria-label="Dark theme"
+      title={isDark ? "Switch to light theme" : "Switch to dark theme"}
       className={`text-ink hover:bg-sand hover:text-accent inline-flex size-10 items-center justify-center rounded-full transition-colors ${className}`}
     >
       {/* Moon: shown in light mode */}

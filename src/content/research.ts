@@ -35,10 +35,10 @@ export const flagship = {
   question:
     "When a country is hit by a physically intense natural hazard, how do the shares and real levels of government spending on each sector change in the following years?",
   facts: [
-    { term: "Approach", value: "Local projections · event-study design · compositional checks" },
-    { term: "Data", value: "IMF GFS (COFOG), IFPRI SPEED, IBTrACS, ERA5 / CHIRPS" },
-    { term: "Scope", value: "Multi-country panel, set by the data-feasibility audit" },
-    { term: "Output", value: "Working paper, open code and replication package" },
+    { term: "Approach", value: "Local projections · event-study design" },
+    { term: "Data", value: "IMF COFOG · IFPRI SPEED · IBTrACS · ERA5" },
+    { term: "Scope", value: "Multi-country panel, sized by the data audit" },
+    { term: "Output", value: "Working paper · open code · replication package" },
   ],
   stages: ["Protocol", "Data audit", "Dataset", "Analysis", "Paper"],
   currentStage: 0, // index into stages

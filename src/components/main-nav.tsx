@@ -39,10 +39,14 @@ export function MainNav() {
     desktop.addEventListener("change", onResize);
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    // Keep keyboard and screen-reader focus inside the header and open menu.
+    const background = [document.getElementById("main"), document.querySelector("body > footer")];
+    background.forEach((el) => el?.setAttribute("inert", ""));
     return () => {
       document.removeEventListener("keydown", onKey);
       desktop.removeEventListener("change", onResize);
       document.body.style.overflow = previous;
+      background.forEach((el) => el?.removeAttribute("inert"));
     };
   }, [open]);
 

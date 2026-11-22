@@ -1,29 +1,43 @@
-import { LOGO_PATH } from "./logo-path";
+import { preload } from "react-dom";
 
 type LogoProps = {
   /** Show the "RESEARCH · DEVELOP · BUILD" line under the wordmark. */
   withTagline?: boolean;
+  /** Size with width classes (e.g. "w-64"); height follows the logo's aspect ratio. */
   className?: string;
-  /** Set when the logo is the page's main heading, so screen readers announce it once. */
   title?: string;
 };
 
+const FILES = {
+  full: { src: "/brand/cavalry-logo.svg", ratio: "4434 / 1050" },
+  wordmark: { src: "/brand/cavalry-wordmark.svg", ratio: "4434 / 900" },
+} as const;
+
 /**
- * CAVALRY research calligraphic logo as an inline SVG.
- * It uses currentColor, so set the colour with a text-* class.
+ * CAVALRY research calligraphic logo.
+ *
+ * Drawn as a CSS mask over the current text colour, so it recolours with
+ * text-* classes and both themes, while the SVG itself is a small cached file
+ * instead of ~44 KB of path data repeated in every page's HTML.
  */
-export function Logo({ withTagline = true, className, title = "CAVALRY research" }: LogoProps) {
-  const height = withTagline ? 1050 : 900;
+export function Logo({
+  withTagline = true,
+  className = "",
+  title = "CAVALRY research",
+}: LogoProps) {
+  const file = withTagline ? FILES.full : FILES.wordmark;
+  preload(file.src, { as: "image", fetchPriority: "high" });
+
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox={`0 0 4434 ${height}`}
-      fill="currentColor"
+    <span
       role="img"
       aria-label={withTagline ? `${title}: Research, Develop, Build` : title}
-      className={className}
-    >
-      <path d={LOGO_PATH} fillRule="evenodd" />
-    </svg>
+      className={`block bg-current ${className}`}
+      style={{
+        aspectRatio: file.ratio,
+        WebkitMask: `url(${file.src}) center / contain no-repeat`,
+        mask: `url(${file.src}) center / contain no-repeat`,
+      }}
+    />
   );
 }
