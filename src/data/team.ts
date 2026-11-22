@@ -1,19 +1,12 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import {
-  openRoles as contentRoles,
-  people as contentPeople,
-  type OpenRole,
-  type Person,
-} from "@/content/team";
+import type { OpenRole, Person } from "@/content/team";
 import { getDb } from "@/lib/db";
-import { isDatabaseConfigured } from "@/lib/env";
 
 export async function getPeople(): Promise<Person[]> {
   "use cache";
   cacheLife("hours");
   cacheTag("team");
-  if (!isDatabaseConfigured()) return contentPeople;
   const rows = await getDb().teamMember.findMany({
     where: { isActive: true },
     orderBy: [{ isFounder: "desc" }, { sortOrder: "asc" }, { name: "asc" }],
@@ -38,7 +31,6 @@ export async function getOpenRoles(): Promise<OpenRole[]> {
   "use cache";
   cacheLife("hours");
   cacheTag("team");
-  if (!isDatabaseConfigured()) return contentRoles;
   const rows = await getDb().openRole.findMany({
     where: { isOpen: true },
     orderBy: [{ sortOrder: "asc" }, { title: "asc" }],

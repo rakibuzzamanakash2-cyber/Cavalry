@@ -108,7 +108,7 @@ export default async function TeamPage() {
           Join the first programme
         </SectionHeading>
         <p className="text-muted mt-3 max-w-3xl leading-relaxed">
-          We are looking for three members to work on the disasters and public spending programme.
+          We are looking for members in three fields for our first research programme.
         </p>
         <ul className="border-line mt-6 grid border-t border-l md:grid-cols-3">
           {openRoles.map((r) => (

@@ -3,18 +3,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ArticleSkeleton } from "@/components/article-skeleton";
-import { getPost, getPosts } from "@/data/news";
+import { getPublicPost } from "@/data/news";
 import { formatDate } from "@/lib/format";
 import { site } from "@/lib/site";
 
-export async function generateStaticParams() {
-  const posts = await getPosts();
-  return posts.map((p) => ({ slug: p.slug }));
-}
-
 export async function generateMetadata({ params }: PageProps<"/news/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getPost(slug);
+  const post = await getPublicPost(slug);
   if (!post) return {};
   return {
     title: post.title,
@@ -34,7 +29,7 @@ export default function NewsPostPage({ params }: PageProps<"/news/[slug]">) {
 
 async function NewsPostContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = await getPost(slug);
+  const post = await getPublicPost(slug);
   if (!post) notFound();
 
   const jsonLd = {

@@ -1,13 +1,14 @@
 import Link from "next/link";
-import { FlagshipCard } from "@/components/flagship-card";
+import { FinishedWorkCard } from "@/components/finished-work-card";
 import { Logo } from "@/components/logo";
 import { principles, researchAreas } from "@/content/research";
-import { getFeaturedProgramme } from "@/data/programmes";
+import { getPublicProgrammes } from "@/data/programmes";
+import { getPublicOutputs } from "@/data/publications";
 import { site } from "@/lib/site";
 
 // One-screen home page that reads as a research group at first glance:
-// identity and research areas on the left, the live research programme on the
-// right, and the research principles along the bottom.
+// identity and research areas on the left, finished public work on the right
+// (research in progress is confidential), and the principles along the bottom.
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "ResearchOrganization",
@@ -21,7 +22,7 @@ const organizationJsonLd = {
 };
 
 export default async function HomePage() {
-  const flagship = await getFeaturedProgramme();
+  const [programmes, outputs] = await Promise.all([getPublicProgrammes(), getPublicOutputs()]);
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 sm:px-6">
       <script
@@ -72,7 +73,7 @@ export default async function HomePage() {
         </div>
 
         <div className="lg:col-span-5">
-          {flagship ? <FlagshipCard programme={flagship} /> : null}
+          <FinishedWorkCard programmes={programmes} outputs={outputs} />
         </div>
       </section>
 

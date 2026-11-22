@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader, SectionHeading } from "@/components/page-header";
 import { outputKinds, type Output } from "@/content/publications";
-import { getOutputs } from "@/data/publications";
+import { getPublicOutputs } from "@/data/publications";
 
 export const metadata: Metadata = {
   title: "Publications",
@@ -35,9 +35,7 @@ function OutputRow({ output: o }: { output: Output }) {
 }
 
 export default async function PublicationsPage() {
-  const outputs = await getOutputs();
-  const published = outputs.filter((o) => o.status === "Published");
-  const upcoming = outputs.filter((o) => o.status !== "Published");
+  const published = await getPublicOutputs();
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6">
@@ -53,9 +51,8 @@ export default async function PublicationsPage() {
           <div className="border-line bg-sand/40 mt-6 border p-5 sm:p-6">
             <p className="font-serif text-xl">Nothing published yet.</p>
             <p className="text-muted mt-2 max-w-2xl leading-relaxed">
-              We are a new group and our first programme is at its protocol stage. Our first outputs
-              are listed below with their real status. We would rather show an empty list than an
-              inflated one.
+              We are a new group and our research is still in progress. Papers, data and code appear
+              here when they are published. We would rather show an empty list than an inflated one.
             </p>
           </div>
         ) : (
@@ -67,19 +64,8 @@ export default async function PublicationsPage() {
         )}
       </section>
 
-      <section aria-labelledby="upcoming" className="border-line border-t py-10 sm:py-14">
-        <SectionHeading number="02" id="upcoming">
-          In preparation
-        </SectionHeading>
-        <ul className="border-line mt-6 divide-y border-y">
-          {upcoming.map((o) => (
-            <OutputRow key={o.slug} output={o} />
-          ))}
-        </ul>
-      </section>
-
       <section aria-labelledby="kinds" className="border-line border-t py-10 sm:py-14">
-        <SectionHeading number="03" id="kinds">
+        <SectionHeading number="02" id="kinds">
           What you will find here
         </SectionHeading>
         <ul className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">

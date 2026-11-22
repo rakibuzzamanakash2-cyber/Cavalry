@@ -1,5 +1,5 @@
 // News and updates, newest first. Body is plain paragraphs (no Markdown yet).
-// Seeded into the database; also the fallback when no database is configured.
+// Seeded into the database (npm run db:seed).
 
 export type NewsPost = {
   slug: string;
@@ -8,6 +8,8 @@ export type NewsPost = {
   excerpt: string;
   body: string[];
   tags: string[];
+  /** "public" for everyone, "members" for the workspace only. Defaults to members. */
+  visibility?: "public" | "members";
 };
 
 export const posts: NewsPost[] = [
@@ -24,5 +26,7 @@ export const posts: NewsPost[] = [
       "We will post updates here as each stage is completed, along with any changes to the plan and the reasons for them.",
     ],
     tags: ["Announcement", "Disasters and public spending"],
+    // Names the flagship programme, which is confidential until it is finished.
+    visibility: "members",
   },
 ];

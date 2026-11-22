@@ -1,17 +1,12 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import {
-  outputs as contentOutputs,
-  type Output,
-  type OutputStatus,
-  type OutputType,
-} from "@/content/publications";
+import type { Output, OutputStatus, OutputType } from "@/content/publications";
 import type {
   OutputStatus as DbOutputStatus,
   OutputType as DbOutputType,
 } from "@/generated/prisma/enums";
 import { getDb } from "@/lib/db";
-import { isDatabaseConfigured } from "@/lib/env";
+import { requireMember } from "@/lib/session";
 
 // Database enums ↔ the labels shown on the site.
 export const outputTypeLabel: Record<DbOutputType, OutputType> = {
@@ -29,12 +24,12 @@ export const outputStatusLabel: Record<DbOutputStatus, OutputStatus> = {
   published: "Published",
 };
 
-export async function getOutputs(): Promise<Output[]> {
+async function listOutputs(scope: "public" | "all"): Promise<Output[]> {
   "use cache";
   cacheLife("hours");
   cacheTag("publications");
-  if (!isDatabaseConfigured()) return contentOutputs;
   const rows = await getDb().publication.findMany({
+    where: scope === "public" ? { status: "published" } : undefined,
     include: { project: { select: { slug: true } } },
     orderBy: [{ year: { sort: "desc", nulls: "first" } }, { sortOrder: "asc" }, { title: "asc" }],
   });
@@ -54,4 +49,15 @@ export async function getOutputs(): Promise<Output[]> {
       r.doi ? { label: "DOI", href: `https://doi.org/${r.doi}` } : null,
     ].filter((l): l is { label: string; href: string } => l !== null),
   }));
+}
+
+/** Published outputs, for everyone. */
+export function getPublicOutputs() {
+  return listOutputs("public");
+}
+
+/** All outputs, including work in preparation. Members only. */
+export async function getWorkspaceOutputs(): Promise<Output[]> {
+  await requireMember("/workspace");
+  return listOutputs("all");
 }

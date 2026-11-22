@@ -3,7 +3,7 @@ import Link from "next/link";
 import { PageHeader, SectionHeading } from "@/components/page-header";
 import { StageTracker } from "@/components/stage-tracker";
 import { researchAreas } from "@/content/research";
-import { getProgrammes } from "@/data/programmes";
+import { getPublicProgrammes } from "@/data/programmes";
 
 export const metadata: Metadata = {
   title: "Research",
@@ -20,18 +20,27 @@ const process = [
 ];
 
 export default async function ResearchPage() {
-  const programmes = await getProgrammes();
+  const programmes = await getPublicProgrammes();
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6">
       <PageHeader eyebrow="Research" title="Questions worth answering carefully">
         We work on a small number of programmes at a time, each built around one clear question, a
-        written protocol and data we can defend.
+        written protocol and data we can defend. Programmes are shared here once they are complete.
       </PageHeader>
 
       <section aria-labelledby="programmes" className="py-10 sm:py-14">
         <SectionHeading number="01" id="programmes">
-          Programmes
+          Completed programmes
         </SectionHeading>
+        {programmes.length === 0 ? (
+          <div className="border-line bg-sand/40 mt-6 border p-5 sm:p-6">
+            <p className="font-serif text-xl">No completed programmes yet.</p>
+            <p className="text-muted mt-2 max-w-2xl leading-relaxed">
+              Our research stays confidential while it is in progress. Each programme is published
+              here, with its methods and outputs, once it is finished.
+            </p>
+          </div>
+        ) : null}
         <ul className="mt-6 grid gap-6">
           {programmes.map((p) => (
             <li key={p.slug}>
@@ -74,10 +83,6 @@ export default async function ResearchPage() {
             </li>
           ))}
         </ul>
-        <p className="text-muted mt-6 text-sm">
-          New programmes are added only when the current one has passed its data audit, so each gets
-          the attention it needs.
-        </p>
       </section>
 
       <section aria-labelledby="areas" className="border-line border-t py-10 sm:py-14">

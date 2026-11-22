@@ -9,6 +9,11 @@ import { Logo } from "./logo";
 export function HeaderBrand() {
   const pathname = usePathname();
   if (pathname === "/") return <span aria-hidden />;
+  return <HeaderBrandLink />;
+}
+
+/** The logo link itself; also the Suspense fallback while the URL is unknown. */
+export function HeaderBrandLink() {
   return (
     <Link href="/" aria-label={`${site.name} home`} className="text-primary">
       <Logo withTagline={false} className="w-36 sm:w-44" />

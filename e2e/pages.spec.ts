@@ -17,28 +17,17 @@ test("every menu link opens a real page", async ({ page }) => {
   }
 });
 
-test("news post opens from the list", async ({ page }) => {
-  await page.goto("/news");
-  await page.getByRole("link", { name: /CAVALRY research begins/ }).click();
-  await expect(page).toHaveURL(/\/news\/cavalry-research-begins$/);
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("CAVALRY research begins");
-});
-
 test("publications shows an honest empty state", async ({ page }) => {
   await page.goto("/publications");
   await expect(page.getByText("Nothing published yet.")).toBeVisible();
-  await expect(page.getByText("In preparation").first()).toBeVisible();
+  await expect(page.getByText("In preparation")).toHaveCount(0);
 });
 
 test("sitemap and robots are served", async ({ request }) => {
   const sitemap = await request.get("/sitemap.xml");
   expect(sitemap.ok()).toBe(true);
   const xml = await sitemap.text();
-  for (const path of [
-    "/about",
-    "/research/disasters-and-public-spending",
-    "/news/cavalry-research-begins",
-  ]) {
+  for (const path of ["/about", "/research", "/publications", "/contact"]) {
     expect(xml).toContain(path);
   }
   const robots = await request.get("/robots.txt");
@@ -55,12 +44,13 @@ test("pages load without console errors", async ({ page }) => {
     "/",
     "/about",
     "/research",
-    "/research/disasters-and-public-spending",
     "/publications",
     "/team",
     "/news",
-    "/news/cavalry-research-begins",
     "/contact",
+    "/sign-in",
+    "/sign-up",
+    "/members-only",
   ]) {
     await page.goto(path);
     await page.waitForLoadState("networkidle");
