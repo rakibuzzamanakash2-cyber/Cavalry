@@ -1,26 +1,82 @@
 @import "tailwindcss";
 
+/* `dark:` follows the resolved theme set on <html data-theme="..."> by the
+   inline script in layout.tsx (system preference unless the visitor chose one). */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 /*
  * CAVALRY research — design tokens: "Ink & Parchment" with an oxblood accent,
- * chosen to match the calligraphic logo. Use these semantic names in
- * components (bg-primary, text-accent, ...), never raw hex values.
+ * matched to the calligraphic logo. Components use the semantic names
+ * (bg-primary, text-accent, ...) and never raw hex values, so both themes
+ * are defined only here.
  */
-@theme {
-  --color-primary: #17140f; /* Ink — logo, headings, dark sections */
-  --color-primary-hover: #2a251d;
-  --color-primary-foreground: #f4eee3;
-  --color-accent: #6e1f28; /* Oxblood — rules, hover states, highlights */
-  --color-accent-strong: #5a1820; /* Oxblood for small text and links */
-  --color-accent-foreground: #f4eee3;
-  --color-surface: #f4eee3; /* Parchment — page background */
-  --color-sand: #e9e0cf; /* panels, callouts */
-  --color-ink: #17140f; /* body text */
-  --color-muted: #6a6155; /* captions, metadata */
-  --color-line: #d8cdb9; /* borders, dividers */
+:root {
+  --header-h: 4rem;
+  color-scheme: light;
+  --primary: #17140f; /* Ink — logo, headings, primary buttons */
+  --primary-hover: #2a251d;
+  --primary-foreground: #f4eee3;
+  --accent: #6e1f28; /* Oxblood — rules, hover states, highlights */
+  --accent-strong: #5a1820; /* small text and links */
+  --accent-foreground: #f4eee3;
+  --surface: #f4eee3; /* Parchment — page background */
+  --sand: #e9e0cf; /* panels, callouts */
+  --ink: #17140f; /* body text */
+  --muted: #6a6155; /* captions, metadata */
+  --line: #d8cdb9; /* borders, dividers */
+}
 
+/* Dark: lamp-lit ink. Parchment becomes the ink, oxblood lifts to claret. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --primary: #efe7d8;
+  --primary-hover: #ffffff;
+  --primary-foreground: #13110d;
+  --accent: #b5525c;
+  --accent-strong: #e0959b;
+  --accent-foreground: #13110d;
+  --surface: #13110d;
+  --sand: #1f1b16;
+  --ink: #e9e1d2;
+  --muted: #a1978a;
+  --line: #3a342c;
+}
+
+/* No-JavaScript fallback: follow the system setting. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --primary: #efe7d8;
+    --primary-hover: #ffffff;
+    --primary-foreground: #13110d;
+    --accent: #b5525c;
+    --accent-strong: #e0959b;
+    --accent-foreground: #13110d;
+    --surface: #13110d;
+    --sand: #1f1b16;
+    --ink: #e9e1d2;
+    --muted: #a1978a;
+    --line: #3a342c;
+  }
+}
+
+@theme inline {
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-surface: var(--surface);
+  --color-sand: var(--sand);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+}
+
+@theme {
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Cormorant Garamond Variable", ui-serif, Georgia, serif;
-
   --tracking-caps: 0.28em;
 }
 
@@ -30,6 +86,13 @@
     color: var(--color-ink);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
   }
 
   h1,
@@ -53,5 +116,14 @@
   ::selection {
     background-color: var(--color-accent);
     color: var(--color-accent-foreground);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
   }
 }
