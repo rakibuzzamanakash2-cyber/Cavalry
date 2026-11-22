@@ -8,14 +8,6 @@ const serverEnvSchema = z.object({
 
 let cached: z.infer<typeof serverEnvSchema> | undefined;
 
-/**
- * True when a database is configured. Without one, the site serves the
- * content files in src/content (useful before setup and for local design work).
- */
-export function isDatabaseConfigured() {
-  return Boolean(process.env.DATABASE_URL);
-}
-
 /** Validated server-side environment. Throws a readable error if something is wrong. */
 export function serverEnv() {
   if (cached) return cached;

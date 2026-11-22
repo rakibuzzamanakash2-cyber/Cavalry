@@ -1,16 +1,18 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { PROGRAMME_SLUG, signedInContext, test } from "./helpers";
 
 const pages = [
   "/",
   "/about",
   "/research",
-  "/research/disasters-and-public-spending",
   "/publications",
   "/team",
   "/news",
-  "/news/cavalry-research-begins",
   "/contact",
+  "/sign-in",
+  "/sign-up",
+  "/members-only",
 ];
 
 for (const path of pages) {
@@ -34,5 +36,32 @@ for (const path of pages) {
         await context.close();
       });
     }
+  }
+}
+
+// Private pages, audited as the people who can see them.
+const privatePages = [
+  { path: "/workspace", role: "member" as const },
+  { path: `/workspace/research/${PROGRAMME_SLUG}`, role: "member" as const },
+  { path: "/admin/users", role: "admin" as const },
+];
+
+for (const { path, role } of privatePages) {
+  for (const colorScheme of ["light", "dark"] as const) {
+    test(`${path} has no accessibility violations (${colorScheme}, ${role})`, async ({
+      browser,
+    }) => {
+      const { context } = await signedInContext(browser, role, { colorScheme });
+      const page = await context.newPage();
+      await page.goto(path);
+      await page.waitForLoadState("networkidle");
+      const results = await new AxeBuilder({ page })
+        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"])
+        .analyze();
+      expect(
+        results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(", ")}`),
+      ).toEqual([]);
+      await context.close();
+    });
   }
 }

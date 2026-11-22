@@ -17,19 +17,17 @@ The public website of CAVALRY research: an independent research group that inves
 | Hosting    | Vercel                                                                    |
 | CI         | GitHub Actions: lint, typecheck, format, migrations, build, browser tests |
 
-Why these choices: see [`docs/decisions/`](docs/decisions/) — ADR 0001 (stack) and ADR 0002 (Neon and Prisma).
+Why these choices: see [`docs/decisions/`](docs/decisions/) — ADR 0001 (stack), ADR 0002 (Neon and Prisma), ADR 0003 (access model and auth).
 
 ## Getting started
 
-Requirements: Node.js 22+. A Neon database is optional for local work.
+Requirements: Node.js 22+ and a Neon database.
 
 ```bash
 npm install                  # also generates the Prisma client
 cp .env.example .env.local
 npm run dev                  # http://localhost:3000
 ```
-
-Without `DATABASE_URL` the site runs from the files in `src/content/`.
 
 ### Connecting Neon
 
@@ -42,7 +40,25 @@ npm run db:migrate   # applies prisma/migrations
 npm run db:seed      # copies src/content into the database (safe to re-run)
 ```
 
-4. On Vercel, add `DATABASE_URL` (pooled) and `NEXT_PUBLIC_SITE_URL`.
+### Accounts and roles
+
+1. Set `BETTER_AUTH_SECRET` (32+ random characters) and `BETTER_AUTH_URL` in `.env.local`.
+2. Put the founders' emails in `ADMIN_EMAILS` (comma-separated).
+3. Optional, Google sign-in: create an OAuth client in Google Cloud Console with the redirect URI `<site URL>/api/auth/callback/google`, then set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
+4. Sign up on the site. Founders who sign in with Google become admins automatically; otherwise run `npm run user:role -- you@example.com admin`.
+
+| Role     | Sees                               |
+| -------- | ---------------------------------- |
+| visitor  | Public overview and finished work  |
+| `user`   | Same (applications coming)         |
+| `member` | `/workspace`: research in progress |
+| `admin`  | Everything, plus `/admin/users`    |
+
+See ADR 0003 for the access rules.
+
+### Deploying on Vercel
+
+Add `DATABASE_URL` (pooled), `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` and `NEXT_PUBLIC_SITE_URL` (both your real URL), `ADMIN_EMAILS`, and the Google keys if used.
 
 ## Scripts
 

@@ -1,11 +1,11 @@
 import type { MetadataRoute } from "next";
-import { getPosts } from "@/data/news";
-import { getProgrammes } from "@/data/programmes";
+import { getPublicPosts } from "@/data/news";
+import { getPublicProgrammes } from "@/data/programmes";
 import { site } from "@/lib/site";
 
-// Dates come from content (not new Date()) so the sitemap stays static.
+// Public pages only. Dates come from content (not new Date()) so the sitemap stays static.
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [programmes, posts] = await Promise.all([getProgrammes(), getPosts()]);
+  const [programmes, posts] = await Promise.all([getPublicProgrammes(), getPublicPosts()]);
   const staticPages = ["", "/about", "/research", "/publications", "/team", "/news", "/contact"];
   return [
     ...staticPages.map((path) => ({ url: `${site.url}${path}` })),

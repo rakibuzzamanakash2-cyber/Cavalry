@@ -135,6 +135,7 @@ async function main() {
       excerpt: post.excerpt,
       body: post.body.join("\n\n"),
       tags: post.tags,
+      visibility: post.visibility ?? ("members" as const),
       publishedAt: date(post.date),
     };
     await prisma.newsPost.upsert({

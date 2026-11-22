@@ -61,7 +61,7 @@ export function FlagshipCard({ programme: flagship }: { programme: Programme }) 
 
       <footer className="border-line mt-auto border-t">
         <Link
-          href={`/research/${flagship.slug}`}
+          href={`/workspace/research/${flagship.slug}`}
           className="tracking-caps text-primary hover:text-accent block px-4 py-3.5 text-xs uppercase transition-colors sm:px-5 lg:py-2.5"
         >
           Read the research programme →

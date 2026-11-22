@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
-import { getPosts } from "@/data/news";
+import { getPublicPosts } from "@/data/news";
 import { formatDate } from "@/lib/format";
 
 export const metadata: Metadata = {
@@ -10,12 +10,21 @@ export const metadata: Metadata = {
 };
 
 export default async function NewsPage() {
-  const posts = await getPosts();
+  const posts = await getPublicPosts();
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6">
       <PageHeader eyebrow="News" title="Updates and milestones">
-        Each stage we finish, every change to a plan and why, and anything we publish.
+        Announcements, finished work and anything we publish.
       </PageHeader>
+
+      {posts.length === 0 ? (
+        <div className="border-line bg-sand/40 mt-10 border p-5 sm:mt-14 sm:p-6">
+          <p className="font-serif text-xl">No public updates yet.</p>
+          <p className="text-muted mt-2 max-w-2xl leading-relaxed">
+            Milestones and finished work will be announced here.
+          </p>
+        </div>
+      ) : null}
 
       <ul className="border-line mt-10 divide-y border-y sm:mt-14">
         {posts.map((post) => (

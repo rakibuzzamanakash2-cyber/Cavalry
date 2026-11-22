@@ -5,14 +5,29 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { site } from "@/lib/site";
+import { MobileAccount } from "./auth/mobile-account";
 
-function isActive(pathname: string, href: string) {
+function isActive(pathname: string | null, href: string) {
+  if (!pathname) return false;
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-/** Desktop link row (lg and up) plus a full-screen menu for phones and tablets. */
+/**
+ * Desktop link row (lg and up) plus a full-screen menu for phones and tablets.
+ * Reading the URL (for the active link) must sit inside <Suspense> on dynamic
+ * routes, so the header renders <MainNavFallback> until the URL is known.
+ */
 export function MainNav() {
   const pathname = usePathname();
+  return <MainNavView pathname={pathname} />;
+}
+
+/** Same navigation without an active link, used as the Suspense fallback. */
+export function MainNavFallback() {
+  return <MainNavView pathname={null} />;
+}
+
+function MainNavView({ pathname }: { pathname: string | null }) {
   const [open, setOpen] = useState(false);
   const [lastPath, setLastPath] = useState(pathname);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -123,6 +138,7 @@ export function MainNav() {
                     );
                   })}
                 </ul>
+                <MobileAccount />
                 <p className="tracking-caps text-muted mt-8 text-xs uppercase">{site.tagline}</p>
               </nav>
             </div>,

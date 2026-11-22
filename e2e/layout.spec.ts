@@ -21,12 +21,13 @@ async function measure(page: Page) {
 const innerPages = [
   "/about",
   "/research",
-  "/research/disasters-and-public-spending",
   "/publications",
   "/team",
   "/news",
-  "/news/cavalry-research-begins",
   "/contact",
+  "/sign-in",
+  "/sign-up",
+  "/members-only",
 ];
 
 for (const vp of viewports) {
@@ -63,11 +64,9 @@ for (const vp of viewports.filter((v) => v.width >= 1280)) {
   });
 }
 
-test("home shows the research programme", async ({ page }) => {
+test("home shows the organisation and finished work only", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("img", { name: /CAVALRY research/ }).first()).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: /composition of public spending/i }),
-  ).toBeVisible();
-  await expect(page.getByText("Research question")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Finished work" })).toBeVisible();
+  await expect(page.getByText("Research areas")).toBeVisible();
 });
