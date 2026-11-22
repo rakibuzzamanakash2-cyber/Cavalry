@@ -12,23 +12,55 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
+
+    # A throwaway Postgres so migrations, the seed and the database-backed
+    # build are tested on every PR, the same way they run against Neon.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: cavalry
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/cavalry
+      DIRECT_URL: postgresql://postgres:postgres@localhost:5432/cavalry
+      SHADOW_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/cavalry_shadow
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: npm
-      - run: npm ci
+      - run: npm ci # also runs `prisma generate`
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run format:check
+
       - name: Check migrations match the schema
         run: |
-          npx drizzle-kit generate --name ci-check
-          git diff --exit-code -- drizzle || (echo "Schema changed without a migration. Run: npm run db:generate" && exit 1)
-        env:
-          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
-      - run: npm run build
+          PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE cavalry_shadow"
+          npx prisma migrate diff --from-migrations prisma/migrations --to-schema prisma/schema.prisma --exit-code \
+            || (echo "::error::prisma/schema.prisma changed without a migration. Run: npm run db:migrate:dev -- --name <change>" && exit 1)
+
+      - name: Apply migrations
+        run: npm run db:migrate
+
+      - name: Seed the database
+        run: npm run db:seed
+
+      - name: Build against the database
+        run: npm run build
+
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
       - name: Browser tests (layout, theme, mobile menu, accessibility)

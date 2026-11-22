@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { flagship } from "@/content/research";
+import type { Programme } from "@/content/research";
 import { StageTracker } from "./stage-tracker";
 
 /** The flagship programme, laid out like the front matter of a paper. */
-export function FlagshipCard() {
-  const { stages, currentStage } = flagship;
+export function FlagshipCard({ programme: flagship }: { programme: Programme }) {
+  const stages = flagship.stages.map((s) => s.name);
+  const currentStage = flagship.currentStage;
   return (
     <article
       aria-labelledby="flagship-title"
@@ -42,7 +43,7 @@ export function FlagshipCard() {
             <span className="tracking-normal normal-case">· confirmed in the protocol</span>
           </p>
           <dl className="mt-2 grid grid-cols-1 gap-x-3 gap-y-0.5 text-sm leading-snug min-[400px]:grid-cols-[5rem_1fr] min-[400px]:gap-y-1.5 lg:text-[0.8rem]">
-            {flagship.facts.map((f, i) => (
+            {flagship.highlights.map((f, i) => (
               <div key={f.term} className="contents">
                 <dt
                   className={`text-muted text-xs tracking-wider uppercase min-[400px]:mt-0 ${i > 0 ? "mt-2" : ""}`}

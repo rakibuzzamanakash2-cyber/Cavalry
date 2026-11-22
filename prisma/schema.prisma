@@ -1,0 +1,161 @@
+// CAVALRY research — database schema (PostgreSQL on Neon).
+// After editing: `npm run db:migrate:dev -- --name <change>` and commit prisma/migrations.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ProjectStatus {
+  planning
+  active
+  completed
+  paused
+}
+
+enum OutputType {
+  working_paper
+  journal_article
+  preprint
+  dataset
+  software
+  policy_brief
+}
+
+enum OutputStatus {
+  in_preparation
+  under_review
+  published
+}
+
+/// People shown on the Team page.
+model TeamMember {
+  id          String          @id @default(uuid()) @db.Uuid
+  slug        String          @unique
+  name        String
+  role        String
+  focus       String
+  bio         String
+  photoUrl    String?         @map("photo_url")
+  email       String?
+  linkedinUrl String?         @map("linkedin_url")
+  githubUrl   String?         @map("github_url")
+  scholarUrl  String?         @map("scholar_url")
+  isFounder   Boolean         @default(false) @map("is_founder")
+  isActive    Boolean         @default(true) @map("is_active")
+  sortOrder   Int             @default(0) @map("sort_order")
+  projects    ProjectMember[]
+  createdAt   DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([isActive, sortOrder])
+  @@map("team_members")
+}
+
+/// Open member roles listed on the Team page.
+model OpenRole {
+  id         String   @id @default(uuid()) @db.Uuid
+  slug       String   @unique
+  title      String
+  background String
+  owns       String
+  isOpen     Boolean  @default(true) @map("is_open")
+  sortOrder  Int      @default(0) @map("sort_order")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("open_roles")
+}
+
+/// Research programmes. Structured lists (sub-questions, data sources, stages,
+/// ...) are JSON columns validated in src/data/programmes.ts.
+model Project {
+  id           String          @id @default(uuid()) @db.Uuid
+  slug         String          @unique
+  number       String
+  label        String
+  title        String
+  summary      String
+  question     String
+  status       ProjectStatus   @default(planning)
+  statusLabel  String          @map("status_label")
+  currentStage Int             @default(0) @map("current_stage")
+  leads        String[]
+  areas        String[]
+  whyItMatters Json            @map("why_it_matters")
+  subQuestions Json            @map("sub_questions")
+  design       Json
+  dataSources  Json            @map("data_sources")
+  approach     Json
+  scopes       Json
+  stages       Json
+  outputs      Json
+  commitments  Json
+  highlights   Json /// short facts for the home page card
+  isFeatured   Boolean         @default(false) @map("is_featured")
+  sortOrder    Int             @default(0) @map("sort_order")
+  lastUpdated  DateTime        @map("last_updated") @db.Date
+  members      ProjectMember[]
+  publications Publication[]
+  createdAt    DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([isFeatured, sortOrder])
+  @@map("projects")
+}
+
+/// Which team members work on which programme.
+model ProjectMember {
+  projectId    String     @map("project_id") @db.Uuid
+  memberId     String     @map("member_id") @db.Uuid
+  contribution String?
+  project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  member       TeamMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, memberId])
+  @@map("project_members")
+}
+
+/// Papers, datasets, code and briefs — with an honest status.
+model Publication {
+  id        String       @id @default(uuid()) @db.Uuid
+  slug      String       @unique
+  title     String
+  type      OutputType
+  status    OutputStatus
+  authors   String
+  year      Int?
+  venue     String?
+  abstract  String
+  url       String?
+  pdfUrl    String?      @map("pdf_url")
+  doi       String?
+  projectId String?      @map("project_id") @db.Uuid
+  project   Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  sortOrder Int          @default(0) @map("sort_order")
+  createdAt DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([status, year])
+  @@map("publications")
+}
+
+/// News and updates. A null publishedAt means the post is a draft.
+model NewsPost {
+  id          String    @id @default(uuid()) @db.Uuid
+  slug        String    @unique
+  title       String
+  excerpt     String
+  body        String /// paragraphs separated by a blank line
+  tags        String[]
+  publishedAt DateTime? @map("published_at") @db.Timestamptz(6)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([publishedAt])
+  @@map("news_posts")
+}

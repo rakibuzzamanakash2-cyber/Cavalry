@@ -1,4 +1,5 @@
 // News and updates, newest first. Body is plain paragraphs (no Markdown yet).
+// Seeded into the database; also the fallback when no database is configured.
 
 export type NewsPost = {
   slug: string;
@@ -25,7 +26,3 @@ export const posts: NewsPost[] = [
     tags: ["Announcement", "Disasters and public spending"],
   },
 ];
-
-export function getPost(slug: string) {
-  return posts.find((p) => p.slug === slug) ?? null;
-}

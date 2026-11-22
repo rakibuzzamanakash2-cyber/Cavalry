@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
-import { posts } from "@/content/news";
+import { getPosts } from "@/data/news";
 import { formatDate } from "@/lib/format";
 
 export const metadata: Metadata = {
@@ -9,7 +9,8 @@ export const metadata: Metadata = {
   description: "Updates from CAVALRY research: programme milestones, changes to plans and outputs.",
 };
 
-export default function NewsPage() {
+export default async function NewsPage() {
+  const posts = await getPosts();
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6">
       <PageHeader eyebrow="News" title="Updates and milestones">

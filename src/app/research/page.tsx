@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader, SectionHeading } from "@/components/page-header";
 import { StageTracker } from "@/components/stage-tracker";
-import { programmes, researchAreas } from "@/content/research";
+import { researchAreas } from "@/content/research";
+import { getProgrammes } from "@/data/programmes";
 
 export const metadata: Metadata = {
   title: "Research",
@@ -18,7 +19,8 @@ const process = [
   { name: "Publication", detail: "Paper, open code and a replication package." },
 ];
 
-export default function ResearchPage() {
+export default async function ResearchPage() {
+  const programmes = await getProgrammes();
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6">
       <PageHeader eyebrow="Research" title="Questions worth answering carefully">

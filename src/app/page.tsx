@@ -2,6 +2,7 @@ import Link from "next/link";
 import { FlagshipCard } from "@/components/flagship-card";
 import { Logo } from "@/components/logo";
 import { principles, researchAreas } from "@/content/research";
+import { getFeaturedProgramme } from "@/data/programmes";
 import { site } from "@/lib/site";
 
 // One-screen home page that reads as a research group at first glance:
@@ -19,7 +20,8 @@ const organizationJsonLd = {
   knowsAbout: researchAreas.map((a) => a.title),
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const flagship = await getFeaturedProgramme();
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 sm:px-6">
       <script
@@ -70,7 +72,7 @@ export default function HomePage() {
         </div>
 
         <div className="lg:col-span-5">
-          <FlagshipCard />
+          {flagship ? <FlagshipCard programme={flagship} /> : null}
         </div>
       </section>
 

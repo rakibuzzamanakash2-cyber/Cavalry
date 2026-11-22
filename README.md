@@ -10,39 +10,53 @@ The public website of CAVALRY research: an independent research group that inves
 | ---------- | ------------------------------------------------------------------------- |
 | Framework  | Next.js 16 (App Router, Cache Components) + TypeScript                    |
 | Styling    | Tailwind CSS v4 with brand tokens in `src/app/globals.css`                |
-| Database   | PostgreSQL on Supabase                                                    |
-| ORM        | Drizzle ORM + drizzle-kit migrations                                      |
+| Database   | PostgreSQL on Neon                                                        |
+| ORM        | Prisma 7 (driver adapter `@prisma/adapter-pg`) + Prisma Migrate           |
 | Validation | Zod                                                                       |
 | Fonts      | Cormorant Garamond (headings), Inter (body), self-hosted                  |
 | Hosting    | Vercel                                                                    |
 | CI         | GitHub Actions: lint, typecheck, format, migrations, build, browser tests |
 
-Why these choices: see [`docs/decisions/0001-tech-stack.md`](docs/decisions/0001-tech-stack.md).
+Why these choices: see [`docs/decisions/`](docs/decisions/) — ADR 0001 (stack) and ADR 0002 (Neon and Prisma).
 
 ## Getting started
 
-Requirements: Node.js 22+ and a Supabase project.
+Requirements: Node.js 22+. A Neon database is optional for local work.
 
 ```bash
-npm install
-cp .env.example .env.local   # then fill in the Supabase connection strings
-npm run db:migrate           # create the tables
-npm run db:seed              # optional: starter team + flagship project
+npm install                  # also generates the Prisma client
+cp .env.example .env.local
 npm run dev                  # http://localhost:3000
 ```
 
+Without `DATABASE_URL` the site runs from the files in `src/content/`.
+
+### Connecting Neon
+
+1. Create a project at neon.tech in **AWS Asia Pacific (Singapore)**.
+2. Click **Connect**. Copy the string with **Connection pooling** on into `DATABASE_URL`, and with it off into `DIRECT_URL`.
+3. Create the tables and load the content:
+
+```bash
+npm run db:migrate   # applies prisma/migrations
+npm run db:seed      # copies src/content into the database (safe to re-run)
+```
+
+4. On Vercel, add `DATABASE_URL` (pooled) and `NEXT_PUBLIC_SITE_URL`.
+
 ## Scripts
 
-| Command               | What it does                                        |
-| --------------------- | --------------------------------------------------- |
-| `npm run dev`         | Start the dev server                                |
-| `npm run build`       | Production build                                    |
-| `npm run check`       | Lint + typecheck + format check (run before a PR)   |
-| `npm run format`      | Format all files with Prettier                      |
-| `npm run db:generate` | Create a migration after editing `src/db/schema.ts` |
-| `npm run db:migrate`  | Apply migrations to the database                    |
-| `npm run db:studio`   | Browse the database in Drizzle Studio               |
-| `npm run db:seed`     | Insert starter content                              |
+| Command                  | What it does                                      |
+| ------------------------ | ------------------------------------------------- |
+| `npm run dev`            | Start the dev server                              |
+| `npm run build`          | Production build                                  |
+| `npm run check`          | Lint + typecheck + format check (run before a PR) |
+| `npm run format`         | Format all files with Prettier                    |
+| `npm run db:migrate`     | Apply migrations (production / Neon)              |
+| `npm run db:migrate:dev` | Create a migration after editing `schema.prisma`  |
+| `npm run db:seed`        | Copy `src/content` into the database              |
+| `npm run db:status`      | Show which migrations are applied                 |
+| `npm run db:studio`      | Browse the database in Prisma Studio              |
 
 ## Browser tests
 
@@ -55,9 +69,10 @@ src/
   app/            routes, layout, global styles
   components/     shared UI (header, footer, logo, stage tracker)
   content/        research, team, publications and news content (edit here)
-  db/             schema.ts, client (index.ts), cached queries, seed
-  lib/            env validation, site settings
-drizzle/          generated SQL migrations (commit these)
+  data/           cached data access (database, or content files as fallback)
+  generated/      Prisma client (generated, not committed)
+  lib/            database client, env validation, site settings
+prisma/           schema.prisma, migrations (commit these), seed.ts
 docs/decisions/   architecture decision records
 ```
 

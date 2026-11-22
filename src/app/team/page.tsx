@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { PageHeader, SectionHeading } from "@/components/page-header";
-import { founders, joiningNotes, openRoles, type Person } from "@/content/team";
+import { joiningNotes, type Person } from "@/content/team";
+import { getOpenRoles, getPeople } from "@/data/team";
 
 export const metadata: Metadata = {
   title: "Team",
@@ -63,7 +64,10 @@ function PersonCard({ person }: { person: Person }) {
   );
 }
 
-export default function TeamPage() {
+export default async function TeamPage() {
+  const [people, openRoles] = await Promise.all([getPeople(), getOpenRoles()]);
+  const founders = people.filter((p) => p.isFounder);
+  const members = people.filter((p) => !p.isFounder);
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6">
       <PageHeader eyebrow="Team" title="A small team, by design">
@@ -84,8 +88,23 @@ export default function TeamPage() {
         </ul>
       </section>
 
+      {members.length > 0 ? (
+        <section aria-labelledby="members" className="border-line border-t py-10 sm:py-14">
+          <SectionHeading number="02" id="members">
+            Members
+          </SectionHeading>
+          <ul className="mt-6 grid gap-6 lg:grid-cols-2">
+            {members.map((p) => (
+              <li key={p.slug}>
+                <PersonCard person={p} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
       <section aria-labelledby="join" className="border-line border-t py-10 sm:py-14">
-        <SectionHeading number="02" id="join">
+        <SectionHeading number={members.length > 0 ? "03" : "02"} id="join">
           Join the first programme
         </SectionHeading>
         <p className="text-muted mt-3 max-w-3xl leading-relaxed">
@@ -93,7 +112,7 @@ export default function TeamPage() {
         </p>
         <ul className="border-line mt-6 grid border-t border-l md:grid-cols-3">
           {openRoles.map((r) => (
-            <li key={r.title} className="border-line border-r border-b p-5 sm:p-6">
+            <li key={r.slug} className="border-line border-r border-b p-5 sm:p-6">
               <p className="text-accent-strong tracking-caps text-xs uppercase">Open role</p>
               <h3 className="mt-2 text-xl leading-snug">{r.title}</h3>
               <p className="text-muted mt-3 text-sm leading-relaxed">
