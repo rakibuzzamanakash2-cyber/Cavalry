@@ -53,7 +53,8 @@ npm run dev                  # http://localhost:3000
 ```
 src/
   app/            routes, layout, global styles
-  components/     shared UI (header, footer, logo)
+  components/     shared UI (header, footer, logo, stage tracker)
+  content/        research programmes and home page text (edit here)
   db/             schema.ts, client (index.ts), cached queries, seed
   lib/            env validation, site settings
 drizzle/          generated SQL migrations (commit these)

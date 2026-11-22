@@ -50,7 +50,7 @@ test.describe("mobile menu", () => {
     await expect(page.locator("#mobile-menu")).toBeHidden();
   });
 
-  test("desktop links are hidden on phones", async ({ page }) => {
+  test("desktop links are hidden on phones and tablets", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("navigation", { name: "Main" })).toBeHidden();
   });

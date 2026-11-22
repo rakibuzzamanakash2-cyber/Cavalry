@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { flagship } from "@/content/research";
+import { StageTracker } from "./stage-tracker";
 
 /** The flagship programme, laid out like the front matter of a paper. */
 export function FlagshipCard() {
@@ -54,28 +55,7 @@ export function FlagshipCard() {
           </dl>
         </div>
 
-        <div>
-          <p className="tracking-caps text-muted text-xs uppercase">
-            Stage {currentStage + 1} of {stages.length} · {stages[currentStage]}
-          </p>
-          <ol className="mt-2 grid grid-cols-5 gap-1" aria-label="Research stages">
-            {stages.map((stage, i) => {
-              const state = i < currentStage ? "done" : i === currentStage ? "current" : "next";
-              return (
-                <li key={stage} aria-current={state === "current" ? "step" : undefined}>
-                  <span
-                    className={`block h-1 ${state === "next" ? "bg-line" : state === "current" ? "bg-accent" : "bg-primary"}`}
-                  />
-                  <span
-                    className={`mt-1 block text-xs leading-tight uppercase ${state === "current" ? "text-accent-strong" : "text-muted"}`}
-                  >
-                    {stage}
-                  </span>
-                </li>
-              );
-            })}
-          </ol>
-        </div>
+        <StageTracker stages={stages} current={currentStage} />
       </div>
 
       <footer className="border-line mt-auto border-t">
