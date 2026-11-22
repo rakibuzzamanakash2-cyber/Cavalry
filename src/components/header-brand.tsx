@@ -11,7 +11,7 @@ export function HeaderBrand() {
   if (pathname === "/") return <span aria-hidden />;
   return (
     <Link href="/" aria-label={`${site.name} home`} className="text-primary">
-      <Logo withTagline={false} className="h-8 w-auto sm:h-10" />
+      <Logo withTagline={false} className="w-36 sm:w-44" />
     </Link>
   );
 }
