@@ -50,7 +50,7 @@ async function ApplicationList() {
           <li key={a.id}>
             <article
               aria-label={`Application from ${a.applicant.name}`}
-              className={`border-line border p-5 sm:p-6 ${a.status === "pending" ? "bg-surface shadow-[6px_6px_0_0_var(--color-sand)]" : "opacity-80"}`}
+              className={`border-line border p-5 sm:p-6 ${a.status === "pending" ? "bg-surface shadow-[6px_6px_0_0_var(--color-sand)]" : "bg-sand/30"}`}
             >
               <header className="flex flex-wrap items-baseline justify-between gap-2">
                 <div>

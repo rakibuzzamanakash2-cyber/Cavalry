@@ -47,14 +47,18 @@ npm run db:seed      # copies src/content into the database (safe to re-run)
 3. Optional, Google sign-in: create an OAuth client in Google Cloud Console with the redirect URI `<site URL>/api/auth/callback/google`, then set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
 4. Sign up on the site. Founders who sign in with Google become admins automatically; otherwise run `npm run user:role -- you@example.com admin`.
 
-| Role     | Sees                               |
-| -------- | ---------------------------------- |
-| visitor  | Public overview and finished work  |
-| `user`   | Same (applications coming)         |
-| `member` | `/workspace`: research in progress |
-| `admin`  | Everything, plus `/admin/users`    |
+| Role     | Sees                                                         |
+| -------- | ------------------------------------------------------------ |
+| visitor  | Public overview and finished work                            |
+| `user`   | Same, plus `/apply` to apply for a field                     |
+| `member` | `/workspace`: every project's title; full details of its own |
+| `admin`  | Every project in full, plus `/admin/users` and applications  |
 
 See ADR 0003 for the access rules.
+
+### Projects and teams
+
+Any member can open a project at `/workspace/projects/new` and becomes its team leader. Other members see only the project's title, leader and stage until they are on the team. The leader (or an admin) manages the team at `/workspace/projects/<slug>/team`: add existing members with any role name, change roles, hand over leadership, and create one-time invite links (valid 7 days) for people who are not members yet. Accepting an invite makes the person a member and puts them on the project. After migrating, run `npm run db:seed` once to make the first admin in `ADMIN_EMAILS` the leader of the seeded programme. See ADR 0004.
 
 ### Deploying on Vercel
 

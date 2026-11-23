@@ -32,6 +32,11 @@ const statusValue: Record<string, OutputStatus> = {
   Published: "published",
 };
 
+const adminEmails = (process.env.ADMIN_EMAILS ?? "")
+  .split(",")
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean);
+
 const date = (iso: string) => new Date(`${iso}T00:00:00.000Z`);
 
 async function main() {
@@ -94,6 +99,24 @@ async function main() {
       create: { slug: p.slug, ...data },
       update: data,
     });
+
+    // Give a seeded project a leader so its team can be managed: the first
+    // admin account (from ADMIN_EMAILS) that exists. Never replaces a leader.
+    if (!project.leaderId) {
+      const leader = await prisma.user.findFirst({
+        where: { email: { in: adminEmails }, role: "admin" },
+        orderBy: { createdAt: "asc" },
+      });
+      if (leader) {
+        await prisma.project.update({ where: { id: project.id }, data: { leaderId: leader.id } });
+        await prisma.projectMembership.upsert({
+          where: { projectId_userId: { projectId: project.id, userId: leader.id } },
+          create: { projectId: project.id, userId: leader.id, role: "Team leader" },
+          update: {},
+        });
+        console.log(`${p.slug}: ${leader.email} is now the team leader.`);
+      }
+    }
 
     const leads = await prisma.teamMember.findMany({ where: { name: { in: p.leads } } });
     for (const member of leads) {

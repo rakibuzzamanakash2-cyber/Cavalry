@@ -50,18 +50,22 @@ enum ApplicationStatus {
 // ---------------------------------------------------------------------------
 
 model User {
-  id            String        @id
+  id            String              @id
   name          String
-  email         String        @unique
-  emailVerified Boolean       @default(false) @map("email_verified")
+  email         String              @unique
+  emailVerified Boolean             @default(false) @map("email_verified")
   image         String?
-  role          String        @default("user")
+  role          String              @default("user")
   sessions      Session[]
   accounts      Account[]
-  applications  Application[] @relation("applicant")
-  reviews       Application[] @relation("reviewer")
-  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+  applications  Application[]       @relation("applicant")
+  reviews       Application[]       @relation("reviewer")
+  ledProjects   Project[]           @relation("leader")
+  memberships   ProjectMembership[]
+  invitesSent   ProjectInvite[]     @relation("inviteCreator")
+  invitesUsed   ProjectInvite[]     @relation("inviteAcceptor")
+  createdAt     DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@map("user")
 }
@@ -155,35 +159,40 @@ model OpenRole {
 /// Research programmes. Structured lists (sub-questions, data sources, stages,
 /// ...) are JSON columns validated in src/data/programmes.ts.
 model Project {
-  id           String          @id @default(uuid()) @db.Uuid
-  slug         String          @unique
+  id           String              @id @default(uuid()) @db.Uuid
+  slug         String              @unique
   number       String
   label        String
   title        String
   summary      String
   question     String
-  status       ProjectStatus   @default(planning)
-  statusLabel  String          @map("status_label")
-  currentStage Int             @default(0) @map("current_stage")
+  status       ProjectStatus       @default(planning)
+  statusLabel  String              @map("status_label")
+  currentStage Int                 @default(0) @map("current_stage")
   leads        String[]
   areas        String[]
-  whyItMatters Json            @map("why_it_matters")
-  subQuestions Json            @map("sub_questions")
+  whyItMatters Json                @map("why_it_matters")
+  subQuestions Json                @map("sub_questions")
   design       Json
-  dataSources  Json            @map("data_sources")
+  dataSources  Json                @map("data_sources")
   approach     Json
   scopes       Json
   stages       Json
   outputs      Json
   commitments  Json
   highlights   Json /// short facts for the home page card
-  isFeatured   Boolean         @default(false) @map("is_featured")
-  sortOrder    Int             @default(0) @map("sort_order")
-  lastUpdated  DateTime        @map("last_updated") @db.Date
+  isFeatured   Boolean             @default(false) @map("is_featured")
+  sortOrder    Int                 @default(0) @map("sort_order")
+  lastUpdated  DateTime            @map("last_updated") @db.Date
+  /// The member who opened the project (or was made leader); manages the team.
+  leaderId     String?             @map("leader_id")
+  leader       User?               @relation("leader", fields: [leaderId], references: [id], onDelete: SetNull)
+  memberships  ProjectMembership[]
+  invites      ProjectInvite[]
   members      ProjectMember[]
   publications Publication[]
-  createdAt    DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt    DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdAt    DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@index([isFeatured, sortOrder])
   @@map("projects")
@@ -264,4 +273,41 @@ model Application {
   @@index([status, createdAt])
   @@index([userId])
   @@map("applications")
+}
+
+/// A platform user working on a project, with a project-specific role.
+model ProjectMembership {
+  id        String   @id @default(uuid()) @db.Uuid
+  projectId String   @map("project_id") @db.Uuid
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String
+  joinedAt  DateTime @default(now()) @map("joined_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@unique([projectId, userId])
+  @@index([userId])
+  @@map("project_memberships")
+}
+
+/// One-time invite link to join a project. Only a hash of the token is stored.
+model ProjectInvite {
+  id           String    @id @default(uuid()) @db.Uuid
+  projectId    String    @map("project_id") @db.Uuid
+  project      Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tokenHash    String    @unique @map("token_hash")
+  role         String
+  note         String?
+  createdById  String?   @map("created_by_id")
+  createdBy    User?     @relation("inviteCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  expiresAt    DateTime  @map("expires_at") @db.Timestamptz(6)
+  acceptedById String?   @map("accepted_by_id")
+  acceptedBy   User?     @relation("inviteAcceptor", fields: [acceptedById], references: [id], onDelete: SetNull)
+  acceptedAt   DateTime? @map("accepted_at") @db.Timestamptz(6)
+  revokedAt    DateTime? @map("revoked_at") @db.Timestamptz(6)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([projectId])
+  @@map("project_invites")
 }

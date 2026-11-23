@@ -1,0 +1,185 @@
+"use client";
+
+import { useActionState, useState } from "react";
+import { ui } from "@/components/ui";
+import { addMember, createInvite, updateMemberRole, type ActionState } from "../../actions";
+
+function Status({ state }: { state: ActionState }) {
+  if (!state) return null;
+  return (
+    <span role="status" className={`text-xs ${state.ok ? "text-muted" : "text-accent-strong"}`}>
+      {state.message}
+    </span>
+  );
+}
+
+/** Edit one team member's project role (free text). */
+export function RoleEditForm({
+  membershipId,
+  name,
+  role,
+}: {
+  membershipId: string;
+  name: string;
+  role: string;
+}) {
+  const [state, action, pending] = useActionState<ActionState, FormData>(updateMemberRole, null);
+  const id = `role-${membershipId}`;
+  return (
+    <form action={action} className="flex flex-wrap items-center gap-2">
+      <input type="hidden" name="membershipId" value={membershipId} />
+      <label className="sr-only" htmlFor={id}>
+        Project role for {name}
+      </label>
+      <input
+        id={id}
+        name="role"
+        defaultValue={role}
+        maxLength={60}
+        required
+        className={`${ui.inputSm} w-48`}
+      />
+      <button type="submit" disabled={pending} className={ui.buttonSm}>
+        {pending ? "Saving…" : "Save role"}
+      </button>
+      <Status state={state} />
+    </form>
+  );
+}
+
+/** Add an existing member to the project. */
+export function AddMemberForm({
+  projectId,
+  candidates,
+}: {
+  projectId: string;
+  candidates: { id: string; name: string; email: string }[];
+}) {
+  const [state, action, pending] = useActionState<ActionState, FormData>(addMember, null);
+  if (candidates.length === 0) {
+    return (
+      <p className="text-muted text-sm">
+        Every member is already on this project. Use an invite link to bring in someone new.
+      </p>
+    );
+  }
+  return (
+    <form action={action} className="grid gap-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+      <input type="hidden" name="projectId" value={projectId} />
+      <div>
+        <label htmlFor="add-user" className={ui.label}>
+          Member
+        </label>
+        <select id="add-user" name="userId" required defaultValue="" className={ui.input}>
+          <option value="" disabled>
+            Choose a member
+          </option>
+          {candidates.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name} ({c.email})
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label htmlFor="add-role" className={ui.label}>
+          Role on this project
+        </label>
+        <input
+          id="add-role"
+          name="role"
+          required
+          maxLength={60}
+          placeholder="e.g. Data engineer"
+          className={ui.input}
+        />
+      </div>
+      <button type="submit" disabled={pending} className={ui.button}>
+        {pending ? "Adding…" : "Add member"}
+      </button>
+      <div className="sm:col-span-3">
+        <Status state={state} />
+      </div>
+    </form>
+  );
+}
+
+/** Create a one-time invite link; the link is shown once. */
+export function InviteForm({ projectId }: { projectId: string }) {
+  const [state, action, pending] = useActionState<ActionState, FormData>(createInvite, null);
+  const [copied, setCopied] = useState(false);
+  const link =
+    state?.inviteLink && typeof window !== "undefined"
+      ? `${window.location.origin}${state.inviteLink}`
+      : state?.inviteLink;
+
+  return (
+    <div className="space-y-4">
+      <form action={action} className="grid gap-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+        <input type="hidden" name="projectId" value={projectId} />
+        <div>
+          <label htmlFor="invite-role" className={ui.label}>
+            Role for the invitee
+          </label>
+          <input
+            id="invite-role"
+            name="role"
+            required
+            maxLength={60}
+            placeholder="e.g. Research assistant"
+            className={ui.input}
+          />
+        </div>
+        <div>
+          <label htmlFor="invite-note" className={ui.label}>
+            Note (optional, only you see it)
+          </label>
+          <input
+            id="invite-note"
+            name="note"
+            maxLength={200}
+            placeholder="e.g. For Nadia"
+            className={ui.input}
+          />
+        </div>
+        <button type="submit" disabled={pending} className={ui.button}>
+          {pending ? "Creating…" : "Create invite link"}
+        </button>
+      </form>
+      {state && !state.ok ? <Status state={state} /> : null}
+      {state?.ok && link ? (
+        <div className="border-accent bg-sand/40 border-l-2 p-4">
+          <p role="status" className="text-sm">
+            {state.message}
+          </p>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <label htmlFor="invite-link" className="sr-only">
+              Invite link
+            </label>
+            <input
+              id="invite-link"
+              readOnly
+              value={link}
+              onFocus={(e) => e.currentTarget.select()}
+              className={`${ui.inputSm} min-w-0 flex-1 font-mono`}
+            />
+            <button
+              type="button"
+              className={ui.ghostSm}
+              onClick={async () => {
+                await navigator.clipboard.writeText(link);
+                setCopied(true);
+              }}
+            >
+              {copied ? "Copied" : "Copy link"}
+            </button>
+          </div>
+          <p className="text-muted mt-2 text-xs">
+            Works once and expires in 7 days. Anyone with the link can join this project, so send it
+            privately.
+          </p>
+        </div>
+      ) : null}
+    </div>
+  );
+}

@@ -59,7 +59,9 @@ test("an admin accepts an application and the applicant becomes a member", async
   const admin = await signedInContext(browser, "admin");
   const adminPage = await admin.context.newPage();
   await adminPage.goto("/admin/applications");
-  const card = adminPage.getByRole("article", { name: `Application from ${applicant.name}` });
+  const card = adminPage
+    .getByRole("article", { name: `Application from ${applicant.name}` })
+    .filter({ hasText: applicant.email });
   await expect(card.getByText("Causal inference")).toBeVisible();
   await card.getByRole("button", { name: "Accept as member" }).click();
   await expect(card.getByText(/Accepted by Test Admin/)).toBeVisible();
@@ -85,7 +87,9 @@ test("a rejected applicant sees the team's note", async ({ browser }) => {
   const admin = await signedInContext(browser, "admin");
   const adminPage = await admin.context.newPage();
   await adminPage.goto("/admin/applications");
-  const card = adminPage.getByRole("article", { name: `Application from ${applicant.name}` });
+  const card = adminPage
+    .getByRole("article", { name: `Application from ${applicant.name}` })
+    .filter({ hasText: applicant.email });
   await card.getByLabel(/Note to/).fill("Please apply again once you have a work sample.");
   await card.getByRole("button", { name: "Reject" }).click();
   await expect(card.getByText(/Not accepted by Test Admin/)).toBeVisible();
