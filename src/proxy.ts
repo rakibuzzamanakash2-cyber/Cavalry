@@ -17,5 +17,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/workspace/:path*", "/admin/:path*"],
+  matcher: ["/workspace/:path*", "/admin/:path*", "/invite/:path*"],
 };

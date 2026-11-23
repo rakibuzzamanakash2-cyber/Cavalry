@@ -25,7 +25,12 @@ test.describe("public visitors", () => {
   });
 
   test("workspace and admin redirect to sign-in", async ({ request }) => {
-    for (const path of ["/workspace", `/workspace/research/${PROGRAMME_SLUG}`, "/admin/users"]) {
+    for (const path of [
+      "/workspace",
+      `/workspace/projects/${PROGRAMME_SLUG}`,
+      "/admin/users",
+      "/invite/some-token",
+    ]) {
       const res = await request.get(path, { maxRedirects: 0 });
       expect(res.status(), path).toBe(307);
       expect(res.headers()["location"]).toContain(`/sign-in?next=${encodeURIComponent(path)}`);
@@ -68,15 +73,30 @@ test.describe("signing up and in", () => {
 });
 
 test.describe("members", () => {
-  test("see programmes in progress in the workspace", async ({ browser }) => {
+  test("see that projects exist, but not the details of other teams' work", async ({ browser }) => {
     const { context } = await signedInContext(browser, "member");
     const page = await context.newPage();
     await page.goto("/workspace");
     await expect(
       page.getByRole("heading", { name: /composition of public spending/i }),
     ).toBeVisible();
-    await page.getByRole("link", { name: /Read the research programme/ }).click();
-    await expect(page).toHaveURL(new RegExp(`/workspace/research/${PROGRAMME_SLUG}$`));
+    await expect(page.getByText(/Team only\./).first()).toBeVisible();
+
+    await page.goto(`/workspace/projects/${PROGRAMME_SLUG}`);
+    await expect(page.getByText(/visible only to its team/)).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Research question" })).toHaveCount(0);
+    expect(await page.content()).not.toMatch(/Local projections|IBTrACS|Sub-questions/i);
+    await context.close();
+  });
+
+  test("admins can read every project in full", async ({ browser }) => {
+    const { context } = await signedInContext(browser, "admin");
+    const page = await context.newPage();
+    await page.goto("/workspace");
+    await page
+      .getByRole("link", { name: /Open project .*composition of public spending/i })
+      .click();
+    await expect(page).toHaveURL(new RegExp(`/workspace/projects/${PROGRAMME_SLUG}$`));
     for (const name of [
       "Research question",
       "Sub-questions & hypotheses",
@@ -103,7 +123,7 @@ test.describe("members", () => {
   test("signed-in users who are not members are kept out", async ({ browser }) => {
     const { context } = await signedInContext(browser, "user");
     const page = await context.newPage();
-    await page.goto(`/workspace/research/${PROGRAMME_SLUG}`);
+    await page.goto(`/workspace/projects/${PROGRAMME_SLUG}`);
     await page.waitForURL((u) => u.pathname === "/members-only");
     expect(await page.content()).not.toMatch(CONFIDENTIAL);
     await context.close();

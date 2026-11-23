@@ -1,16 +1,16 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { ArticleSkeleton } from "@/components/article-skeleton";
-import { FlagshipCard } from "@/components/flagship-card";
 import { PageHeader, SectionHeading } from "@/components/page-header";
+import { StageTracker } from "@/components/stage-tracker";
+import { ui } from "@/components/ui";
 import { getWorkspacePosts } from "@/data/news";
-import { getWorkspaceProgrammes } from "@/data/programmes";
+import { getProjectList } from "@/data/projects";
 import { formatDate } from "@/lib/format";
 import { roleLabel } from "@/lib/roles";
 import { getCurrentUser } from "@/lib/session";
 
 const comingNext = [
-  { title: "Projects", detail: "Open a project, invite members and assign roles." },
   { title: "Teams", detail: "Team pages, member profiles and project ratings." },
   { title: "Datasets", detail: "Every dataset we use, with its GitHub or Drive link." },
 ];
@@ -26,9 +26,9 @@ export default function WorkspacePage() {
 }
 
 async function WorkspaceDashboard() {
-  const [user, programmes, posts] = await Promise.all([
+  const [user, projects, posts] = await Promise.all([
     getCurrentUser(),
-    getWorkspaceProgrammes(),
+    getProjectList(),
     getWorkspacePosts(),
   ]);
 
@@ -39,17 +39,49 @@ async function WorkspaceDashboard() {
         {user ? `You are signed in as ${roleLabel[user.role].toLowerCase()}.` : null}
       </PageHeader>
 
-      <section aria-labelledby="programmes" className="py-10 sm:py-14">
-        <SectionHeading number="01" id="programmes">
-          Programmes in progress
-        </SectionHeading>
-        {programmes.length === 0 ? (
-          <p className="text-muted mt-6">No programmes yet.</p>
+      <section aria-labelledby="projects" className="py-10 sm:py-14">
+        <div className="flex flex-wrap items-baseline justify-between gap-4">
+          <SectionHeading number="01" id="projects">
+            Projects
+          </SectionHeading>
+          <Link href="/workspace/projects/new" className={ui.buttonSm}>
+            Open a project
+          </Link>
+        </div>
+        <p className="text-muted mt-3 max-w-3xl leading-relaxed">
+          Every member can see that a project exists. Its details are visible only to its team.
+        </p>
+        {projects.length === 0 ? (
+          <p className="text-muted mt-6">No projects yet. Open the first one.</p>
         ) : (
           <ul className="mt-6 grid gap-6 lg:grid-cols-2">
-            {programmes.map((p) => (
-              <li key={p.slug}>
-                <FlagshipCard programme={p} />
+            {projects.map((p) => (
+              <li key={p.id} className="border-line bg-surface flex flex-col border p-5 sm:p-6">
+                <p className="tracking-caps flex flex-wrap gap-x-3 text-xs uppercase">
+                  <span className="text-accent-strong">Programme {p.number}</span>
+                  <span className="text-muted">{p.statusLabel}</span>
+                  {p.isMine ? <span className="text-primary">Your team</span> : null}
+                </p>
+                <h3 className="mt-2 text-2xl leading-snug">{p.title}</h3>
+                <p className="text-muted mt-1 text-sm">
+                  Led by {p.leaderName ?? "no one yet"} · {p.teamSize}{" "}
+                  {p.teamSize === 1 ? "person" : "people"}
+                </p>
+                {p.stages.length > 0 ? (
+                  <StageTracker stages={p.stages} current={p.currentStage} className="mt-5" />
+                ) : null}
+                <p className="mt-auto pt-5">
+                  {p.canView ? (
+                    <Link href={`/workspace/projects/${p.slug}`} className={ui.link}>
+                      Open project<span className="sr-only"> {p.title}</span>{" "}
+                      <span aria-hidden>→</span>
+                    </Link>
+                  ) : (
+                    <span className="text-muted text-sm">
+                      Team only. Ask {p.leaderName ?? "an admin"} to add you.
+                    </span>
+                  )}
+                </p>
               </li>
             ))}
           </ul>
@@ -83,7 +115,7 @@ async function WorkspaceDashboard() {
         <SectionHeading number="03" id="next">
           Coming to the workspace
         </SectionHeading>
-        <ul className="mt-6 grid gap-6 sm:grid-cols-3">
+        <ul className="mt-6 grid gap-6 sm:grid-cols-2">
           {comingNext.map((c) => (
             <li key={c.title} className="border-line border-t-2 pt-3">
               <h3 className="text-xl">{c.title}</h3>

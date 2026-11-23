@@ -43,7 +43,10 @@ for (const path of pages) {
 // Private pages, audited as the people who can see them.
 const privatePages = [
   { path: "/workspace", role: "member" as const },
-  { path: `/workspace/research/${PROGRAMME_SLUG}`, role: "member" as const },
+  { path: `/workspace/projects/${PROGRAMME_SLUG}`, role: "admin" as const },
+  { path: `/workspace/projects/${PROGRAMME_SLUG}/team`, role: "admin" as const },
+  { path: `/workspace/projects/${PROGRAMME_SLUG}`, role: "member" as const },
+  { path: "/workspace/projects/new", role: "member" as const },
   { path: "/admin/users", role: "admin" as const },
   { path: "/admin/applications", role: "admin" as const },
   { path: "/apply", role: "user" as const },
