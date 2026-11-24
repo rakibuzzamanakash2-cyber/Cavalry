@@ -56,7 +56,7 @@ export default async function PublicationsPage() {
             </p>
           </div>
         ) : (
-          <ul className="border-line mt-6 divide-y border-y">
+          <ul className="border-line divide-line mt-6 divide-y border-y">
             {published.map((o) => (
               <OutputRow key={o.slug} output={o} />
             ))}

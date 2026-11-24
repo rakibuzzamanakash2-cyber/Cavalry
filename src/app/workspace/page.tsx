@@ -11,7 +11,6 @@ import { roleLabel } from "@/lib/roles";
 import { getCurrentUser } from "@/lib/session";
 
 const comingNext = [
-  { title: "Teams", detail: "Team pages, member profiles and project ratings." },
   { title: "Datasets", detail: "Every dataset we use, with its GitHub or Drive link." },
 ];
 
@@ -44,9 +43,14 @@ async function WorkspaceDashboard() {
           <SectionHeading number="01" id="projects">
             Projects
           </SectionHeading>
-          <Link href="/workspace/projects/new" className={ui.buttonSm}>
-            Open a project
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/workspace/team" className={ui.ghostSm}>
+              Team &amp; ratings
+            </Link>
+            <Link href="/workspace/projects/new" className={ui.buttonSm}>
+              Open a project
+            </Link>
+          </div>
         </div>
         <p className="text-muted mt-3 max-w-3xl leading-relaxed">
           Every member can see that a project exists. Its details are visible only to its team.
@@ -95,7 +99,7 @@ async function WorkspaceDashboard() {
         {posts.length === 0 ? (
           <p className="text-muted mt-6">No updates yet.</p>
         ) : (
-          <ul className="border-line mt-6 divide-y border-y">
+          <ul className="border-line divide-line mt-6 divide-y border-y">
             {posts.map((post) => (
               <li key={post.slug} className="grid gap-2 py-5 md:grid-cols-12 md:gap-6">
                 <p className="text-muted tracking-caps text-xs uppercase md:col-span-3 md:pt-1">

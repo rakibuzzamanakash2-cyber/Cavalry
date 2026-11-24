@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getDb } from "@/lib/db";
 import { newInviteToken } from "@/lib/invite-token";
+import { ratingSchema } from "@/lib/ratings";
 import { getProjectAccessById } from "@/lib/project-access";
 import { requireMember } from "@/lib/session";
 
@@ -184,6 +185,39 @@ export async function updateMemberRole(
   await db.projectMembership.update({ where: { id: membershipId }, data: { role: role.data } });
   refresh();
   return { ok: true, message: "Role updated." };
+}
+
+/**
+ * Rate a team member's work on this project, 1–5. Leader or admin only, and
+ * never yourself (an admin rates the team leader).
+ */
+export async function rateMember(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const membershipId = formId(formData, "membershipId");
+  const db = getDb();
+  const membership = membershipId
+    ? await db.projectMembership.findUnique({
+        where: { id: membershipId },
+        select: { projectId: true, userId: true },
+      })
+    : null;
+  if (!membership) return { ok: false, message: "Team member not found." };
+  const check = await requireManager(membership.projectId);
+  if (!check.allowed) return { ok: false, message: check.error };
+  if (membership.userId === check.access.user.id) {
+    return { ok: false, message: "You can't rate yourself. An admin rates the team leader." };
+  }
+
+  const rating = ratingSchema.safeParse(formData.get("rating"));
+  if (!rating.success) {
+    return { ok: false, message: rating.error.issues[0]?.message ?? "Invalid rating." };
+  }
+
+  await db.projectMembership.update({
+    where: { id: membershipId },
+    data: { rating: rating.data, ratedAt: new Date(), ratedById: check.access.user.id },
+  });
+  refresh();
+  return { ok: true, message: "Rating saved." };
 }
 
 /** Remove someone from the project (not the leader). Leader or admin only. */

@@ -47,6 +47,7 @@ const privatePages = [
   { path: `/workspace/projects/${PROGRAMME_SLUG}/team`, role: "admin" as const },
   { path: `/workspace/projects/${PROGRAMME_SLUG}`, role: "member" as const },
   { path: "/workspace/projects/new", role: "member" as const },
+  { path: "/workspace/team", role: "admin" as const },
   { path: "/admin/users", role: "admin" as const },
   { path: "/admin/applications", role: "admin" as const },
   { path: "/apply", role: "user" as const },

@@ -108,6 +108,8 @@ export type TeamMemberRow = {
   role: string;
   joinedAt: string;
   isLeader: boolean;
+  /** The leader's 1–5 rating for this project, or null. Visible to the team. */
+  rating: number | null;
 };
 
 export type InviteRow = {
@@ -183,6 +185,7 @@ export async function getProjectDetail(slug: string): Promise<ProjectDetail> {
       role: m.role,
       joinedAt: m.joinedAt.toISOString(),
       isLeader: m.user.id === row.leaderId,
+      rating: m.rating,
     }))
     .sort((a, b) => Number(b.isLeader) - Number(a.isLeader));
 

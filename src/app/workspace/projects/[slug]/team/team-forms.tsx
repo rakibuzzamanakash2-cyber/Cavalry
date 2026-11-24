@@ -2,7 +2,13 @@
 
 import { useActionState, useState } from "react";
 import { ui } from "@/components/ui";
-import { addMember, createInvite, updateMemberRole, type ActionState } from "../../actions";
+import {
+  addMember,
+  createInvite,
+  rateMember,
+  updateMemberRole,
+  type ActionState,
+} from "../../actions";
 
 function Status({ state }: { state: ActionState }) {
   if (!state) return null;
@@ -181,5 +187,47 @@ export function InviteForm({ projectId }: { projectId: string }) {
         </div>
       ) : null}
     </div>
+  );
+}
+
+/** The leader's 1–5 rating of one team member on this project. */
+export function RatingForm({
+  membershipId,
+  name,
+  rating,
+}: {
+  membershipId: string;
+  name: string;
+  rating: number | null;
+}) {
+  const [state, action, pending] = useActionState<ActionState, FormData>(rateMember, null);
+  const id = `rating-${membershipId}`;
+  return (
+    <form action={action} className="flex flex-wrap items-center gap-2">
+      <input type="hidden" name="membershipId" value={membershipId} />
+      <label className="sr-only" htmlFor={id}>
+        Rating for {name}
+      </label>
+      <select
+        id={id}
+        name="rating"
+        required
+        defaultValue={rating === null ? "" : String(rating)}
+        className={ui.inputSm}
+      >
+        <option value="" disabled>
+          Rate…
+        </option>
+        {[5, 4, 3, 2, 1].map((n) => (
+          <option key={n} value={n}>
+            {"★".repeat(n)} {n}
+          </option>
+        ))}
+      </select>
+      <button type="submit" disabled={pending} className={ui.ghostSm}>
+        {pending ? "Saving…" : "Save rating"}
+      </button>
+      <Status state={state} />
+    </form>
   );
 }

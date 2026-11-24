@@ -26,7 +26,7 @@ export default async function NewsPage() {
         </div>
       ) : null}
 
-      <ul className="border-line mt-10 divide-y border-y sm:mt-14">
+      <ul className="border-line divide-line mt-10 divide-y border-y sm:mt-14">
         {posts.map((post) => (
           <li key={post.slug}>
             <article className="grid gap-3 py-6 md:grid-cols-12 md:gap-6">

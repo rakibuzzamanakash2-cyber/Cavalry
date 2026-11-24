@@ -13,8 +13,11 @@ const MONTHS = [
   "December",
 ];
 
-/** "2026-11-22" → "22 November 2026". Deterministic, so server and client agree. */
+/**
+ * "2026-11-22" (or a full ISO timestamp) → "22 November 2026". Deterministic
+ * (UTC date, no locale), so server and client agree.
+ */
 export function formatDate(iso: string) {
-  const [y, m, d] = iso.split("-").map(Number);
+  const [y, m, d] = iso.slice(0, 10).split("-").map(Number);
   return `${d} ${MONTHS[m - 1]} ${y}`;
 }

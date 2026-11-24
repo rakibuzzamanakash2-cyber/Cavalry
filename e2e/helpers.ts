@@ -1,4 +1,4 @@
-import { test as base, type Browser, type BrowserContext } from "@playwright/test";
+import { test as base, type Browser, type BrowserContext, type Page } from "@playwright/test";
 import pg from "pg";
 
 // Shared test helpers. Tests run against a real database (DATABASE_URL), the
@@ -69,13 +69,14 @@ export async function signedInContext(
   browser: Browser,
   role: "user" | "member" | "admin",
   options: Parameters<Browser["newContext"]>[0] = {},
+  displayName?: string,
 ): Promise<{ context: BrowserContext; email: string; name: string }> {
   const context = await browser.newContext({
     ...options,
     extraHTTPHeaders: { ...options.extraHTTPHeaders, ...visitorHeaders() },
   });
   const email = uniqueEmail(role);
-  const name = `Test ${role[0].toUpperCase()}${role.slice(1)}`;
+  const name = displayName ?? `Test ${role[0].toUpperCase()}${role.slice(1)}`;
   const res = await context.request.post("/api/auth/sign-up/email", {
     data: { name, email, password: PASSWORD },
     headers: { origin: process.env.BETTER_AUTH_URL ?? "http://localhost:3100" },
@@ -83,4 +84,35 @@ export async function signedInContext(
   if (!res.ok()) throw new Error(`Sign-up failed: ${res.status()} ${await res.text()}`);
   if (role !== "user") await setRole(email, role);
   return { context, email, name };
+}
+
+/** Open a new project as the signed-in member; returns its path. */
+export async function openProject(page: Page, title: string) {
+  await page.goto("/workspace/projects/new");
+  await page.getByLabel("Project title").fill(title);
+  await page
+    .getByLabel("Short summary")
+    .fill("A test project about how cities fund flood defences.");
+  await page.getByLabel("Research question").fill(`Secret question for ${title}: does it work?`);
+  await page.getByRole("button", { name: "Open project" }).click();
+  await page.waitForURL(
+    (u) => /^\/workspace\/projects\/[a-z0-9-]+$/.test(u.pathname) && !u.pathname.endsWith("/new"),
+  );
+  return new URL(page.url()).pathname;
+}
+
+/** As the leader, add an existing member to the project at `path` with a role. */
+export async function addToProject(
+  page: Page,
+  path: string,
+  person: { name: string; email: string },
+  role: string,
+) {
+  await page.goto(`${path}/team`);
+  await page.getByLabel("Member", { exact: true }).selectOption({
+    label: `${person.name} (${person.email})`,
+  });
+  await page.getByLabel("Role on this project").fill(role);
+  await page.getByRole("button", { name: "Add member" }).click();
+  await page.getByRole("status").filter({ hasText: "Member added." }).waitFor();
 }
