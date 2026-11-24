@@ -1,19 +1,12 @@
-import { expect, type Page } from "@playwright/test";
-import { signedInContext, test, uniqueEmail, PASSWORD, visitorHeaders } from "./helpers";
-
-async function openProject(page: Page, title: string) {
-  await page.goto("/workspace/projects/new");
-  await page.getByLabel("Project title").fill(title);
-  await page
-    .getByLabel("Short summary")
-    .fill("A test project about how cities fund flood defences.");
-  await page.getByLabel("Research question").fill(`Secret question for ${title}: does it work?`);
-  await page.getByRole("button", { name: "Open project" }).click();
-  await page.waitForURL(
-    (u) => /^\/workspace\/projects\/[a-z0-9-]+$/.test(u.pathname) && !u.pathname.endsWith("/new"),
-  );
-  return new URL(page.url()).pathname;
-}
+import { expect } from "@playwright/test";
+import {
+  openProject,
+  signedInContext,
+  test,
+  uniqueEmail,
+  PASSWORD,
+  visitorHeaders,
+} from "./helpers";
 
 test.describe("projects", () => {
   test("a member opens a project and becomes its leader", async ({ browser }) => {

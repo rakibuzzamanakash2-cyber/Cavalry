@@ -61,7 +61,8 @@ model User {
   applications  Application[]       @relation("applicant")
   reviews       Application[]       @relation("reviewer")
   ledProjects   Project[]           @relation("leader")
-  memberships   ProjectMembership[]
+  memberships   ProjectMembership[] @relation("membershipUser")
+  ratingsGiven  ProjectMembership[] @relation("ratedBy")
   invitesSent   ProjectInvite[]     @relation("inviteCreator")
   invitesUsed   ProjectInvite[]     @relation("inviteAcceptor")
   createdAt     DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
@@ -277,14 +278,19 @@ model Application {
 
 /// A platform user working on a project, with a project-specific role.
 model ProjectMembership {
-  id        String   @id @default(uuid()) @db.Uuid
-  projectId String   @map("project_id") @db.Uuid
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  userId    String   @map("user_id")
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String    @id @default(uuid()) @db.Uuid
+  projectId String    @map("project_id") @db.Uuid
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String    @map("user_id")
+  user      User      @relation("membershipUser", fields: [userId], references: [id], onDelete: Cascade)
   role      String
-  joinedAt  DateTime @default(now()) @map("joined_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  joinedAt  DateTime  @default(now()) @map("joined_at") @db.Timestamptz(6)
+  /// Leader's 1–5 rating of this person's work on this project (null = not rated yet).
+  rating    Int?
+  ratedAt   DateTime? @map("rated_at") @db.Timestamptz(6)
+  ratedById String?   @map("rated_by_id")
+  ratedBy   User?     @relation("ratedBy", fields: [ratedById], references: [id], onDelete: SetNull)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@unique([projectId, userId])
   @@index([userId])

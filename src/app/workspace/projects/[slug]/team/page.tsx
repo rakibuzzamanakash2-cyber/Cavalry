@@ -9,7 +9,8 @@ import { ui } from "@/components/ui";
 import { getAddableMembers, getProjectDetail } from "@/data/projects";
 import { formatDate } from "@/lib/format";
 import { makeLeader, removeMember, revokeInvite } from "../../actions";
-import { AddMemberForm, InviteForm, RoleEditForm } from "./team-forms";
+import { Stars } from "@/components/stars";
+import { AddMemberForm, InviteForm, RatingForm, RoleEditForm } from "./team-forms";
 
 export const metadata: Metadata = {
   title: "Project team",
@@ -39,19 +40,23 @@ async function TeamView({ params }: { params: Promise<{ slug: string }> }) {
     <div className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6">
       <PageHeader eyebrow={`Programme ${programme.number} · team`} title={programme.title}>
         {manage
-          ? "Add members, set their roles and invite new people. Only you and admins can change this."
-          : "Who is working on this project. Only the team leader and admins can change roles."}
+          ? "Add members, set their roles, rate their work on this project (1–5) and invite new people. Only you and admins can change this."
+          : "Who is working on this project. Only the team leader and admins can change roles and ratings."}
       </PageHeader>
 
       <section aria-labelledby="members" className="py-10">
         <SectionHeading number="01" id="members">
           Members
         </SectionHeading>
-        <ul className="border-line mt-6 divide-y border-y">
+        <ul className="border-line divide-line mt-6 divide-y border-y">
           {team.map((m) => (
             <li
               key={m.membershipId}
-              className="grid gap-3 py-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-center"
+              className={
+                manage
+                  ? "flex flex-col gap-3 py-5"
+                  : "grid gap-3 py-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-center"
+              }
             >
               <div className="min-w-0">
                 <p className="font-medium">
@@ -68,10 +73,16 @@ async function TeamView({ params }: { params: Promise<{ slug: string }> }) {
                 <p className="text-muted text-sm break-all">
                   {m.email} · joined <time dateTime={m.joinedAt}>{formatDate(m.joinedAt)}</time>
                 </p>
+                <p className="mt-2">
+                  <Stars value={m.rating} size="sm" />
+                </p>
               </div>
               {manage ? (
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                   <RoleEditForm membershipId={m.membershipId} name={m.name} role={m.role} />
+                  {m.userId !== access.user.id ? (
+                    <RatingForm membershipId={m.membershipId} name={m.name} rating={m.rating} />
+                  ) : null}
                   {!m.isLeader ? (
                     <>
                       <form action={makeLeader}>
@@ -122,7 +133,7 @@ async function TeamView({ params }: { params: Promise<{ slug: string }> }) {
             {invites.length > 0 ? (
               <>
                 <h3 className="mt-10 text-lg">Open invites</h3>
-                <ul className="border-line mt-3 divide-y border-y">
+                <ul className="border-line divide-line mt-3 divide-y border-y">
                   {invites.map((i) => (
                     <li
                       key={i.id}

@@ -62,6 +62,7 @@ export function AccountMenu({
 
   const links = [
     isMember ? { href: "/workspace", label: "Workspace" } : null,
+    isMember ? { href: "/workspace/team", label: "Team & ratings" } : null,
     role === "user" ? { href: "/apply", label: "Apply to join" } : null,
     role === "admin"
       ? {

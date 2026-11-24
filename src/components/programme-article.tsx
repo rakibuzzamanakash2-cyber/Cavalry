@@ -170,7 +170,7 @@ export function ProgrammeArticle({
               <SectionHeading number={num("sub-questions")} id="sub-questions">
                 Sub-questions &amp; hypotheses
               </SectionHeading>
-              <ol className="border-line mt-5 divide-y border-y">
+              <ol className="border-line divide-line mt-5 divide-y border-y">
                 {p.subQuestions.map((q) => (
                   <li key={q.id} className="grid gap-2 py-4 sm:grid-cols-[4rem_1fr] sm:gap-4">
                     <span className="text-accent-strong tracking-caps text-xs tabular-nums sm:pt-1">
@@ -194,7 +194,7 @@ export function ProgrammeArticle({
               <SectionHeading number={num("design")} id="design">
                 Proposed design
               </SectionHeading>
-              <dl className="border-line mt-5 divide-y border-y">
+              <dl className="border-line divide-line mt-5 divide-y border-y">
                 {p.design.map((d) => (
                   <div key={d.term} className="grid gap-1 py-3 sm:grid-cols-[8rem_1fr] sm:gap-4">
                     <dt className="text-muted tracking-caps text-xs uppercase sm:pt-0.5">
