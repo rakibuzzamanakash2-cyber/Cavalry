@@ -30,7 +30,7 @@ async function listOutputs(scope: "public" | "all"): Promise<Output[]> {
   cacheTag("publications");
   const rows = await getDb().publication.findMany({
     where: scope === "public" ? { status: "published" } : undefined,
-    include: { project: { select: { slug: true } } },
+    include: { project: { select: { slug: true, status: true } } },
     orderBy: [{ year: { sort: "desc", nulls: "first" } }, { sortOrder: "asc" }, { title: "asc" }],
   });
   return rows.map((r) => ({
@@ -42,7 +42,11 @@ async function listOutputs(scope: "public" | "all"): Promise<Output[]> {
     year: r.year ?? undefined,
     venue: r.venue ?? undefined,
     abstract: r.abstract,
-    programmeSlug: r.project?.slug,
+    // Link only to programmes that are public themselves.
+    programmeSlug:
+      r.project && (scope === "all" || r.project.status === "completed")
+        ? r.project.slug
+        : undefined,
     links: [
       r.url ? { label: "Read", href: r.url } : null,
       r.pdfUrl ? { label: "PDF", href: r.pdfUrl } : null,
