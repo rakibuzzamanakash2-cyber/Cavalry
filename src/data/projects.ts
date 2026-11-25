@@ -217,3 +217,12 @@ export async function getAddableMembers(access: ProjectAccess) {
     select: { id: true, name: true, email: true },
   });
 }
+
+/** A project's editable content, for its leader and admins only. */
+export async function getProjectForEdit(slug: string) {
+  const access = await getProjectAccessBySlug(slug);
+  if (!access) return { kind: "missing" as const };
+  if (!access.canManage) return { kind: "forbidden" as const, title: access.title };
+  const row = await getDb().project.findUniqueOrThrow({ where: { id: access.projectId } });
+  return { kind: "ok" as const, access, programme: toProgramme(row), status: row.status };
+}

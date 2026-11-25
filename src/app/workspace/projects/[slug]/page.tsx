@@ -41,9 +41,16 @@ async function ProjectView({ params }: { params: Promise<{ slug: string }> }) {
           <h2 id="project-team" className="text-xl">
             Team · {team.length} {team.length === 1 ? "person" : "people"}
           </h2>
-          <Link href={`/workspace/projects/${programme.slug}/team`} className={ui.link}>
-            {access.canManage ? "Manage team and invites →" : "See the team →"}
-          </Link>
+          <span className="flex flex-wrap gap-x-6 gap-y-2">
+            {access.canManage ? (
+              <Link href={`/workspace/projects/${programme.slug}/edit`} className={ui.link}>
+                Edit research plan →
+              </Link>
+            ) : null}
+            <Link href={`/workspace/projects/${programme.slug}/team`} className={ui.link}>
+              {access.canManage ? "Manage team and invites →" : "See the team →"}
+            </Link>
+          </span>
         </div>
         <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">
           {team.map((m) => (

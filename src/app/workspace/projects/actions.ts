@@ -1,10 +1,11 @@
 "use server";
 
-import { refresh } from "next/cache";
+import { refresh, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getDb } from "@/lib/db";
 import { newInviteToken } from "@/lib/invite-token";
+import { projectContentSchema } from "@/lib/project-content";
 import { ratingSchema } from "@/lib/ratings";
 import { getProjectAccessById } from "@/lib/project-access";
 import { requireMember } from "@/lib/session";
@@ -317,4 +318,93 @@ export async function revokeInvite(formData: FormData): Promise<void> {
   if (!check.allowed) return;
   await db.projectInvite.update({ where: { id: inviteId }, data: { revokedAt: new Date() } });
   refresh();
+}
+
+/** Save a project's research content. Leader or admin only. */
+export async function updateProjectContent(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const projectId = formId(formData, "projectId");
+  const check = await requireManager(projectId);
+  if (!check.allowed) return { ok: false, message: check.error };
+
+  let raw: unknown;
+  try {
+    raw = JSON.parse(String(formData.get("payload") ?? ""));
+  } catch {
+    return { ok: false, message: "Could not read the form. Reload the page and try again." };
+  }
+  const parsed = projectContentSchema.safeParse(raw);
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0];
+    return { ok: false, message: issue?.message ?? "Please check the form." };
+  }
+  const c = parsed.data;
+
+  await getDb().project.update({
+    where: { id: projectId },
+    data: {
+      title: c.title,
+      summary: c.summary,
+      question: c.question,
+      statusLabel: c.statusLabel,
+      areas: c.areas,
+      leads: c.leads,
+      currentStage: Math.min(c.currentStage, c.stages.length - 1),
+      whyItMatters: c.whyItMatters,
+      subQuestions: c.subQuestions,
+      design: c.design,
+      dataSources: c.dataSources,
+      approach: c.approach,
+      scopes: c.scopes,
+      stages: c.stages,
+      outputs: c.outputs,
+      commitments: c.commitments,
+      highlights: c.highlights,
+      lastUpdated: new Date(new Date().toISOString().slice(0, 10)),
+    },
+  });
+  // Finished projects are on the public site, which is cached.
+  updateTag("projects");
+  refresh();
+  return { ok: true, message: "Saved." };
+}
+
+const statusSchema = z.enum(["planning", "active", "paused", "completed"]);
+
+/**
+ * Change a project's status. Admins only, because "completed" publishes the
+ * project on the public site as finished work.
+ */
+export async function setProjectStatus(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const projectId = formId(formData, "projectId");
+  const check = await requireManager(projectId);
+  if (!check.allowed) return { ok: false, message: check.error };
+  if (!check.access.isAdmin) return { ok: false, message: "Only admins can change the status." };
+  const status = statusSchema.safeParse(formData.get("status"));
+  if (!status.success) return { ok: false, message: "Choose a status." };
+
+  const labels = {
+    planning: "Planning",
+    active: "In progress",
+    paused: "Paused",
+    completed: "Completed",
+  } as const;
+  await getDb().project.update({
+    where: { id: projectId },
+    data: { status: status.data, statusLabel: labels[status.data] },
+  });
+  updateTag("projects");
+  refresh();
+  return {
+    ok: true,
+    message:
+      status.data === "completed"
+        ? "Published: the project now appears on the public site as finished work."
+        : "Status saved. The project is visible to its team only.",
+  };
 }
