@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useId, useState } from "react";
 import { ui } from "@/components/ui";
 import {
   addMember,
@@ -62,6 +62,7 @@ export function AddMemberForm({
   candidates: { id: string; name: string; email: string }[];
 }) {
   const [state, action, pending] = useActionState<ActionState, FormData>(addMember, null);
+  const uid = useId();
   if (candidates.length === 0) {
     return (
       <p className="text-muted text-sm">
@@ -73,10 +74,10 @@ export function AddMemberForm({
     <form action={action} className="grid gap-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
       <input type="hidden" name="projectId" value={projectId} />
       <div>
-        <label htmlFor="add-user" className={ui.label}>
+        <label htmlFor={`${uid}-add-user`} className={ui.label}>
           Member
         </label>
-        <select id="add-user" name="userId" required defaultValue="" className={ui.input}>
+        <select id={`${uid}-add-user`} name="userId" required defaultValue="" className={ui.input}>
           <option value="" disabled>
             Choose a member
           </option>
@@ -88,11 +89,11 @@ export function AddMemberForm({
         </select>
       </div>
       <div>
-        <label htmlFor="add-role" className={ui.label}>
+        <label htmlFor={`${uid}-add-role`} className={ui.label}>
           Role on this project
         </label>
         <input
-          id="add-role"
+          id={`${uid}-add-role`}
           name="role"
           required
           maxLength={60}
@@ -113,6 +114,7 @@ export function AddMemberForm({
 /** Create a one-time invite link; the link is shown once. */
 export function InviteForm({ projectId }: { projectId: string }) {
   const [state, action, pending] = useActionState<ActionState, FormData>(createInvite, null);
+  const uid = useId();
   const [copied, setCopied] = useState(false);
   const link =
     state?.inviteLink && typeof window !== "undefined"
@@ -124,11 +126,11 @@ export function InviteForm({ projectId }: { projectId: string }) {
       <form action={action} className="grid gap-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
         <input type="hidden" name="projectId" value={projectId} />
         <div>
-          <label htmlFor="invite-role" className={ui.label}>
+          <label htmlFor={`${uid}-invite-role`} className={ui.label}>
             Role for the invitee
           </label>
           <input
-            id="invite-role"
+            id={`${uid}-invite-role`}
             name="role"
             required
             maxLength={60}
@@ -137,11 +139,11 @@ export function InviteForm({ projectId }: { projectId: string }) {
           />
         </div>
         <div>
-          <label htmlFor="invite-note" className={ui.label}>
+          <label htmlFor={`${uid}-invite-note`} className={ui.label}>
             Note (optional, only you see it)
           </label>
           <input
-            id="invite-note"
+            id={`${uid}-invite-note`}
             name="note"
             maxLength={200}
             placeholder="e.g. For Nadia"
@@ -159,11 +161,11 @@ export function InviteForm({ projectId }: { projectId: string }) {
             {state.message}
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            <label htmlFor="invite-link" className="sr-only">
+            <label htmlFor={`${uid}-invite-link`} className="sr-only">
               Invite link
             </label>
             <input
-              id="invite-link"
+              id={`${uid}-invite-link`}
               readOnly
               value={link}
               onFocus={(e) => e.currentTarget.select()}

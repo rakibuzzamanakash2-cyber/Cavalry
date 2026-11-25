@@ -10,8 +10,17 @@ import { formatDate } from "@/lib/format";
 import { roleLabel } from "@/lib/roles";
 import { getCurrentUser } from "@/lib/session";
 
-const comingNext = [
-  { title: "Datasets", detail: "Every dataset we use, with its GitHub or Drive link." },
+const tools = [
+  {
+    href: "/workspace/datasets",
+    title: "Datasets",
+    detail: "Every dataset we use, what it is for, with its GitHub or Drive link.",
+  },
+  {
+    href: "/workspace/team",
+    title: "Team & ratings",
+    detail: "Who works on what, and each member's overall rating.",
+  },
 ];
 
 // The dashboard depends on the signed-in member, so its content streams inside
@@ -115,14 +124,18 @@ async function WorkspaceDashboard() {
         )}
       </section>
 
-      <section aria-labelledby="next" className="border-line border-t py-10 sm:py-14">
-        <SectionHeading number="03" id="next">
-          Coming to the workspace
+      <section aria-labelledby="tools" className="border-line border-t py-10 sm:py-14">
+        <SectionHeading number="03" id="tools">
+          Tools
         </SectionHeading>
         <ul className="mt-6 grid gap-6 sm:grid-cols-2">
-          {comingNext.map((c) => (
+          {tools.map((c) => (
             <li key={c.title} className="border-line border-t-2 pt-3">
-              <h3 className="text-xl">{c.title}</h3>
+              <h3 className="text-xl">
+                <Link href={c.href} className="hover:text-accent transition-colors">
+                  {c.title}
+                </Link>
+              </h3>
               <p className="text-muted mt-1 leading-relaxed">{c.detail}</p>
             </li>
           ))}
