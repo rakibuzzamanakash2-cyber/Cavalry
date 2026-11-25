@@ -30,6 +30,8 @@ function PersonCard({ person }: { person: Person }) {
           alt=""
           width={96}
           height={96}
+          // Photos linked from other sites are shown as they are.
+          unoptimized={person.photo.startsWith("http")}
           className="size-24 shrink-0 object-cover"
         />
       ) : (
@@ -52,8 +54,14 @@ function PersonCard({ person }: { person: Person }) {
           <ul className="tracking-caps mt-3 flex flex-wrap gap-4 text-xs uppercase">
             {person.links.map((l) => (
               <li key={l.href}>
-                <a href={l.href} className="text-primary hover:text-accent transition-colors">
+                <a
+                  href={l.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:text-accent transition-colors"
+                >
                   {l.label}
+                  <span className="sr-only">: {person.name} (opens in a new tab)</span>
                 </a>
               </li>
             ))}

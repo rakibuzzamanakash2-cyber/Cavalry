@@ -166,6 +166,12 @@ async function WorkspaceDashboard() {
             >
               Manage publications →
             </Link>
+            <Link
+              href="/admin/team"
+              className="text-primary hover:text-accent tracking-caps text-xs uppercase transition-colors"
+            >
+              Edit team profiles →
+            </Link>
           </p>
         ) : null}
       </section>

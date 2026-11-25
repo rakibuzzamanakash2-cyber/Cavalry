@@ -1,7 +1,6 @@
 // Loads the content in src/content into the database.
-// Run with: npm run db:seed. Safe to re-run: rows are upserted by slug, so edits
-// to the content files are copied over on the next seed, except projects, news
-// and publications, which are only created if missing (they are edited on the site).
+// Run with: npm run db:seed. Safe to re-run: content is edited on the site now,
+// so rows are only created if missing (by slug) and never overwritten.
 import { PrismaPg } from "@prisma/adapter-pg";
 import { config } from "dotenv";
 import { posts } from "../src/content/news";
@@ -52,10 +51,11 @@ async function main() {
       isFounder: p.isFounder ?? false,
       sortOrder: i,
     };
+    // Edited on the site (admin): create if missing, never overwrite.
     await prisma.teamMember.upsert({
       where: { slug: p.slug },
       create: { slug: p.slug, ...data },
-      update: data,
+      update: {},
     });
   }
 
@@ -64,7 +64,7 @@ async function main() {
     await prisma.openRole.upsert({
       where: { slug: r.slug },
       create: { slug: r.slug, ...data },
-      update: data,
+      update: {},
     });
   }
 
