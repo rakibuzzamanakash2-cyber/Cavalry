@@ -50,9 +50,19 @@ function PersonCard({ person }: { person: Person }) {
           <span className="text-ink font-medium">Focus: </span>
           {person.focus}
         </p>
-        {person.links?.length ? (
+        {person.links?.length || person.email ? (
           <ul className="tracking-caps mt-3 flex flex-wrap gap-4 text-xs uppercase">
-            {person.links.map((l) => (
+            {person.email ? (
+              <li>
+                <a
+                  href={`mailto:${person.email}`}
+                  className="text-primary hover:text-accent transition-colors"
+                >
+                  Email<span className="sr-only"> {person.name}</span>
+                </a>
+              </li>
+            ) : null}
+            {(person.links ?? []).map((l) => (
               <li key={l.href}>
                 <a
                   href={l.href}

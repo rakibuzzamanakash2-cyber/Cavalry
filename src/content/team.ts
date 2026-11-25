@@ -8,6 +8,7 @@ export type Person = {
   bio: string;
   photo?: string; // path under /public, e.g. "/team/rakib.jpg"
   isFounder?: boolean;
+  email?: string;
   links?: { label: string; href: string }[];
 };
 
@@ -17,16 +18,22 @@ export const people: Person[] = [
     isFounder: true,
     name: "Md Rakibuzzaman",
     role: "Co-founder · Project and data lead",
-    focus: "Fiscal data, harmonisation and project coordination",
-    bio: "Leads the flagship programme's data work — assembling and harmonising public-spending and hazard datasets — and coordinates the protocol, timeline and stage reviews.",
+    focus: "Public-finance and hazard data, harmonisation and project coordination",
+    bio: "A computer science and engineering student at United International University, Dhaka. He leads CAVALRY's data work — finding, assembling and harmonising public-spending and natural-hazard datasets — and coordinates the protocol, timeline and stage reviews of the flagship programme on disasters and public spending.",
+    email: "rakibuzzaman.akash2@gmail.com",
+    links: [
+      { label: "LinkedIn", href: "https://www.linkedin.com/in/mdrakibuzzamanakash" },
+      { label: "GitHub", href: "https://github.com/rakibuzzamanakash2-cyber" },
+    ],
   },
   {
     slug: "rubayet",
     isFounder: true,
-    name: "Rubayet",
+    name: "Rowshan Rubayet",
     role: "Co-founder · Technical lead",
     focus: "Modelling, codebase and reproducible pipelines",
     bio: "Leads the shared codebase and modelling work, including the reproducible data pipeline, automated checks and the forecasting extension.",
+    email: "rubayet.off@gmail.com",
   },
 ];
 

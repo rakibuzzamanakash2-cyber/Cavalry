@@ -121,6 +121,7 @@ export const personSchema = z.object({
         return false;
       }
     }, "Photo: an https:// link or a path like /team/rakib.jpg, or leave it empty."),
+  email: z.union([z.literal(""), z.email("Email: check the address, or leave it empty.").max(200)]),
   linkedinUrl: optionalUrl("LinkedIn"),
   githubUrl: optionalUrl("GitHub"),
   scholarUrl: optionalUrl("Google Scholar"),

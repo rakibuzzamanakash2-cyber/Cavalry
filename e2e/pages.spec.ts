@@ -65,3 +65,23 @@ test("theme script is in the document head exactly once", async ({ request }) =>
   const head = html.slice(0, html.indexOf("</head>"));
   expect(head.match(/id="theme-init"/g)?.length).toBe(1);
 });
+
+test("the co-founders are listed with their emails", async ({ page }) => {
+  await page.goto("/team");
+  for (const [name, email] of [
+    ["Md Rakibuzzaman", "rakibuzzaman.akash2@gmail.com"],
+    ["Rowshan Rubayet", "rubayet.off@gmail.com"],
+  ]) {
+    const card = page.getByRole("article").filter({ hasText: name });
+    await expect(card.getByRole("link", { name: `Email ${name}` })).toHaveAttribute(
+      "href",
+      `mailto:${email}`,
+    );
+  }
+  await page.goto("/contact");
+  await expect(page.getByRole("link", { name: "rubayet.off@gmail.com" })).toHaveAttribute(
+    "href",
+    "mailto:rubayet.off@gmail.com",
+  );
+  await expect(page.getByText("Rowshan Rubayet")).toBeVisible();
+});

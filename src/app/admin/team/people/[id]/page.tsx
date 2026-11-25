@@ -46,6 +46,7 @@ async function Editor({ params }: { params: Promise<{ id: string }> }) {
             focus: p.focus,
             bio: p.bio,
             photoUrl: p.photoUrl ?? "",
+            email: p.email ?? "",
             linkedinUrl: p.linkedinUrl ?? "",
             githubUrl: p.githubUrl ?? "",
             scholarUrl: p.scholarUrl ?? "",

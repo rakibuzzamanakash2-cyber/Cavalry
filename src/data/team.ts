@@ -19,6 +19,7 @@ export async function getPeople(): Promise<Person[]> {
     bio: r.bio,
     photo: r.photoUrl ?? undefined,
     isFounder: r.isFounder,
+    email: r.email ?? undefined,
     links: [
       r.linkedinUrl ? { label: "LinkedIn", href: r.linkedinUrl } : null,
       r.githubUrl ? { label: "GitHub", href: r.githubUrl } : null,

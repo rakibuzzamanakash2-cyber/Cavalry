@@ -81,7 +81,7 @@ export function PublicationForm({
       <FormField
         id={f("authors")}
         label="Authors"
-        hint="As they should appear, e.g. Rakibuzzaman, M. and Rubayet"
+        hint="As they should appear, e.g. Rakibuzzaman, M. and Rubayet, R."
         error={e.authors}
       >
         {(a) => (

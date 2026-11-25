@@ -15,6 +15,7 @@ const PERSON_KEYS = [
   "focus",
   "bio",
   "photoUrl",
+  "email",
   "linkedinUrl",
   "githubUrl",
   "scholarUrl",
@@ -35,6 +36,7 @@ function personData(d: z.infer<typeof personSchema>) {
   return {
     ...d,
     photoUrl: d.photoUrl || null,
+    email: d.email || null,
     linkedinUrl: d.linkedinUrl || null,
     githubUrl: d.githubUrl || null,
     scholarUrl: d.scholarUrl || null,
