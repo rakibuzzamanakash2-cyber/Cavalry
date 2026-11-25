@@ -86,7 +86,7 @@ Add `DATABASE_URL` (pooled), `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` and `NEXT_P
 
 1. Import the GitHub repo in Vercel (framework: Next.js). `vercel.json` sets the Singapore region and the build command.
 2. Add environment variables (Settings → Environment Variables), for **Production**: `DATABASE_URL` (Neon pooled), `DIRECT_URL` (Neon direct), `BETTER_AUTH_SECRET` (32+ characters), `ADMIN_EMAILS`, and optionally `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` and `NEXT_PUBLIC_CONTACT_EMAIL`. For **Preview**, use the same keys but point the database at a separate Neon branch.
-3. Deploy. Production builds apply migrations automatically; previews don't.
+3. Deploy. Builds apply migrations automatically, production to the live database and previews to the preview database.
 4. After the first deploy, run `npm run db:seed` once against production from your machine if the database is new, and add `<your URL>/api/auth/callback/google` to the Google OAuth client.
 5. With a custom domain, set `NEXT_PUBLIC_SITE_URL` (and `BETTER_AUTH_URL`) to it and redeploy.
 
