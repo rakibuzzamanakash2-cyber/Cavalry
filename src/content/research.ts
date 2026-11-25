@@ -87,7 +87,7 @@ export const programmes: Programme[] = [
     title: "Disasters and the composition of public spending",
     status: "In progress",
     lastUpdated: "2026-11-22",
-    leads: ["Md Rakibuzzaman", "Rubayet"],
+    leads: ["Md Rakibuzzaman", "Rowshan Rubayet"],
     areas: ["Public finance", "Climate & disaster risk", "Causal inference"],
     summary:
       "A multi-country study of how governments reallocate spending between sectors after physically intense natural hazards — and whether that reallocation protects or crowds out health and education.",

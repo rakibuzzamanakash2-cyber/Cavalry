@@ -48,6 +48,10 @@ async function main() {
       focus: p.focus,
       bio: p.bio,
       photoUrl: p.photo ?? null,
+      email: p.email ?? null,
+      linkedinUrl: p.links?.find((l) => l.label === "LinkedIn")?.href ?? null,
+      githubUrl: p.links?.find((l) => l.label === "GitHub")?.href ?? null,
+      scholarUrl: p.links?.find((l) => l.label === "Google Scholar")?.href ?? null,
       isFounder: p.isFounder ?? false,
       sortOrder: i,
     };

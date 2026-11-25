@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader, SectionHeading } from "@/components/page-header";
+import { getPeople } from "@/data/team";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -34,12 +35,15 @@ const reasons = [
   },
 ];
 
-function mailto(subject: string) {
-  return `mailto:${site.email}?subject=${encodeURIComponent(`${subject} — ${site.name}`)}`;
+function mailto(to: string, subject: string) {
+  return `mailto:${to}?subject=${encodeURIComponent(`${subject} — ${site.name}`)}`;
 }
 
-export default function ContactPage() {
-  const hasEmail = Boolean(site.email);
+export default async function ContactPage() {
+  const founders = (await getPeople()).filter((p) => p.isFounder && p.email);
+  // A shared address when one is set (NEXT_PUBLIC_CONTACT_EMAIL), otherwise the
+  // first co-founder's.
+  const contactEmail = site.email || founders[0]?.email || "";
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6">
@@ -57,9 +61,9 @@ export default function ContactPage() {
               <li key={r.title} className="border-line flex flex-col border-r border-b p-5 sm:p-6">
                 <h3 className="text-xl leading-snug">{r.title}</h3>
                 <p className="text-muted mt-2 flex-1 leading-relaxed">{r.detail}</p>
-                {hasEmail ? (
+                {contactEmail ? (
                   <a
-                    href={mailto(r.subject)}
+                    href={mailto(contactEmail, r.subject)}
                     className="text-primary hover:text-accent tracking-caps mt-4 text-xs uppercase transition-colors"
                   >
                     Email us about this →
@@ -76,21 +80,43 @@ export default function ContactPage() {
               Details
             </h2>
             <dl className="space-y-4">
-              <div>
-                <dt className="text-muted tracking-caps text-xs uppercase">Email</dt>
-                <dd className="mt-1">
-                  {hasEmail ? (
-                    <a
-                      href={`mailto:${site.email}`}
-                      className="hover:text-accent break-all underline transition-colors"
-                    >
-                      {site.email}
-                    </a>
-                  ) : (
-                    <span className="text-muted">Our address will appear here soon.</span>
-                  )}
-                </dd>
-              </div>
+              {site.email || founders.length === 0 ? (
+                <div>
+                  <dt className="text-muted tracking-caps text-xs uppercase">Email</dt>
+                  <dd className="mt-1">
+                    {site.email ? (
+                      <a
+                        href={`mailto:${site.email}`}
+                        className="hover:text-accent break-all underline transition-colors"
+                      >
+                        {site.email}
+                      </a>
+                    ) : (
+                      <span className="text-muted">Our address will appear here soon.</span>
+                    )}
+                  </dd>
+                </div>
+              ) : null}
+              {founders.length > 0 ? (
+                <div>
+                  <dt className="text-muted tracking-caps text-xs uppercase">Co-founders</dt>
+                  <dd className="mt-1">
+                    <ul className="space-y-2">
+                      {founders.map((p) => (
+                        <li key={p.slug}>
+                          <span className="block font-medium">{p.name}</span>
+                          <a
+                            href={`mailto:${p.email}`}
+                            className="hover:text-accent text-sm break-all underline transition-colors"
+                          >
+                            {p.email}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </dd>
+                </div>
+              ) : null}
               <div>
                 <dt className="text-muted tracking-caps text-xs uppercase">Based in</dt>
                 <dd className="mt-1">{site.location}</dd>

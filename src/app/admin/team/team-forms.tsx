@@ -43,6 +43,7 @@ export type PersonValues = {
   focus: string;
   bio: string;
   photoUrl: string;
+  email: string;
   linkedinUrl: string;
   githubUrl: string;
   scholarUrl: string;
@@ -111,6 +112,16 @@ export function PersonForm({
         error={e.photoUrl}
       >
         {(a) => <input {...a} name="photoUrl" defaultValue={v.photoUrl} className={ui.input} />}
+      </FormField>
+      <FormField
+        id={f("email")}
+        label="Public email (optional)"
+        hint="Shown on the team page. Co-founders' emails also appear on the contact page."
+        error={e.email}
+      >
+        {(a) => (
+          <input {...a} name="email" type="email" defaultValue={v.email} className={ui.input} />
+        )}
       </FormField>
       <p className="text-muted -mb-2 text-xs">Profile links are optional.</p>
       <div className="grid gap-5 md:grid-cols-3">

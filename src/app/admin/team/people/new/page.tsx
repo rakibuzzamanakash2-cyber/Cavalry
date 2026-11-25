@@ -37,6 +37,7 @@ async function Form() {
         focus: "",
         bio: "",
         photoUrl: "",
+        email: "",
         linkedinUrl: "",
         githubUrl: "",
         scholarUrl: "",
