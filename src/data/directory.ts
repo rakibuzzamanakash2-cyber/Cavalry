@@ -1,6 +1,9 @@
 import "server-only";
 import { getDb } from "@/lib/db";
+import type { Position } from "@/lib/project-rules";
 import { averageRating } from "@/lib/ratings";
+
+const rank: Record<Position, number> = { leader: 0, co_leader: 1, member: 2 };
 import { roleLabel, toRole } from "@/lib/roles";
 import { requireMember } from "@/lib/session";
 
@@ -22,6 +25,7 @@ export type DirectoryPerson = {
     title: string;
     role: string;
     isLeader: boolean;
+    position: Position;
     canView: boolean;
   }[];
 };
@@ -34,7 +38,7 @@ export type DirectoryTeam = {
   statusLabel: string;
   leaderName: string | null;
   canView: boolean;
-  members: { userId: string; name: string; role: string; isLeader: boolean }[];
+  members: { userId: string; name: string; role: string; isLeader: boolean; position: Position }[];
 };
 
 export async function getTeamDirectory(): Promise<{
@@ -56,6 +60,7 @@ export async function getTeamDirectory(): Promise<{
           orderBy: { joinedAt: "asc" },
           select: {
             role: true,
+            position: true,
             rating: true,
             project: {
               select: { id: true, slug: true, number: true, title: true, leaderId: true },
@@ -76,7 +81,7 @@ export async function getTeamDirectory(): Promise<{
         leader: { select: { name: true } },
         memberships: {
           orderBy: { joinedAt: "asc" },
-          select: { role: true, user: { select: { id: true, name: true } } },
+          select: { role: true, position: true, user: { select: { id: true, name: true } } },
         },
       },
     }),
@@ -106,6 +111,7 @@ export async function getTeamDirectory(): Promise<{
         title: m.project.title,
         role: m.role,
         isLeader: m.project.leaderId === u.id,
+        position: (m.project.leaderId === u.id ? "leader" : m.position) as Position,
         canView: canView(m.project.id),
       })),
     };
@@ -125,8 +131,9 @@ export async function getTeamDirectory(): Promise<{
         name: m.user.name,
         role: m.role,
         isLeader: m.user.id === p.leaderId,
+        position: (m.user.id === p.leaderId ? "leader" : m.position) as Position,
       }))
-      .sort((a, b) => Number(b.isLeader) - Number(a.isLeader)),
+      .sort((a, b) => rank[a.position] - rank[b.position]),
   }));
 
   return { people, teams };

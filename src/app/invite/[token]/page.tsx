@@ -68,8 +68,10 @@ async function InviteView({ params }: { params: Promise<{ token: string }> }) {
       <h1 className="mt-3 text-4xl leading-tight">{invite.title}</h1>
       <p className="text-muted mt-4 text-lg leading-relaxed">
         {invite.invitedBy ? `${invite.invitedBy} has invited you` : "You have been invited"} to join
-        this project as <span className="text-ink font-medium">{invite.role}</span>. Accepting makes
-        you a CAVALRY member and gives you access to the project&apos;s work.
+        this project as <span className="text-ink font-medium">{invite.role}</span>
+        {invite.position === "co_leader" ? ", as co-leader" : ""}
+        {invite.position === "leader" ? ", as the project's new leader" : ""}. Accepting makes you a
+        CAVALRY member and gives you access to the project&apos;s work.
       </p>
       <AcceptForm token={token} />
     </>

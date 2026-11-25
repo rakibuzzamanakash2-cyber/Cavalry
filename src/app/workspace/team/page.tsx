@@ -7,6 +7,7 @@ import { Stars } from "@/components/stars";
 import { ui } from "@/components/ui";
 import { getTeamDirectory } from "@/data/directory";
 import { formatDate } from "@/lib/format";
+import { positionLabel } from "@/lib/project-rules";
 
 export const metadata: Metadata = {
   title: "Team & ratings",
@@ -74,7 +75,11 @@ async function Directory() {
                       ) : (
                         <span className="font-medium">{pr.title}</span>
                       )}
-                      <span className="text-muted"> · {pr.isLeader ? "Team leader" : pr.role}</span>
+                      <span className="text-muted">
+                        {" "}
+                        · {pr.position === "member" ? "" : `${positionLabel[pr.position]}, `}
+                        {pr.role}
+                      </span>
                     </li>
                   ))}
                 </ul>
@@ -126,7 +131,11 @@ async function Directory() {
                       >
                         {m.name}
                       </a>
-                      <span className="text-muted"> · {m.isLeader ? "Team leader" : m.role}</span>
+                      <span className="text-muted">
+                        {" "}
+                        · {m.position === "member" ? "" : `${positionLabel[m.position]}, `}
+                        {m.role}
+                      </span>
                     </li>
                   ))}
                 </ul>

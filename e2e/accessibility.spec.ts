@@ -57,6 +57,7 @@ const privatePages = [
   { path: "/admin/publications/new", role: "admin" as const },
   { path: "/admin/team", role: "admin" as const },
   { path: "/admin/team/people/new", role: "admin" as const },
+  { path: "/admin/slot-requests", role: "admin" as const },
   { path: "/admin/users", role: "admin" as const },
   { path: "/admin/applications", role: "admin" as const },
   { path: "/apply", role: "user" as const },

@@ -19,7 +19,7 @@ test.describe("projects", () => {
     await expect(page.getByRole("heading", { name: "Research question" })).toBeVisible();
     // Empty sections stay hidden on a new project.
     await expect(page.getByRole("heading", { name: "Proposed design" })).toHaveCount(0);
-    await expect(page.getByText(`${leader.name} · Team leader`)).toBeVisible();
+    await expect(page.getByText(`${leader.name} · Leader, Principal investigator`)).toBeVisible();
 
     await page.goto("/workspace");
     const card = page.getByRole("listitem").filter({ hasText: title });

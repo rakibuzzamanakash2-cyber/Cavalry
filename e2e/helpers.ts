@@ -94,6 +94,7 @@ export async function openProject(page: Page, title: string) {
     .getByLabel("Short summary")
     .fill("A test project about how cities fund flood defences.");
   await page.getByLabel("Research question").fill(`Secret question for ${title}: does it work?`);
+  await page.getByLabel("Your role on this project").fill("Principal investigator");
   await page.getByRole("button", { name: "Open project" }).click();
   await page.waitForURL(
     (u) => /^\/workspace\/projects\/[a-z0-9-]+$/.test(u.pathname) && !u.pathname.endsWith("/new"),

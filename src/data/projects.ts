@@ -3,7 +3,8 @@ import { z } from "zod";
 import type { Programme } from "@/content/research";
 import type { Project } from "@/generated/prisma/client";
 import { getDb } from "@/lib/db";
-import { getProjectAccessBySlug, type ProjectAccess } from "@/lib/project-access";
+import type { Position } from "@/lib/project-rules";
+import { getProjectAccessBySlug, slotUsage, type ProjectAccess } from "@/lib/project-access";
 import { requireMember } from "@/lib/session";
 
 // Workspace project data. Not cached: what each member may see depends on who
@@ -61,6 +62,7 @@ export type ProjectSummary = {
   currentStage: number;
   leaderName: string | null;
   teamSize: number;
+  slots: number;
   isMine: boolean;
   canView: boolean;
 };
@@ -77,6 +79,7 @@ export async function getProjectList(): Promise<ProjectSummary[]> {
       statusLabel: true,
       stages: true,
       currentStage: true,
+      slots: true,
       leaderId: true,
       leader: { select: { name: true } },
       memberships: { select: { userId: true } },
@@ -94,6 +97,7 @@ export async function getProjectList(): Promise<ProjectSummary[]> {
       currentStage: r.currentStage,
       leaderName: r.leader?.name ?? null,
       teamSize: r.memberships.length,
+      slots: r.slots,
       isMine,
       canView: isMine || user.role === "admin",
     };
@@ -108,6 +112,8 @@ export type TeamMemberRow = {
   role: string;
   joinedAt: string;
   isLeader: boolean;
+  /** leader, co_leader or member. */
+  position: Position;
   /** The leader's 1–5 rating for this project, or null. Visible to the team. */
   rating: number | null;
 };
@@ -115,6 +121,7 @@ export type TeamMemberRow = {
 export type InviteRow = {
   id: string;
   role: string;
+  position: Position;
   note: string | null;
   expiresAt: string;
   createdBy: string | null;
@@ -130,7 +137,23 @@ export type ProjectDetail =
       leaderName: string | null;
       team: TeamMemberRow[];
       invites: InviteRow[];
+      slots: { slots: number; members: number; invites: number; used: number; free: number };
+      /** Slot requests: the open one (if any) and the last decision. */
+      slotRequest: SlotRequestRow | null;
+      lastDecision: SlotRequestRow | null;
     };
+
+export type SlotRequestRow = {
+  id: string;
+  extra: number;
+  reason: string;
+  status: "pending" | "approved" | "declined" | "cancelled";
+  adminNote: string | null;
+  createdAt: string;
+  decidedAt: string | null;
+};
+
+const rank: Record<Position, number> = { leader: 0, co_leader: 1, member: 2 };
 
 /** Full details for the project's team and admins; a title-only view for other members. */
 export async function getProjectDetail(slug: string): Promise<ProjectDetail> {
@@ -162,8 +185,8 @@ export async function getProjectDetail(slug: string): Promise<ProjectDetail> {
     },
   });
 
-  // Open invites only for people who can manage the team.
-  const invites = access.canManage
+  // Open invites for the people who run the team; slot details for everyone on it.
+  const invites = access.canRunTeam
     ? await db.projectInvite.findMany({
         where: {
           projectId: access.projectId,
@@ -185,9 +208,30 @@ export async function getProjectDetail(slug: string): Promise<ProjectDetail> {
       role: m.role,
       joinedAt: m.joinedAt.toISOString(),
       isLeader: m.user.id === row.leaderId,
+      position: (m.user.id === row.leaderId ? "leader" : m.position) as Position,
       rating: m.rating,
     }))
-    .sort((a, b) => Number(b.isLeader) - Number(a.isLeader));
+    .sort((a, b) => rank[a.position] - rank[b.position]);
+
+  const [usage, requests] = await Promise.all([
+    slotUsage(access.projectId),
+    db.projectSlotRequest.findMany({
+      where: { projectId: access.projectId, status: { not: "cancelled" } },
+      orderBy: { createdAt: "desc" },
+      take: 5,
+    }),
+  ]);
+  const toRequest = (r: (typeof requests)[number]): SlotRequestRow => ({
+    id: r.id,
+    extra: r.extra,
+    reason: r.reason,
+    status: r.status,
+    adminNote: r.adminNote,
+    createdAt: r.createdAt.toISOString(),
+    decidedAt: r.decidedAt?.toISOString() ?? null,
+  });
+  const open = requests.find((r) => r.status === "pending");
+  const decided = requests.find((r) => r.status !== "pending");
 
   return {
     kind: "full",
@@ -195,9 +239,13 @@ export async function getProjectDetail(slug: string): Promise<ProjectDetail> {
     programme: toProgramme(row),
     leaderName: row.leader?.name ?? null,
     team,
+    slots: usage,
+    slotRequest: open ? toRequest(open) : null,
+    lastDecision: decided ? toRequest(decided) : null,
     invites: invites.map((i) => ({
       id: i.id,
       role: i.role,
+      position: i.position,
       note: i.note,
       expiresAt: i.expiresAt.toISOString(),
       createdBy: i.createdBy?.name ?? null,
@@ -207,7 +255,7 @@ export async function getProjectDetail(slug: string): Promise<ProjectDetail> {
 
 /** Members and admins who are not on the project yet (for the "add member" list). */
 export async function getAddableMembers(access: ProjectAccess) {
-  if (!access.canManage) return [];
+  if (!access.canRunTeam) return [];
   return getDb().user.findMany({
     where: {
       role: { in: ["member", "admin"] },
@@ -222,7 +270,7 @@ export async function getAddableMembers(access: ProjectAccess) {
 export async function getProjectForEdit(slug: string) {
   const access = await getProjectAccessBySlug(slug);
   if (!access) return { kind: "missing" as const };
-  if (!access.canManage) return { kind: "forbidden" as const, title: access.title };
+  if (!access.canRunTeam) return { kind: "forbidden" as const, title: access.title };
   const row = await getDb().project.findUniqueOrThrow({ where: { id: access.projectId } });
   return { kind: "ok" as const, access, programme: toProgramme(row), status: row.status };
 }

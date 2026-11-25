@@ -6,6 +6,7 @@ import { ArticleSkeleton } from "@/components/article-skeleton";
 import { ProgrammeArticle } from "@/components/programme-article";
 import { RestrictedProject } from "@/components/restricted-project";
 import { ui } from "@/components/ui";
+import { positionLabel } from "@/lib/project-rules";
 import { DatasetList } from "@/components/dataset-list";
 import { getProjectDatasets } from "@/data/datasets";
 import { getProjectDetail } from "@/data/projects";
@@ -42,13 +43,13 @@ async function ProjectView({ params }: { params: Promise<{ slug: string }> }) {
             Team · {team.length} {team.length === 1 ? "person" : "people"}
           </h2>
           <span className="flex flex-wrap gap-x-6 gap-y-2">
-            {access.canManage ? (
+            {access.canRunTeam ? (
               <Link href={`/workspace/projects/${programme.slug}/edit`} className={ui.link}>
                 Edit research plan →
               </Link>
             ) : null}
             <Link href={`/workspace/projects/${programme.slug}/team`} className={ui.link}>
-              {access.canManage ? "Manage team and invites →" : "See the team →"}
+              {access.canRunTeam ? "Manage team and invites →" : "See the team →"}
             </Link>
           </span>
         </div>
@@ -56,7 +57,10 @@ async function ProjectView({ params }: { params: Promise<{ slug: string }> }) {
           {team.map((m) => (
             <li key={m.membershipId}>
               <span className="font-medium">{m.name}</span>{" "}
-              <span className="text-muted">· {m.role}</span>
+              <span className="text-muted">
+                · {m.position === "member" ? "" : `${positionLabel[m.position]}, `}
+                {m.role}
+              </span>
             </li>
           ))}
         </ul>

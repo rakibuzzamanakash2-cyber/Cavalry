@@ -63,6 +63,23 @@ export function NewProjectForm() {
         <FieldError id="question-error" message={e.question} />
       </label>
 
+      <label className="block">
+        <span className={ui.label}>Your role on this project</span>
+        <input
+          name="role"
+          required
+          maxLength={60}
+          placeholder="e.g. Principal investigator, Data lead"
+          aria-invalid={Boolean(e.role)}
+          aria-describedby={e.role ? "role-error" : "role-hint"}
+          className={ui.input}
+        />
+        <span id="role-hint" className="text-muted mt-1 block text-xs">
+          You lead the project; this is the work you do on it.
+        </span>
+        <FieldError id="role-error" message={e.role} />
+      </label>
+
       {state && !state.ok ? (
         <p role="alert" className="border-accent text-accent-strong border-l-2 pl-3 text-sm">
           {state.message}

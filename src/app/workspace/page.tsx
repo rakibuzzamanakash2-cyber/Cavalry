@@ -77,8 +77,7 @@ async function WorkspaceDashboard() {
                 </p>
                 <h3 className="mt-2 text-2xl leading-snug">{p.title}</h3>
                 <p className="text-muted mt-1 text-sm">
-                  Led by {p.leaderName ?? "no one yet"} · {p.teamSize}{" "}
-                  {p.teamSize === 1 ? "person" : "people"}
+                  Led by {p.leaderName ?? "no one yet"} · {p.teamSize} of {p.slots} slots filled
                 </p>
                 {p.stages.length > 0 ? (
                   <StageTracker stages={p.stages} current={p.currentStage} className="mt-5" />
@@ -171,6 +170,12 @@ async function WorkspaceDashboard() {
               className="text-primary hover:text-accent tracking-caps text-xs uppercase transition-colors"
             >
               Edit team profiles →
+            </Link>
+            <Link
+              href="/admin/slot-requests"
+              className="text-primary hover:text-accent tracking-caps text-xs uppercase transition-colors"
+            >
+              Slot requests →
             </Link>
           </p>
         ) : null}
