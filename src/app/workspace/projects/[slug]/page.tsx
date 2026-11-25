@@ -6,6 +6,8 @@ import { ArticleSkeleton } from "@/components/article-skeleton";
 import { ProgrammeArticle } from "@/components/programme-article";
 import { RestrictedProject } from "@/components/restricted-project";
 import { ui } from "@/components/ui";
+import { DatasetList } from "@/components/dataset-list";
+import { getProjectDatasets } from "@/data/datasets";
 import { getProjectDetail } from "@/data/projects";
 
 export const metadata: Metadata = { title: "Project", robots: { index: false, follow: false } };
@@ -26,6 +28,7 @@ async function ProjectView({ params }: { params: Promise<{ slug: string }> }) {
   if (detail.kind === "restricted") return <RestrictedProject {...detail} />;
 
   const { programme, team, access } = detail;
+  const datasets = await getProjectDatasets(access);
   return (
     <ProgrammeArticle
       programme={programme}
@@ -50,6 +53,25 @@ async function ProjectView({ params }: { params: Promise<{ slug: string }> }) {
             </li>
           ))}
         </ul>
+      </section>
+      <section aria-labelledby="project-datasets" className="border-line border-b py-6">
+        <div className="flex flex-wrap items-baseline justify-between gap-3">
+          <h2 id="project-datasets" className="text-xl">
+            Datasets · {datasets.length}
+          </h2>
+          <Link href={`/workspace/datasets/new?project=${programme.slug}`} className={ui.link}>
+            Add a dataset →
+          </Link>
+        </div>
+        {datasets.length > 0 ? (
+          <div className="mt-4">
+            <DatasetList datasets={datasets} />
+          </div>
+        ) : (
+          <p className="text-muted mt-2 text-sm">
+            No datasets linked yet. Add the data this project uses, with its GitHub or Drive link.
+          </p>
+        )}
       </section>
     </ProgrammeArticle>
   );
