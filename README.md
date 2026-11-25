@@ -82,6 +82,16 @@ Add `DATABASE_URL` (pooled), `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` and `NEXT_P
 
 `e2e/` holds Playwright tests that run against the production build: no sideways scroll from 320px phones to desktop in both themes, the home page fitting one screen on laptops, the theme toggle, the mobile menu, and an axe accessibility audit. Run `npm run build` once, then `npm run test:e2e` (first time: `npx playwright install chromium`).
 
+## Deploying to Vercel
+
+1. Import the GitHub repo in Vercel (framework: Next.js). `vercel.json` sets the Singapore region and the build command.
+2. Add environment variables (Settings → Environment Variables), for **Production**: `DATABASE_URL` (Neon pooled), `DIRECT_URL` (Neon direct), `BETTER_AUTH_SECRET` (32+ characters), `ADMIN_EMAILS`, and optionally `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` and `NEXT_PUBLIC_CONTACT_EMAIL`. For **Preview**, use the same keys but point the database at a separate Neon branch.
+3. Deploy. Production builds apply migrations automatically; previews don't.
+4. After the first deploy, run `npm run db:seed` once against production from your machine if the database is new, and add `<your URL>/api/auth/callback/google` to the Google OAuth client.
+5. With a custom domain, set `NEXT_PUBLIC_SITE_URL` (and `BETTER_AUTH_URL`) to it and redeploy.
+
+See ADR 0010.
+
 ## Project structure
 
 ```

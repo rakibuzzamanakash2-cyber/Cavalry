@@ -1,3 +1,5 @@
+import { siteUrl } from "./urls";
+
 // Site-wide settings. Edit here rather than hard-coding in components.
 export const site = {
   name: "CAVALRY research",
@@ -5,7 +7,7 @@ export const site = {
   tagline: "Research. Develop. Build.",
   description:
     "CAVALRY research is an independent research group investigating important problems with rigorous, reproducible methods and turning validated findings into useful tools.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  url: siteUrl(),
   location: "Dhaka, Bangladesh",
   // Shown in the footer and contact page only when set.
   email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "",
