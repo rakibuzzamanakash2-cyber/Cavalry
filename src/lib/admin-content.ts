@@ -91,3 +91,48 @@ export const publicationSchema = z.object({
 
 export type NewsInput = z.input<typeof newsSchema>;
 export type PublicationInput = z.input<typeof publicationSchema>;
+
+const checkbox = z
+  .string()
+  .optional()
+  .transform((v) => v === "on" || v === "true");
+
+const sortOrder = z
+  .string()
+  .trim()
+  .refine((v) => v === "" || /^-?\d{1,4}$/.test(v), "Order: a whole number, e.g. 1, 2, 3.")
+  .transform((v) => (v ? Number(v) : 0));
+
+export const personSchema = z.object({
+  name: text("Name", 120, 2),
+  role: text("Role", 120, 2),
+  focus: text("Focus", 200, 2),
+  bio: text("Bio", 1200, 20),
+  photoUrl: z
+    .string()
+    .trim()
+    .max(2000)
+    .refine((v) => {
+      if (!v) return true;
+      if (v.startsWith("/") && !v.startsWith("//")) return true;
+      try {
+        return new URL(v).protocol === "https:";
+      } catch {
+        return false;
+      }
+    }, "Photo: an https:// link or a path like /team/rakib.jpg, or leave it empty."),
+  linkedinUrl: optionalUrl("LinkedIn"),
+  githubUrl: optionalUrl("GitHub"),
+  scholarUrl: optionalUrl("Google Scholar"),
+  isFounder: checkbox,
+  isActive: checkbox,
+  sortOrder,
+});
+
+export const openRoleSchema = z.object({
+  title: text("Title", 120, 3),
+  background: text("Background", 600, 10),
+  owns: text("What they own", 600, 10),
+  isOpen: checkbox,
+  sortOrder,
+});
