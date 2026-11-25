@@ -75,6 +75,7 @@ export function AccountMenu({
     role === "admin" ? { href: "/admin/news", label: "News" } : null,
     role === "admin" ? { href: "/admin/publications", label: "Publications" } : null,
     role === "admin" ? { href: "/admin/team", label: "Team profiles" } : null,
+    role === "admin" ? { href: "/admin/slot-requests", label: "Slot requests" } : null,
   ].filter((l): l is { href: string; label: string } => l !== null);
 
   if (variant === "mobile") {

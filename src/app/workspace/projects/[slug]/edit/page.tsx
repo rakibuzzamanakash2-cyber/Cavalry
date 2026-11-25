@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-// Leader and admins only; the save action checks again.
+// Leader, co-leaders and admins; the save action checks again.
 export default function EditProjectPage({ params }: PageProps<"/workspace/projects/[slug]/edit">) {
   return (
     <div className="mx-auto w-full max-w-4xl px-4 sm:px-6">
@@ -34,7 +34,7 @@ async function Editor({ params }: { params: Promise<{ slug: string }> }) {
       <div className="py-16">
         <h1 className="text-4xl leading-tight">{found.title}</h1>
         <p className="text-muted mt-4 text-lg">
-          Only the team leader and admins can edit this project.
+          Only the leader, co-leaders and admins can edit this project.
         </p>
         <p className="mt-8">
           <Link href={`/workspace/projects/${slug}`} className={ui.link}>

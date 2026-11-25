@@ -51,7 +51,7 @@ test.describe("editing projects", () => {
     await context.close();
   });
 
-  test("team members who are not the leader cannot edit", async ({ browser }) => {
+  test("team members who are not leader or co-leader cannot edit", async ({ browser }) => {
     const leader = await signedInContext(browser, "member");
     const mate = await signedInContext(browser, "member");
     const page = await leader.context.newPage();
@@ -63,7 +63,7 @@ test.describe("editing projects", () => {
     await expect(matePage.getByRole("link", { name: "Edit research plan →" })).toHaveCount(0);
     await matePage.goto(`${path}/edit`);
     await expect(
-      matePage.getByText("Only the team leader and admins can edit this project."),
+      matePage.getByText("Only the leader, co-leaders and admins can edit this project."),
     ).toBeVisible();
     await expect(matePage.getByRole("button", { name: "Save changes" })).toHaveCount(0);
     await leader.context.close();

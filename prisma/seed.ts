@@ -118,7 +118,7 @@ async function main() {
         await prisma.project.update({ where: { id: project.id }, data: { leaderId: leader.id } });
         await prisma.projectMembership.upsert({
           where: { projectId_userId: { projectId: project.id, userId: leader.id } },
-          create: { projectId: project.id, userId: leader.id, role: "Team leader" },
+          create: { projectId: project.id, userId: leader.id, role: "Principal investigator" },
           update: {},
         });
         console.log(`${p.slug}: ${leader.email} is now the team leader.`);

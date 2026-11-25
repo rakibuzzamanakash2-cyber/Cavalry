@@ -6,7 +6,14 @@ import { requireUser } from "@/lib/session";
 export type InviteView =
   | { kind: "invalid" }
   | { kind: "already"; slug: string; title: string }
-  | { kind: "open"; title: string; number: string; role: string; invitedBy: string | null };
+  | {
+      kind: "open";
+      title: string;
+      number: string;
+      role: string;
+      position: "member" | "co_leader" | "leader";
+      invitedBy: string | null;
+    };
 
 /**
  * What the invite page may show: the project title, the role and who sent it.
@@ -42,6 +49,7 @@ export async function getInvite(token: string): Promise<InviteView> {
     title: p.title,
     number: p.number,
     role: invite.role,
+    position: invite.position,
     invitedBy: invite.createdBy?.name ?? null,
   };
 }

@@ -14,7 +14,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Colours: use semantic tokens from `src/app/globals.css` (`bg-primary`, `text-accent-strong`, …). Never hard-code hex values in components.
 - Data: pages read through `src/data/*`. Public getters return finished work only; workspace getters call `requireMember()` first. Keep cached readers unexported. Never import `src/lib/db.ts` into client components.
 - Access: research in progress is confidential. Never render it on public pages. Session reads (`getCurrentUser`, `require*`) must sit inside `<Suspense>`. Server actions re-check permissions themselves.
-- Projects: every project page and action goes through `src/lib/project-access.ts` (`canView` = team or admin, `canManage` = leader or admin). Members outside a project's team see its title, leader and stage only.
+- Projects: every project page and action goes through `src/lib/project-access.ts` (`canView` = team or admin, `canManage` = leader or admin, `canRunTeam` = also co-leaders, `canRequestSlots` = leader only). Members outside a project's team see its title, leader and stage only. Team size is limited by slots (`slotUsage`).
 - Forms: give inputs ids from `useId()`, not fixed strings. Next keeps the previous page mounted (hidden) after client navigation, so fixed ids can clash.
 - Schema changes: edit `prisma/schema.prisma`, run `npm run db:migrate:dev -- --name <change>`, and commit `prisma/migrations`. Keep `src/content/*`, the seed and `src/data/*` mappings in step.
 - Before opening a PR run `npm run check` and `npm run build`.

@@ -4,9 +4,7 @@ import { refresh, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getDb } from "@/lib/db";
-import { newInviteToken } from "@/lib/invite-token";
 import { projectContentSchema } from "@/lib/project-content";
-import { ratingSchema } from "@/lib/ratings";
 import { getProjectAccessById } from "@/lib/project-access";
 import { requireMember } from "@/lib/session";
 import { slugify } from "@/lib/slug";
@@ -50,6 +48,7 @@ const newProjectSchema = z.object({
   title: z.string().trim().min(5, "At least 5 characters.").max(140, "Under 140 characters."),
   summary: z.string().trim().min(20, "At least 20 characters.").max(600, "Under 600 characters."),
   question: z.string().trim().min(20, "At least 20 characters.").max(600, "Under 600 characters."),
+  role: roleText,
 });
 
 /** Any member can open a project and becomes its leader. */
@@ -63,7 +62,7 @@ export async function createProject(_prev: ActionState, formData: FormData): Pro
       errors: fieldErrors(parsed.error.issues),
     };
   }
-  const { title, summary, question } = parsed.data;
+  const { title, summary, question, role } = parsed.data;
 
   const db = getDb();
   // "new" is the create page's own URL.
@@ -103,220 +102,35 @@ export async function createProject(_prev: ActionState, formData: FormData): Pro
       },
     });
     await tx.projectMembership.create({
-      data: { projectId: project.id, userId: user.id, role: "Team leader" },
+      data: { projectId: project.id, userId: user.id, role },
     });
   });
 
   redirect(`/workspace/projects/${slug}`);
 }
 
-type ManagerCheck =
+type Check =
   | { allowed: false; error: string }
   | { allowed: true; access: NonNullable<Awaited<ReturnType<typeof getProjectAccessById>>> };
 
-async function requireManager(projectId: string): Promise<ManagerCheck> {
+/** Leader, co-leader or admin (the research plan can be edited by co-leaders too). */
+async function requireTeamRunner(projectId: string): Promise<Check> {
   if (!projectId) return { allowed: false, error: "Project not found." };
   const access = await getProjectAccessById(projectId);
   if (!access) return { allowed: false, error: "Project not found." };
-  if (!access.canManage) {
-    return { allowed: false, error: "Only the project leader or an admin can do that." };
+  if (!access.canRunTeam) {
+    return { allowed: false, error: "Only the leader, a co-leader or an admin can do that." };
   }
   return { allowed: true, access };
 }
 
-/** Add an existing member to the project with a role. Leader or admin only. */
-export async function addMember(_prev: ActionState, formData: FormData): Promise<ActionState> {
-  const projectId = formId(formData, "projectId");
-  const check = await requireManager(projectId);
-  if (!check.allowed) return { ok: false, message: check.error };
-
-  const role = roleText.safeParse(formData.get("role"));
-  if (!role.success)
-    return { ok: false, message: role.error.issues[0]?.message ?? "Invalid input." };
-  const userId = String(formData.get("userId") ?? "").slice(0, 100);
-
-  const db = getDb();
-  if (!userId) return { ok: false, message: "Choose a member." };
-  const target = await db.user.findUnique({ where: { id: userId }, select: { role: true } });
-  if (!target || !["member", "admin"].includes(target.role)) {
-    return { ok: false, message: "Only members can be added. Use an invite link for others." };
-  }
-  const existing = await db.projectMembership.findUnique({
-    where: { projectId_userId: { projectId, userId } },
-    select: { id: true },
-  });
-  if (existing) return { ok: false, message: "They are already on this project." };
-
-  await db.projectMembership.create({ data: { projectId, userId, role: role.data } });
-  refresh();
-  return { ok: true, message: "Member added." };
-}
-
-/** Change a team member's project role. Leader or admin only. */
-export async function updateMemberRole(
-  _prev: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  const membershipId = formId(formData, "membershipId");
-  const db = getDb();
-  const membership = membershipId
-    ? await db.projectMembership.findUnique({
-        where: { id: membershipId },
-        select: { projectId: true },
-      })
-    : null;
-  if (!membership) return { ok: false, message: "Team member not found." };
-  const check = await requireManager(membership.projectId);
-  if (!check.allowed) return { ok: false, message: check.error };
-
-  const role = roleText.safeParse(formData.get("role"));
-  if (!role.success)
-    return { ok: false, message: role.error.issues[0]?.message ?? "Invalid input." };
-
-  await db.projectMembership.update({ where: { id: membershipId }, data: { role: role.data } });
-  refresh();
-  return { ok: true, message: "Role updated." };
-}
-
-/**
- * Rate a team member's work on this project, 1–5. Leader or admin only, and
- * never yourself (an admin rates the team leader).
- */
-export async function rateMember(_prev: ActionState, formData: FormData): Promise<ActionState> {
-  const membershipId = formId(formData, "membershipId");
-  const db = getDb();
-  const membership = membershipId
-    ? await db.projectMembership.findUnique({
-        where: { id: membershipId },
-        select: { projectId: true, userId: true },
-      })
-    : null;
-  if (!membership) return { ok: false, message: "Team member not found." };
-  const check = await requireManager(membership.projectId);
-  if (!check.allowed) return { ok: false, message: check.error };
-  if (membership.userId === check.access.user.id) {
-    return { ok: false, message: "You can't rate yourself. An admin rates the team leader." };
-  }
-
-  const rating = ratingSchema.safeParse(formData.get("rating"));
-  if (!rating.success) {
-    return { ok: false, message: rating.error.issues[0]?.message ?? "Invalid rating." };
-  }
-
-  await db.projectMembership.update({
-    where: { id: membershipId },
-    data: { rating: rating.data, ratedAt: new Date(), ratedById: check.access.user.id },
-  });
-  refresh();
-  return { ok: true, message: "Rating saved." };
-}
-
-/** Remove someone from the project (not the leader). Leader or admin only. */
-export async function removeMember(formData: FormData): Promise<void> {
-  const membershipId = formId(formData, "membershipId");
-  if (!membershipId) return;
-  const db = getDb();
-  const membership = await db.projectMembership.findUnique({
-    where: { id: membershipId },
-    select: { projectId: true, userId: true, project: { select: { leaderId: true } } },
-  });
-  if (!membership) return;
-  const check = await requireManager(membership.projectId);
-  if (!check.allowed) return;
-  if (membership.userId === membership.project.leaderId) return; // transfer leadership first
-  await db.projectMembership.delete({ where: { id: membershipId } });
-  refresh();
-}
-
-/** Make a team member the project leader. Current leader or admin only. */
-export async function makeLeader(formData: FormData): Promise<void> {
-  const membershipId = formId(formData, "membershipId");
-  if (!membershipId) return;
-  const db = getDb();
-  const membership = await db.projectMembership.findUnique({
-    where: { id: membershipId },
-    select: { projectId: true, userId: true },
-  });
-  if (!membership) return;
-  const check = await requireManager(membership.projectId);
-  if (!check.allowed) return;
-  const previous = check.access.leaderId;
-  await db.$transaction(async (tx) => {
-    await tx.project.update({
-      where: { id: membership.projectId },
-      data: { leaderId: membership.userId },
-    });
-    await tx.projectMembership.update({
-      where: { id: membershipId },
-      data: { role: "Team leader" },
-    });
-    // The previous leader stays on the team; drop the old title if it was the default.
-    if (previous) {
-      await tx.projectMembership.updateMany({
-        where: { projectId: membership.projectId, userId: previous, role: "Team leader" },
-        data: { role: "Member" },
-      });
-    }
-  });
-  refresh();
-}
-
-const inviteSchema = z.object({
-  projectId: z.uuid(),
-  role: roleText,
-  note: z.string().trim().max(200).optional().default(""),
-});
-
-/** Create a one-time invite link (valid 7 days). Leader or admin only. */
-export async function createInvite(_prev: ActionState, formData: FormData): Promise<ActionState> {
-  const parsed = inviteSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success)
-    return { ok: false, message: parsed.error.issues[0]?.message ?? "Invalid input." };
-  const check = await requireManager(parsed.data.projectId);
-  if (!check.allowed) return { ok: false, message: check.error };
-
-  const { token, hash } = newInviteToken();
-  await getDb().projectInvite.create({
-    data: {
-      projectId: parsed.data.projectId,
-      tokenHash: hash,
-      role: parsed.data.role,
-      note: parsed.data.note || null,
-      createdById: check.access.user.id,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    },
-  });
-  refresh();
-  return {
-    ok: true,
-    message: "Invite link created. Copy it now: it is shown only once.",
-    inviteLink: `/invite/${token}`,
-  };
-}
-
-/** Revoke an unused invite. Leader or admin only. */
-export async function revokeInvite(formData: FormData): Promise<void> {
-  const inviteId = formId(formData, "inviteId");
-  if (!inviteId) return;
-  const db = getDb();
-  const invite = await db.projectInvite.findUnique({
-    where: { id: inviteId },
-    select: { projectId: true },
-  });
-  if (!invite) return;
-  const check = await requireManager(invite.projectId);
-  if (!check.allowed) return;
-  await db.projectInvite.update({ where: { id: inviteId }, data: { revokedAt: new Date() } });
-  refresh();
-}
-
-/** Save a project's research content. Leader or admin only. */
+/** Save a project's research content. Leader, co-leader or admin. */
 export async function updateProjectContent(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
   const projectId = formId(formData, "projectId");
-  const check = await requireManager(projectId);
+  const check = await requireTeamRunner(projectId);
   if (!check.allowed) return { ok: false, message: check.error };
 
   let raw: unknown;
@@ -372,7 +186,7 @@ export async function setProjectStatus(
   formData: FormData,
 ): Promise<ActionState> {
   const projectId = formId(formData, "projectId");
-  const check = await requireManager(projectId);
+  const check = await requireTeamRunner(projectId);
   if (!check.allowed) return { ok: false, message: check.error };
   if (!check.access.isAdmin) return { ok: false, message: "Only admins can change the status." };
   const status = statusSchema.safeParse(formData.get("status"));
