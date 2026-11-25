@@ -4,6 +4,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { getDb } from "./db";
 import { isAdminEmail } from "./roles";
+import { authUrl, trustedOrigins } from "./urls";
 
 function createAuth() {
   const google =
@@ -16,9 +17,18 @@ function createAuth() {
         }
       : undefined;
 
+  const secret = process.env.BETTER_AUTH_SECRET;
+  if (process.env.VERCEL_ENV && (!secret || secret.length < 32)) {
+    throw new Error("BETTER_AUTH_SECRET must be set (32+ characters) on Vercel.");
+  }
+
   return betterAuth({
-    secret: process.env.BETTER_AUTH_SECRET,
-    baseURL: process.env.BETTER_AUTH_URL ?? process.env.NEXT_PUBLIC_SITE_URL,
+    secret,
+    baseURL: authUrl(),
+    trustedOrigins: trustedOrigins(),
+    // Keep counts in the database: memory limits reset on every serverless
+    // instance, so they would barely limit anything on Vercel.
+    rateLimit: { storage: "database" },
     database: prismaAdapter(getDb(), { provider: "postgresql" }),
     emailAndPassword: {
       enabled: true,

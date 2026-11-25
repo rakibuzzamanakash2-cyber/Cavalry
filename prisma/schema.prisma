@@ -341,3 +341,14 @@ model Dataset {
   @@index([projectId])
   @@map("datasets")
 }
+
+/// Better Auth sign-in/sign-up rate limits. Stored in the database so the
+/// limits hold across Vercel's serverless instances.
+model RateLimit {
+  id          String @id
+  key         String @unique
+  count       Int
+  lastRequest BigInt @map("last_request")
+
+  @@map("rate_limit")
+}
