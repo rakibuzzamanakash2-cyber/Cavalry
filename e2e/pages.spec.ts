@@ -17,10 +17,12 @@ test("every menu link opens a real page", async ({ page }) => {
   }
 });
 
-test("publications shows an honest empty state", async ({ page }) => {
+test("publications never shows work that is not published", async ({ page }) => {
+  // The seeded outputs are in preparation; other tests may publish their own.
   await page.goto("/publications");
-  await expect(page.getByText("Nothing published yet.")).toBeVisible();
-  await expect(page.getByText("In preparation")).toHaveCount(0);
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(page.getByText("In preparation", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("Under review", { exact: true })).toHaveCount(0);
 });
 
 test("sitemap and robots are served", async ({ request }) => {

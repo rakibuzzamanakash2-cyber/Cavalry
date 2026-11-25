@@ -19,15 +19,36 @@ function OutputRow({ output: o }: { output: Output }) {
       </div>
       <div className="md:col-span-9">
         <h3 className="text-xl leading-snug">{o.title}</h3>
-        <p className="text-muted mt-1 text-sm">{o.authors}</p>
+        <p className="text-muted mt-1 text-sm">
+          {o.authors}
+          {o.year ? ` · ${o.year}` : ""}
+          {o.venue ? ` · ${o.venue}` : ""}
+        </p>
         <p className="mt-2 leading-relaxed">{o.abstract}</p>
-        {o.programmeSlug ? (
-          <Link
-            href={`/research/${o.programmeSlug}`}
-            className="text-primary hover:text-accent tracking-caps mt-3 inline-block text-xs uppercase transition-colors"
-          >
-            About the programme →
-          </Link>
+        {(o.links?.length ?? 0) > 0 || o.programmeSlug ? (
+          <p className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+            {(o.links ?? []).map((l) => (
+              <a
+                key={l.label}
+                href={l.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:text-accent tracking-caps text-xs uppercase transition-colors"
+              >
+                {l.label}
+                <span className="sr-only">: {o.title} (opens in a new tab)</span>{" "}
+                <span aria-hidden>↗</span>
+              </a>
+            ))}
+            {o.programmeSlug ? (
+              <Link
+                href={`/research/${o.programmeSlug}`}
+                className="text-primary hover:text-accent tracking-caps text-xs uppercase transition-colors"
+              >
+                About the programme →
+              </Link>
+            ) : null}
+          </p>
         ) : null}
       </div>
     </li>

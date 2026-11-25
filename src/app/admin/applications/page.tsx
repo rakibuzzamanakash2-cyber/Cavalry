@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { ArticleSkeleton } from "@/components/article-skeleton";
+import { AdminNav } from "@/components/admin-nav";
 import { PageHeader } from "@/components/page-header";
 import { getApplicationsForReview } from "@/data/applications";
 import { statusLabel } from "@/lib/applications";
@@ -25,6 +26,7 @@ export default function AdminApplicationsPage() {
           Users and roles
         </Link>
       </PageHeader>
+      <AdminNav current="/admin/applications" />
       <Suspense fallback={<ArticleSkeleton />}>
         <ApplicationList />
       </Suspense>

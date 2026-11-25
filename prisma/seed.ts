@@ -1,7 +1,7 @@
 // Loads the content in src/content into the database.
 // Run with: npm run db:seed. Safe to re-run: rows are upserted by slug, so edits
-// to the content files are copied over on the next seed, except projects, which
-// are only created if missing (they are edited on the site).
+// to the content files are copied over on the next seed, except projects, news
+// and publications, which are only created if missing (they are edited on the site).
 import { PrismaPg } from "@prisma/adapter-pg";
 import { config } from "dotenv";
 import { posts } from "../src/content/news";
@@ -147,10 +147,11 @@ async function main() {
       projectId: project?.id ?? null,
       sortOrder: i,
     };
+    // Edited on the site (admin): create if missing, never overwrite.
     await prisma.publication.upsert({
       where: { slug: o.slug },
       create: { slug: o.slug, ...data },
-      update: data,
+      update: {},
     });
   }
 
@@ -164,10 +165,11 @@ async function main() {
       visibility: post.visibility ?? ("members" as const),
       publishedAt: date(post.date),
     };
+    // Edited on the site (admin): create if missing, never overwrite.
     await prisma.newsPost.upsert({
       where: { slug: post.slug },
       create: { slug: post.slug, ...data },
-      update: data,
+      update: {},
     });
   }
 

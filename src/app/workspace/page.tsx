@@ -154,6 +154,18 @@ async function WorkspaceDashboard() {
             >
               Manage users and roles →
             </Link>
+            <Link
+              href="/admin/news"
+              className="text-primary hover:text-accent tracking-caps text-xs uppercase transition-colors"
+            >
+              Write news →
+            </Link>
+            <Link
+              href="/admin/publications"
+              className="text-primary hover:text-accent tracking-caps text-xs uppercase transition-colors"
+            >
+              Manage publications →
+            </Link>
           </p>
         ) : null}
       </section>

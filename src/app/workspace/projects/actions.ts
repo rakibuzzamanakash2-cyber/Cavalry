@@ -9,6 +9,7 @@ import { projectContentSchema } from "@/lib/project-content";
 import { ratingSchema } from "@/lib/ratings";
 import { getProjectAccessById } from "@/lib/project-access";
 import { requireMember } from "@/lib/session";
+import { slugify } from "@/lib/slug";
 
 // Every action re-checks permissions on the server. Forms only send ids.
 
@@ -39,17 +40,6 @@ function formId(formData: FormData, key: string) {
   return z.uuid().safeParse(value).success ? value : "";
 }
 
-function slugify(text: string) {
-  return (
-    text
-      .toLowerCase()
-      .normalize("NFKD")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-      .slice(0, 60) || "project"
-  );
-}
-
 function fieldErrors(issues: z.core.$ZodIssue[]) {
   const errors: Record<string, string> = {};
   for (const i of issues) errors[String(i.path[0])] ??= i.message;
@@ -77,7 +67,7 @@ export async function createProject(_prev: ActionState, formData: FormData): Pro
 
   const db = getDb();
   // "new" is the create page's own URL.
-  const base = slugify(title) === "new" ? "new-project" : slugify(title);
+  const base = slugify(title, "project") === "new" ? "new-project" : slugify(title, "project");
   let slug = base;
   for (let n = 2; await db.project.findUnique({ where: { slug }, select: { id: true } }); n++) {
     slug = `${base}-${n}`;
