@@ -13,7 +13,6 @@ async function measure(page: Page) {
     const el = document.documentElement;
     return {
       horizontalOverflow: el.scrollWidth > el.clientWidth,
-      fitsOneScreen: el.scrollHeight <= window.innerHeight,
     };
   });
 }
@@ -54,19 +53,26 @@ for (const vp of viewports) {
 }
 
 for (const vp of viewports.filter((v) => v.width >= 1280)) {
-  test(`home fits one screen on ${vp.name} ${vp.width}x${vp.height}`, async ({ browser }) => {
+  test(`home's first section fits one screen on ${vp.name} ${vp.width}x${vp.height}`, async ({
+    browser,
+  }) => {
+    // The homepage scrolls (ADR 0014), but who we are and the main actions
+    // must be visible without scrolling on a laptop.
     const context = await browser.newContext({ viewport: vp });
     const page = await context.newPage();
     await page.goto("/");
-    const m = await measure(page);
-    expect(m.fitsOneScreen).toBe(true);
+    const bottom = await page
+      .locator("section[aria-labelledby='hero-title']")
+      .evaluate((el) => el.getBoundingClientRect().bottom);
+    expect(bottom).toBeLessThanOrEqual(vp.height);
+    await expect(page.getByRole("link", { name: "Explore our research" })).toBeInViewport();
     await context.close();
   });
 }
 
-test("home shows the organisation and finished work only", async ({ page }) => {
+test("home shows who we are, our research areas and how we work", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("img", { name: /CAVALRY research/ }).first()).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Finished work" })).toBeVisible();
-  await expect(page.getByText("Research areas")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "What we work on" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Evidence you can check" })).toBeVisible();
 });

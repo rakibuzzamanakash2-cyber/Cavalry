@@ -6,10 +6,10 @@ export const ui = {
     "border-line bg-surface text-ink focus:border-accent border px-2 py-1.5 text-sm outline-none",
   label: "text-muted tracking-caps text-xs uppercase",
   button:
-    "bg-primary text-primary-foreground hover:bg-accent tracking-caps px-5 py-3 text-xs uppercase transition-colors disabled:opacity-60",
+    "bg-primary text-primary-foreground hover:bg-accent px-5 py-3 text-sm font-medium transition-colors disabled:opacity-60",
   buttonSm:
-    "bg-primary text-primary-foreground hover:bg-accent tracking-caps px-3 py-1.5 text-xs uppercase transition-colors disabled:opacity-60",
+    "bg-primary text-primary-foreground hover:bg-accent px-3 py-1.5 text-sm font-medium transition-colors disabled:opacity-60",
   ghostSm:
-    "border-line text-ink hover:border-accent hover:text-accent tracking-caps border px-3 py-1.5 text-xs uppercase transition-colors",
-  link: "text-primary hover:text-accent tracking-caps text-xs uppercase transition-colors",
+    "border-line text-ink hover:border-accent hover:text-accent border px-3 py-1.5 text-sm font-medium transition-colors",
+  link: "text-primary hover:text-accent-strong text-sm font-medium transition-colors",
 };
