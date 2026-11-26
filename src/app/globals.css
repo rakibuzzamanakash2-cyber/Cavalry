@@ -5,73 +5,58 @@
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 /*
- * CAVALRY research — design tokens: "Ink & Parchment" with an oxblood accent,
- * matched to the calligraphic logo. Components use the semantic names
- * (bg-primary, text-accent, ...) and never raw hex values, so both themes
- * are defined only here.
+ * CAVALRY research — design tokens: "Teal & Ochre on paper".
+ * Deep teal is the brand (logo, headings, primary buttons), ochre the accent,
+ * warm gray for secondary text and lines, slate blue as a secondary colour.
+ * Components use the semantic names (bg-primary, text-accent, ...) and never
+ * raw hex values, so both themes are defined only here. Every text colour
+ * meets WCAG AA on the backgrounds it is used on.
  */
 :root {
   --header-h: 4rem;
   color-scheme: light;
-  --primary: #17140f; /* Ink — logo, headings, primary buttons */
-  --primary-hover: #2a251d;
-  --primary-foreground: #f4eee3;
-  --accent: #6e1f28; /* Oxblood — rules, hover states, highlights */
-  --accent-strong: #5a1820; /* small text and links */
-  --accent-foreground: #f4eee3;
-  --surface: #f4eee3; /* Parchment — page background */
-  --sand: #e9e0cf; /* panels, callouts */
-  --ink: #17140f; /* body text */
-  --muted: #6a6155; /* captions, metadata */
-  --line: #c9bca5; /* borders, dividers */
-  --paper: #faf7f1; /* long-form reading (articles) */
+  --primary: #1f5c5a; /* Deep teal — logo, headings, primary buttons */
+  --primary-hover: #174846;
+  --primary-foreground: #faf7f1;
+  --accent: #86600f; /* Ochre, deepened so small text stays readable */
+  --accent-strong: #6f4f0c; /* small text and links */
+  --accent-foreground: #faf7f1;
+  --secondary: #4a5d7a; /* Slate blue — secondary highlights */
+  --surface: #faf7f1; /* Paper — page background */
+  --sand: #efe8da; /* panels, callouts */
+  --ink: #1b2827; /* body text: teal-tinted near-black */
+  --muted: #645d51; /* Warm gray — captions, metadata */
+  --line: #d6cdbc; /* borders, dividers */
+  --paper: #fdfbf7; /* long-form reading (articles) */
   /* Charts and categories (research areas). Fills and rules only, never text.
      Fixed order: a category keeps its colour everywhere. */
-  --chart-1: #6e1f28; /* oxblood */
-  --chart-2: #1f5c5a; /* deep teal */
-  --chart-3: #b07a1f; /* ochre */
-  --chart-4: #4a5d7a; /* slate blue */
+  --chart-1: #1f5c5a; /* deep teal */
+  --chart-2: #b07a1f; /* ochre */
+  --chart-3: #4a5d7a; /* slate blue */
+  --chart-4: #9a4a3c; /* brick */
   --chart-5: #8a8070; /* warm gray: "other", context */
 }
 
-/* Dark: lamp-lit ink. Parchment becomes the ink, oxblood lifts to claret. */
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --primary: #efe7d8;
+  --primary: #ece6d8;
   --primary-hover: #ffffff;
-  --primary-foreground: #13110d;
-  --accent: #cc6b74;
-  --accent-strong: #e0959b;
-  --accent-foreground: #13110d;
-  --surface: #13110d;
-  --sand: #1f1b16;
-  --ink: #e9e1d2;
-  --muted: #a1978a;
-  --line: #4a4238;
-  --paper: #19160f;
-  --chart-1: #cc6b74;
-  --chart-2: #5fa9a4;
-  --chart-3: #d6a24a;
-  --chart-4: #8fa3c4;
+  --primary-foreground: #0f1918;
+  --accent: #d9a548;
+  --accent-strong: #e8bd6a;
+  --accent-foreground: #0f1918;
+  --secondary: #9fb1cf;
+  --surface: #0f1918;
+  --sand: #172423;
+  --ink: #e4ebe8;
+  --muted: #a39b8c;
+  --line: #2c3c3a;
+  --paper: #121d1c;
+  --chart-1: #5fb3ab;
+  --chart-2: #d9a548;
+  --chart-3: #8fa3c4;
+  --chart-4: #d0806f;
   --chart-5: #9a9080;
-}
-
-/* No-JavaScript fallback: follow the system setting. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    color-scheme: dark;
-    --primary: #efe7d8;
-    --primary-hover: #ffffff;
-    --primary-foreground: #13110d;
-    --accent: #cc6b74;
-    --accent-strong: #e0959b;
-    --accent-foreground: #13110d;
-    --surface: #13110d;
-    --sand: #1f1b16;
-    --ink: #e9e1d2;
-    --muted: #a1978a;
-    --line: #4a4238;
-  }
 }
 
 @theme inline {
@@ -81,6 +66,7 @@
   --color-accent: var(--accent);
   --color-accent-strong: var(--accent-strong);
   --color-accent-foreground: var(--accent-foreground);
+  --color-secondary: var(--secondary);
   --color-surface: var(--surface);
   --color-sand: var(--sand);
   --color-ink: var(--ink);

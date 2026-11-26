@@ -110,7 +110,7 @@ docs/decisions/   architecture decision records
 
 The logo files are `public/brand/cavalry-logo.svg` (with tagline) and `public/brand/cavalry-wordmark.svg` (without). `src/components/logo.tsx` draws them as a CSS mask over the text colour, so they recolour with `text-*` classes and both themes. Use `<Logo withTagline={false} />` where space is tight.
 
-Palette — Ink & Parchment with an oxblood accent, matched to the calligraphic logo, in light and dark themes. The theme follows the visitor's system setting until they pick one with the toggle (saved in `localStorage`). Use the semantic Tailwind classes, never raw hex values; both themes are defined only in `src/app/globals.css`.
+Palette — deep teal and ochre on paper, with warm gray and slate blue (ADR 0013), in light and dark themes. The theme follows the visitor's system setting until they pick one with the toggle (saved in `localStorage`). Use the semantic Tailwind classes, never raw hex values; both themes are defined only in `src/app/globals.css`.
 
 | Token           | Light     | Dark      | Use                     |
 | --------------- | --------- | --------- | ----------------------- |
