@@ -3,6 +3,7 @@ import Link from "next/link";
 import { PageHeader, SectionHeading } from "@/components/page-header";
 import { StageTracker } from "@/components/stage-tracker";
 import { researchAreas } from "@/content/research";
+import { toneBg } from "@/lib/tones";
 import { getPublicProgrammes } from "@/data/programmes";
 
 export const metadata: Metadata = {
@@ -92,6 +93,7 @@ export default async function ResearchPage() {
         <ul className="border-line mt-6 grid border-t border-l sm:grid-cols-2">
           {researchAreas.map((area) => (
             <li key={area.title} className="border-line border-r border-b p-5 sm:p-6">
+              <span aria-hidden className={`mb-3 block h-0.5 w-10 ${toneBg[area.tone]}`} />
               <h3 className="text-xl">{area.title}</h3>
               <p className="text-muted mt-2 leading-relaxed">{area.long}</p>
             </li>
