@@ -2,24 +2,29 @@
 // Programmes are seeded into the database (npm run db:seed) and read through
 // src/data; this file is also the fallback when no database is configured.
 
+/** Research areas. `tone` is the area's fixed colour, reused in charts. */
 export const researchAreas = [
   {
     title: "Public finance",
+    tone: "chart-1",
     detail: "How governments allocate and reallocate spending",
     long: "How governments decide what to spend on, and how those priorities shift when budgets come under pressure.",
   },
   {
     title: "Climate & disaster risk",
+    tone: "chart-2",
     detail: "Physical hazards and their economic aftermath",
     long: "Cyclones, floods and droughts measured by their physical intensity, and what follows for economies and public services.",
   },
   {
     title: "Causal inference",
+    tone: "chart-3",
     detail: "Credible estimates from observational data",
     long: "Research designs that separate cause from coincidence when experiments are impossible, with pre-trend and placebo checks.",
   },
   {
     title: "Machine learning for policy",
+    tone: "chart-4",
     detail: "Forecasts with honest uncertainty",
     long: "Predictive models judged against simple baselines and reported with calibrated intervals, kept distinct from causal claims.",
   },

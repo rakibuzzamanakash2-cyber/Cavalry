@@ -24,6 +24,14 @@
   --ink: #17140f; /* body text */
   --muted: #6a6155; /* captions, metadata */
   --line: #c9bca5; /* borders, dividers */
+  --paper: #faf7f1; /* long-form reading (articles) */
+  /* Charts and categories (research areas). Fills and rules only, never text.
+     Fixed order: a category keeps its colour everywhere. */
+  --chart-1: #6e1f28; /* oxblood */
+  --chart-2: #1f5c5a; /* deep teal */
+  --chart-3: #b07a1f; /* ochre */
+  --chart-4: #4a5d7a; /* slate blue */
+  --chart-5: #8a8070; /* warm gray: "other", context */
 }
 
 /* Dark: lamp-lit ink. Parchment becomes the ink, oxblood lifts to claret. */
@@ -40,6 +48,12 @@
   --ink: #e9e1d2;
   --muted: #a1978a;
   --line: #4a4238;
+  --paper: #19160f;
+  --chart-1: #cc6b74;
+  --chart-2: #5fa9a4;
+  --chart-3: #d6a24a;
+  --chart-4: #8fa3c4;
+  --chart-5: #9a9080;
 }
 
 /* No-JavaScript fallback: follow the system setting. */
@@ -72,11 +86,20 @@
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-line: var(--line);
+  --color-paper: var(--paper);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
 }
 
 @theme {
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  /* Display serif for big headings (h1, h2); a sturdier text serif for
+     smaller headings, where Cormorant's thin strokes get hard to read. */
   --font-serif: "Cormorant Garamond Variable", ui-serif, Georgia, serif;
+  --font-text-serif: "Source Serif 4 Variable", ui-serif, Georgia, serif;
   --tracking-caps: 0.28em;
 }
 
@@ -102,6 +125,11 @@
     font-weight: 600;
     color: var(--color-primary);
     text-wrap: balance;
+  }
+
+  h3 {
+    font-family: var(--font-text-serif);
+    letter-spacing: -0.01em;
   }
 
   a {

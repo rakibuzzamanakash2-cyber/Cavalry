@@ -2,6 +2,7 @@ import Link from "next/link";
 import { FinishedWorkCard } from "@/components/finished-work-card";
 import { Logo } from "@/components/logo";
 import { principles, researchAreas } from "@/content/research";
+import { toneBg } from "@/lib/tones";
 import { getPublicProgrammes } from "@/data/programmes";
 import { getPublicOutputs } from "@/data/publications";
 import { site } from "@/lib/site";
@@ -47,7 +48,8 @@ export default async function HomePage() {
             <ul className="border-line mt-2 grid grid-cols-1 border-t border-l text-left min-[420px]:grid-cols-2">
               {researchAreas.map((area) => (
                 <li key={area.title} className="border-line border-r border-b px-3 py-2.5">
-                  <p className="text-primary font-serif text-base font-semibold sm:text-[1.05rem] lg:text-[clamp(0.95rem,1.9dvh,1.05rem)]">
+                  <p className="text-primary flex items-center gap-2 font-serif text-base font-semibold sm:text-[1.05rem] lg:text-[clamp(0.95rem,1.9dvh,1.05rem)]">
+                    <span aria-hidden className={`size-2 shrink-0 ${toneBg[area.tone]}`} />
                     {area.title}
                   </p>
                   <p className="text-muted text-xs leading-snug">{area.detail}</p>
