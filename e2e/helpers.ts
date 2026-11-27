@@ -158,3 +158,20 @@ export async function mailTo(
     await new Promise((r) => setTimeout(r, 200));
   }
 }
+
+/** Fill in the join application form (on /apply). */
+export async function fillApplication(page: Page, field = "Public finance") {
+  await page.getByLabel("Field", { exact: true }).selectOption(field);
+  await page
+    .getByLabel("Why do you want to join?")
+    .fill(
+      "I want to study how governments change spending priorities, and I enjoy careful empirical work with public data.",
+    );
+  await page
+    .getByLabel("Your background")
+    .fill("Third-year CSE student with coursework in statistics and Python.");
+  await page
+    .getByLabel("Sample of your work (optional)")
+    .fill("https://github.com/example/project");
+  await page.getByLabel("Hours per week").fill("6");
+}

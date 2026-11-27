@@ -6,6 +6,9 @@ import { PageHeader } from "@/components/page-header";
 import { ui } from "@/components/ui";
 import { isMemberRole, roleLabel } from "@/lib/roles";
 import { requireUser } from "@/lib/session";
+import { YourAccess } from "@/components/your-access";
+import { getMyApplications } from "@/data/applications";
+import { statusLabel } from "@/lib/applications";
 import { UsernameForm } from "./username-form";
 
 export const metadata: Metadata = { title: "Your account", robots: { index: false } };
@@ -29,6 +32,7 @@ export default function AccountPage() {
 async function AccountDetails() {
   const user = await requireUser("/account");
   const member = isMemberRole(user.role);
+  const latest = member ? undefined : (await getMyApplications())[0];
 
   return (
     <div className="grid gap-10 py-10 sm:py-14 lg:grid-cols-12 lg:gap-12">
@@ -76,17 +80,29 @@ async function AccountDetails() {
           ) : (
             <>
               <h2 className="text-2xl">Not a member yet</h2>
-              <p className="text-muted mt-2 leading-relaxed">
-                Members join through an accepted application or an invite link from a project
-                leader. Once you&apos;re in, the research workspace opens up.
-              </p>
+              {latest ? (
+                <p className="mt-2 leading-relaxed" data-testid="application-status">
+                  Your application ({latest.field}):{" "}
+                  <span className="font-medium">{statusLabel[latest.status]}</span>
+                  {latest.status === "pending" ? ". We'll review it soon." : "."}
+                </p>
+              ) : (
+                <p className="text-muted mt-2 leading-relaxed">
+                  Members join through an accepted application or an invite link from a project
+                  leader. Once you&apos;re in, the research workspace opens up.
+                </p>
+              )}
               <Link href="/apply" className={`${ui.button} mt-5 inline-block`}>
-                Apply to join
+                {latest ? "See your application" : "Apply to join"}
               </Link>
             </>
           )}
         </div>
       </aside>
+
+      <div className="border-line border-t pt-10 lg:col-span-12">
+        <YourAccess role={user.role} />
+      </div>
     </div>
   );
 }
