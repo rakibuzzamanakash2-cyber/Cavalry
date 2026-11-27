@@ -18,6 +18,7 @@ export const site = {
   ].filter((l) => l.href),
   nav: [
     { href: "/research", label: "Research" },
+    { href: "/how-we-work", label: "How we work" },
     { href: "/publications", label: "Publications" },
     { href: "/news", label: "News" },
     { href: "/team", label: "Team" },

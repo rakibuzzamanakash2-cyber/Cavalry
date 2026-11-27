@@ -6,13 +6,13 @@ test("every menu link opens a real page", async ({ page }) => {
     .getByRole("navigation", { name: "Main" })
     .getByRole("link")
     .evaluateAll((links) => links.map((a) => a.getAttribute("href")));
-  expect(hrefs.length).toBe(6);
+  expect(hrefs.length).toBe(7);
   for (const href of hrefs) {
     await page.goto(href!);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await expect(page.getByText("Page not found")).toHaveCount(0);
     await expect(
-      page.getByRole("link", { name: new RegExp(`^${href!.slice(1)}$`, "i") }).first(),
+      page.getByRole("navigation", { name: "Main" }).locator(`a[href="${href}"]`),
     ).toHaveAttribute("aria-current", "page");
   }
 });

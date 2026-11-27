@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import Link from "next/link";
 import { JoinLink } from "@/components/join-link";
 import { PageHeader, SectionHeading } from "@/components/page-header";
+import { PersonAvatar } from "@/components/person-avatar";
 import { joiningNotes, type Person } from "@/content/team";
 import { getOpenRoles, getPeople } from "@/data/team";
 
@@ -11,39 +12,19 @@ export const metadata: Metadata = {
     "The founding team of CAVALRY research and the open member roles for the first programme.",
 };
 
-function initials(name: string) {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(-2)
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase();
-}
-
 function PersonCard({ person }: { person: Person }) {
   return (
     <article className="border-line bg-surface flex h-full flex-col gap-4 border p-5 shadow-[6px_6px_0_0_var(--color-sand)] sm:flex-row sm:p-6">
-      {person.photo ? (
-        <Image
-          src={person.photo}
-          alt=""
-          width={96}
-          height={96}
-          // Photos linked from other sites are shown as they are.
-          unoptimized={person.photo.startsWith("http")}
-          className="size-24 shrink-0 object-cover"
-        />
-      ) : (
-        <span
-          aria-hidden
-          className="bg-primary text-primary-foreground flex size-24 shrink-0 items-center justify-center font-serif text-3xl italic"
-        >
-          {initials(person.name)}
-        </span>
-      )}
+      <PersonAvatar name={person.name} photo={person.photo} />
       <div>
-        <h3 className="text-2xl leading-tight">{person.name}</h3>
+        <h3 className="text-2xl leading-tight">
+          <Link
+            href={`/team/${person.slug}`}
+            className="hover:text-accent-strong transition-colors"
+          >
+            {person.name}
+          </Link>
+        </h3>
         <p className="text-accent-strong tracking-caps mt-1 text-xs uppercase">{person.role}</p>
         <p className="mt-3 leading-relaxed">{person.bio}</p>
         <p className="text-muted mt-3 text-sm">

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader, SectionHeading } from "@/components/page-header";
 import { StageTracker } from "@/components/stage-tracker";
+import { ui } from "@/components/ui";
 import { programmeProcess, researchAreas } from "@/content/research";
 import { toneBg } from "@/lib/tones";
 import { getPublicProgrammes } from "@/data/programmes";
@@ -86,7 +87,14 @@ export default async function ResearchPage() {
           {researchAreas.map((area) => (
             <li key={area.title} className="border-line border-r border-b p-5 sm:p-6">
               <span aria-hidden className={`mb-3 block h-0.5 w-10 ${toneBg[area.tone]}`} />
-              <h3 className="text-xl">{area.title}</h3>
+              <h3 className="text-xl">
+                <Link
+                  href={`/research/areas/${area.slug}`}
+                  className="hover:text-accent-strong transition-colors"
+                >
+                  {area.title}
+                </Link>
+              </h3>
               <p className="text-muted mt-2 leading-relaxed">{area.long}</p>
             </li>
           ))}
@@ -99,7 +107,10 @@ export default async function ResearchPage() {
         </SectionHeading>
         <p className="text-muted mt-3 max-w-3xl leading-relaxed">
           Each programme moves through the same evidence-gated stages. A stage is finished only when
-          its output exists and has been reviewed — not when a date arrives.
+          its output exists and has been reviewed — not when a date arrives.{" "}
+          <Link href="/how-we-work" className={ui.link}>
+            Read how we work →
+          </Link>
         </p>
         <ol className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {programmeProcess.map((step, i) => (
