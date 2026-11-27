@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AccessTable } from "@/components/access-table";
 import { PageHeader, SectionHeading } from "@/components/page-header";
 import { ui } from "@/components/ui";
 import {
@@ -105,20 +104,8 @@ export default function HowWeWorkPage() {
         </div>
       </section>
 
-      <section aria-labelledby="access" className="border-line border-t py-10 sm:py-14">
-        <SectionHeading number="05" id="access">
-          Who can see what
-        </SectionHeading>
-        <p className="text-muted mt-3 mb-6 max-w-3xl leading-relaxed">
-          Anyone can read the public site and our finished work. An account lets you apply to join.
-          Research in progress is for members only, and a project&apos;s details are for its own
-          team.
-        </p>
-        <AccessTable />
-      </section>
-
       <section aria-labelledby="teams" className="border-line border-t py-10 sm:py-14">
-        <SectionHeading number="06" id="teams">
+        <SectionHeading number="05" id="teams">
           How teams work
         </SectionHeading>
         <p className="text-muted mt-3 max-w-3xl leading-relaxed">

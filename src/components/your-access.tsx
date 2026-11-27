@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { accessLevelInfo, nextStep, type AccessLevel } from "@/content/access";
 import type { Role } from "@/lib/roles";
-import { AccessTable } from "./access-table";
 
 export function levelOf(role: Role | null | undefined): AccessLevel {
   if (!role) return "visitor";
@@ -10,8 +9,8 @@ export function levelOf(role: Role | null | undefined): AccessLevel {
   return "user";
 }
 
-/** The viewer's access level, what it opens up and how to get more. */
-export function YourAccess({ role, showTable = true }: { role: Role | null; showTable?: boolean }) {
+/** The viewer's own access level and how to get more. No map of the whole site. */
+export function YourAccess({ role }: { role: Role | null }) {
   const level = levelOf(role);
   const info = accessLevelInfo[level];
   const step = nextStep[level];
@@ -45,7 +44,6 @@ export function YourAccess({ role, showTable = true }: { role: Role | null; show
           </>
         ) : null}
       </p>
-      {showTable ? <AccessTable highlight={level} /> : null}
     </section>
   );
 }
