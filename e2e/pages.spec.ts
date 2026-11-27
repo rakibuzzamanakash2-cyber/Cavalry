@@ -50,8 +50,8 @@ test("pages load without console errors", async ({ page }) => {
     "/team",
     "/news",
     "/contact",
-    "/sign-in",
-    "/sign-up",
+    "/login",
+    "/registration",
     "/members-only",
   ]) {
     await page.goto(path);

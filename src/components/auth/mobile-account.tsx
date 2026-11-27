@@ -18,7 +18,7 @@ export function MobileAccount() {
     return (
       <div className="border-line mt-6 border-t pt-6">
         <Link
-          href="/sign-in"
+          href="/login"
           className="bg-primary text-primary-foreground hover:bg-accent tracking-caps block px-5 py-3.5 text-center text-xs uppercase transition-colors"
         >
           Sign in

@@ -6,6 +6,7 @@ import {
   uniqueEmail,
   PASSWORD,
   visitorHeaders,
+  uniqueUsername,
 } from "./helpers";
 
 test.describe("projects", () => {
@@ -98,12 +99,15 @@ test.describe("projects", () => {
     const guest = await browser.newContext({ extraHTTPHeaders: visitorHeaders() });
     const guestPage = await guest.newPage();
     await guestPage.goto(new URL(link).pathname);
-    await guestPage.waitForURL((u) => u.pathname === "/sign-in");
-    await guestPage.goto(`/sign-up?next=${encodeURIComponent(new URL(link).pathname)}`);
+    await guestPage.waitForURL((u) => u.pathname === "/login");
+    await guestPage.goto(`/registration?next=${encodeURIComponent(new URL(link).pathname)}`);
     await guestPage.getByLabel("Full name").fill("Invited Person");
-    await guestPage.getByLabel("Email").fill(uniqueEmail("invitee"));
-    await guestPage.getByLabel("Password").fill(PASSWORD);
-    await guestPage.getByRole("button", { name: "Create account" }).click();
+    await guestPage.getByLabel("Username").fill(uniqueUsername("invitee"));
+    await guestPage.getByLabel("Email", { exact: true }).fill(uniqueEmail("invitee"));
+    await guestPage.getByLabel("Password", { exact: true }).fill(PASSWORD);
+    await guestPage.getByRole("button", { name: "Sign up", exact: true }).click();
+    await guestPage.waitForURL((u) => u.pathname === "/welcome");
+    await guestPage.getByRole("link", { name: "Continue" }).click();
     await guestPage.waitForURL((u) => u.pathname.startsWith("/invite/"));
     await expect(guestPage.getByRole("heading", { level: 1, name: title })).toBeVisible();
     await expect(guestPage.getByText("Research assistant")).toBeVisible();

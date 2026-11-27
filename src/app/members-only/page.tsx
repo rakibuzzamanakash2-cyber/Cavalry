@@ -26,13 +26,13 @@ async function Status() {
     return (
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
         <Link
-          href="/sign-in?next=/workspace"
+          href="/login?next=/workspace"
           className="bg-primary text-primary-foreground hover:bg-accent tracking-caps px-5 py-3.5 text-center text-xs uppercase transition-colors"
         >
           Sign in
         </Link>
         <Link
-          href="/sign-up"
+          href="/registration?next=/workspace"
           className="border-primary text-primary hover:border-accent hover:text-accent tracking-caps border px-5 py-3.5 text-center text-xs uppercase transition-colors"
         >
           Create an account

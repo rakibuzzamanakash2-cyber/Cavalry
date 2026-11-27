@@ -5,8 +5,10 @@ const ITEMS = [
   { href: "/admin/users", label: "Users & roles" },
   { href: "/admin/news", label: "News" },
   { href: "/admin/publications", label: "Publications" },
+  { href: "/admin/datasets", label: "Datasets" },
   { href: "/admin/team", label: "Team" },
   { href: "/admin/slot-requests", label: "Slot requests" },
+  { href: "/admin/subscribers", label: "Subscribers" },
 ] as const;
 
 /** Tabs across the admin pages. `current` is the section's base path. */

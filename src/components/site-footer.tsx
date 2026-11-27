@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { JoinLink } from "./join-link";
+import { NewsletterForm } from "./newsletter-form";
 import { researchAreas } from "@/content/research";
 import { site } from "@/lib/site";
 
@@ -36,6 +37,7 @@ export function SiteFooter() {
               { href: "/how-we-work", label: "How we work" },
               { href: "/team", label: "Team" },
               { href: "/publications", label: "Publications" },
+              { href: "/data", label: "Data" },
               { href: "/news", label: "News" },
             ].map((l) => (
               <li key={l.href}>
@@ -68,6 +70,19 @@ export function SiteFooter() {
             ) : null}
             <li className="text-muted">{site.location}</li>
           </ul>
+        </div>
+      </div>
+      <div className="border-line border-t">
+        <div className="mx-auto grid max-w-6xl gap-4 px-4 py-8 sm:px-6 lg:grid-cols-12 lg:items-center">
+          <div className="lg:col-span-5">
+            <h2 className="text-xl">Get research updates</h2>
+            <p className="text-muted mt-1 text-sm">
+              An email when we publish a paper, a dataset or news.
+            </p>
+          </div>
+          <div className="lg:col-span-7">
+            <NewsletterForm compact />
+          </div>
         </div>
       </div>
       <div className="border-line border-t">

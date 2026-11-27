@@ -8,6 +8,7 @@ import {
   signedInContext,
   test,
   uniqueEmail,
+  uniqueUsername,
 } from "./helpers";
 
 test.describe("public visitors", () => {
@@ -33,7 +34,7 @@ test.describe("public visitors", () => {
     ]) {
       const res = await request.get(path, { maxRedirects: 0 });
       expect(res.status(), path).toBe(307);
-      expect(res.headers()["location"]).toContain(`/sign-in?next=${encodeURIComponent(path)}`);
+      expect(res.headers()["location"]).toContain(`/login?next=${encodeURIComponent(path)}`);
     }
   });
 });
@@ -41,10 +42,18 @@ test.describe("public visitors", () => {
 test.describe("signing up and in", () => {
   test("a new account is a signed-in user without workspace access", async ({ page }) => {
     await page.goto("/sign-up?next=/workspace");
+    // The old address forwards to the new sign-up page.
+    await page.waitForURL((u) => u.pathname === "/registration");
     await page.getByLabel("Full name").fill("New Person");
-    await page.getByLabel("Email").fill(uniqueEmail("signup"));
-    await page.getByLabel("Password").fill(PASSWORD);
-    await page.getByRole("button", { name: "Create account" }).click();
+    await page.getByLabel("Username").fill(uniqueUsername("newperson"));
+    await page.getByLabel("Email", { exact: true }).fill(uniqueEmail("signup"));
+    await page.getByLabel("Password", { exact: true }).fill(PASSWORD);
+    await page.getByRole("button", { name: "Sign up", exact: true }).click();
+    await page.waitForURL((u) => u.pathname === "/welcome");
+    await expect(
+      page.getByText("You have successfully created your CAVALRY account"),
+    ).toBeVisible();
+    await page.getByRole("link", { name: "Continue" }).click();
     await page.waitForURL((u) => u.pathname === "/members-only");
     await expect(page.getByText("Signed in as New Person")).toBeVisible();
     await expect(page.getByRole("button", { name: /Account menu for New Person/ })).toBeVisible();
@@ -54,21 +63,23 @@ test.describe("signing up and in", () => {
     const { context, email } = await signedInContext(browser, "user");
     await context.clearCookies();
     const page = await context.newPage();
-    await page.goto("/sign-in?next=https://evil.example/");
-    await page.getByLabel("Email").fill(email);
-    await page.getByLabel("Password").fill(PASSWORD);
-    await page.getByRole("button", { name: "Sign in" }).click();
+    await page.goto("/login?next=https://evil.example/");
+    await page.getByLabel("Email, username or ID").fill(email);
+    await page.getByLabel("Password", { exact: true }).fill(PASSWORD);
+    await page.getByRole("button", { name: "Login", exact: true }).click();
     await page.waitForURL((u) => u.pathname === "/");
     expect(new URL(page.url()).hostname).toBe("localhost");
     await context.close();
   });
 
   test("wrong password shows an error", async ({ page }) => {
-    await page.goto("/sign-in");
-    await page.getByLabel("Email").fill(uniqueEmail("nobody"));
-    await page.getByLabel("Password").fill("not-the-password");
-    await page.getByRole("button", { name: "Sign in" }).click();
-    await expect(page.getByRole("alert")).toBeVisible();
+    await page.goto("/login");
+    await page.getByLabel("Email, username or ID").fill(uniqueEmail("nobody"));
+    await page.getByLabel("Password", { exact: true }).fill("not-the-password");
+    await page.getByRole("button", { name: "Login", exact: true }).click();
+    await expect(
+      page.getByRole("alert").filter({ hasText: /don't match an account/ }),
+    ).toBeVisible();
   });
 });
 
@@ -145,7 +156,7 @@ test.describe("admins", () => {
     // The member's sessions were revoked, so they are sent to sign in again.
     const memberPage = await member.context.newPage();
     await memberPage.goto("/workspace");
-    await memberPage.waitForURL((u) => u.pathname === "/sign-in");
+    await memberPage.waitForURL((u) => u.pathname === "/login");
 
     await member.context.close();
     await admin.context.close();

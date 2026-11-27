@@ -1,10 +1,12 @@
 import "server-only";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { createAuthMiddleware } from "better-auth/api";
+import { APIError, createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
+import { after } from "next/server";
 import { getDb } from "./db";
-import { identifierKind, normalizeUid, normalizeUsername } from "./identity";
+import { identifierKind, normalizeUid, normalizeUsername, usernameProblem } from "./identity";
+import { sendAccountCreated } from "./mail/account-created";
 import { isAdminEmail } from "./roles";
 import { authUrl, trustedOrigins } from "./urls";
 
@@ -34,7 +36,9 @@ function createAuth() {
     database: prismaAdapter(getDb(), { provider: "postgresql" }),
     emailAndPassword: {
       enabled: true,
+      // Same limits as Ru'sAuth: at least 8 characters, at most 72 (bcrypt's limit).
       minPasswordLength: 8,
+      maxPasswordLength: 72,
       autoSignIn: true,
     },
     socialProviders: google,
@@ -44,8 +48,8 @@ function createAuth() {
         role: { type: "string", defaultValue: "user", input: false, required: false },
         // Given by the database at sign-up; never set from forms.
         uid: { type: "string", input: false, required: false },
-        // Set on the account page, where it is checked and kept unique.
-        username: { type: "string", input: false, required: false },
+        // Chosen at sign-up (checked in the before hook) or on the account page.
+        username: { type: "string", input: true, required: false },
       },
     },
     hooks: {
@@ -54,6 +58,32 @@ function createAuth() {
       // names become an address that matches nobody, so the reply is the same
       // "invalid email or password" as a wrong password and reveals nothing.
       before: createAuthMiddleware(async (ctx) => {
+        const body = (ctx.body ?? {}) as Record<string, unknown>;
+
+        // Sign-up: check the username (format and free) before the account exists.
+        if (ctx.path === "/sign-up/email") {
+          if (body.username === undefined || body.username === "") return;
+          const username = normalizeUsername(String(body.username));
+          const problem = usernameProblem(username);
+          if (problem) throw new APIError("BAD_REQUEST", { message: `Username: ${problem}` });
+          const taken = await getDb().user.findUnique({
+            where: { username },
+            select: { id: true },
+          });
+          if (taken) {
+            throw new APIError("BAD_REQUEST", { message: "That username is taken. Try another." });
+          }
+          return { context: { body: { ...body, username } } };
+        }
+
+        // The username is changed only on the account page, which checks it.
+        // (Hook results are merged into the request, so refuse rather than strip.)
+        if (ctx.path === "/update-user" && body.username !== undefined) {
+          throw new APIError("BAD_REQUEST", {
+            message: "Change your username on the account page.",
+          });
+        }
+
         if (ctx.path !== "/sign-in/email") return;
         const typed = String((ctx.body as { email?: unknown } | undefined)?.email ?? "").trim();
         const kind = identifierKind(typed);
@@ -76,6 +106,23 @@ function createAuth() {
           before: async (user) => {
             if (user.emailVerified && isAdminEmail(user.email)) {
               return { data: { ...user, role: "admin" } };
+            }
+          },
+          // Every new account (email or Google) gets a confirmation email.
+          // Mail problems are logged and never stop the sign-up.
+          after: async (user) => {
+            const send = async () => {
+              const row = await getDb().user.findUnique({
+                where: { id: user.id },
+                select: { name: true, email: true, uid: true },
+              });
+              if (row) await sendAccountCreated(row);
+            };
+            // Send after the response so sign-up isn't slowed by the mail server.
+            try {
+              after(send);
+            } catch {
+              await send();
             }
           },
         },

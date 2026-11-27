@@ -343,23 +343,43 @@ model ProjectInvite {
 /// A dataset the research uses. With a project it is visible to that project's
 /// team (and admins) only; without one it is shared with every member.
 model Dataset {
-  id          String   @id @default(uuid()) @db.Uuid
+  id          String    @id @default(uuid()) @db.Uuid
   name        String
   /// What the data is: source, coverage, version.
   description String
   /// What we use it for.
-  usedFor     String   @map("used_for")
+  usedFor     String    @map("used_for")
   /// GitHub, Google Drive or another https link.
   url         String
-  projectId   String?  @map("project_id") @db.Uuid
-  project     Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  addedById   String?  @map("added_by_id")
-  addedBy     User?    @relation(fields: [addedById], references: [id], onDelete: SetNull)
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  projectId   String?   @map("project_id") @db.Uuid
+  project     Project?  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  addedById   String?   @map("added_by_id")
+  addedBy     User?     @relation(fields: [addedById], references: [id], onDelete: SetNull)
+  /// Listed in the public data catalogue (/data). Only admins publish, and
+  /// never while the dataset's project is still in progress.
+  isPublic    Boolean   @default(false) @map("is_public")
+  /// Address of the public page, /data/<slug>. Set when first published.
+  slug        String?   @unique
+  /// Licence key from LICENCES in src/lib/citation.ts.
+  licence     String?
+  publishedAt DateTime? @map("published_at") @db.Timestamptz(6)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@index([projectId])
+  @@index([isPublic])
   @@map("datasets")
+}
+
+/// People who signed up for email updates. Unsubscribing deletes the row.
+model NewsletterSubscriber {
+  id               String   @id @default(uuid()) @db.Uuid
+  email            String   @unique
+  /// Secret used in the unsubscribe link in every email.
+  unsubscribeToken String   @unique @map("unsubscribe_token")
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("newsletter_subscribers")
 }
 
 /// Better Auth sign-in/sign-up rate limits. Stored in the database so the
