@@ -29,6 +29,12 @@ export function MobileAccount() {
 
   const user = data.user as typeof data.user & { role?: unknown };
   return (
-    <AccountMenu name={user.name} email={user.email} role={toRole(user.role)} variant="mobile" />
+    <AccountMenu
+      name={user.name}
+      email={user.email}
+      uid={String((user as { uid?: unknown }).uid ?? "")}
+      role={toRole(user.role)}
+      variant="mobile"
+    />
   );
 }

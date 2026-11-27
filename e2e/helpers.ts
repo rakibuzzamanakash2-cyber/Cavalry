@@ -117,3 +117,9 @@ export async function addToProject(
   await page.getByRole("button", { name: "Add member" }).click();
   await page.getByRole("status").filter({ hasText: "Member added." }).waitFor();
 }
+
+/** An account's permanent ID (e.g. CAV00012), read from the database. */
+export async function getUid(email: string): Promise<string> {
+  const r = await db().query(`SELECT uid FROM "user" WHERE email = $1`, [email]);
+  return r.rows[0].uid as string;
+}

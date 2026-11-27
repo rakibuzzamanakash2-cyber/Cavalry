@@ -1,8 +1,10 @@
 import "server-only";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { getDb } from "./db";
+import { identifierKind, normalizeUid, normalizeUsername } from "./identity";
 import { isAdminEmail } from "./roles";
 import { authUrl, trustedOrigins } from "./urls";
 
@@ -40,7 +42,29 @@ function createAuth() {
       additionalFields: {
         // Never settable from sign-up forms; changed only by admins.
         role: { type: "string", defaultValue: "user", input: false, required: false },
+        // Given by the database at sign-up; never set from forms.
+        uid: { type: "string", input: false, required: false },
+        // Set on the account page, where it is checked and kept unique.
+        username: { type: "string", input: false, required: false },
       },
+    },
+    hooks: {
+      // The sign-in form takes an email, a username or a UID. Before the normal
+      // password check, swap a username or UID for the account's email. Unknown
+      // names become an address that matches nobody, so the reply is the same
+      // "invalid email or password" as a wrong password and reveals nothing.
+      before: createAuthMiddleware(async (ctx) => {
+        if (ctx.path !== "/sign-in/email") return;
+        const typed = String((ctx.body as { email?: unknown } | undefined)?.email ?? "").trim();
+        const kind = identifierKind(typed);
+        if (!typed || kind === "email") return;
+        const where =
+          kind === "uid" ? { uid: normalizeUid(typed) } : { username: normalizeUsername(typed) };
+        const found = await getDb().user.findUnique({ where, select: { email: true } });
+        return {
+          context: { body: { ...ctx.body, email: found?.email ?? "no-account@invalid.invalid" } },
+        };
+      }),
     },
     databaseHooks: {
       user: {

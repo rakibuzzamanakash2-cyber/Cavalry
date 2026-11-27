@@ -3,11 +3,21 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { ArticleSkeleton } from "@/components/article-skeleton";
 import { PageHeader, SectionHeading } from "@/components/page-header";
+import { PeopleFilter } from "@/components/people-filter";
 import { Stars } from "@/components/stars";
 import { ui } from "@/components/ui";
 import { getTeamDirectory } from "@/data/directory";
 import { formatDate } from "@/lib/format";
+import {
+  byTierThenName,
+  cleanQuery,
+  countTiers,
+  matchesQuery,
+  tierLabel,
+  toTierFilter,
+} from "@/lib/people";
 import { positionLabel } from "@/lib/project-rules";
+import { tierBadge } from "@/lib/tier-badge";
 
 export const metadata: Metadata = {
   title: "Team & ratings",
@@ -15,7 +25,7 @@ export const metadata: Metadata = {
 };
 
 // Members only (the workspace layout checks, and so does getTeamDirectory).
-export default function TeamDirectoryPage() {
+export default function TeamDirectoryPage({ searchParams }: PageProps<"/workspace/team">) {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6">
       <PageHeader eyebrow="Workspace · team" title="Team & ratings">
@@ -23,21 +33,49 @@ export default function TeamDirectoryPage() {
         of the 1–5 ratings their team leaders gave them, project by project.
       </PageHeader>
       <Suspense fallback={<ArticleSkeleton />}>
-        <Directory />
+        <Directory searchParams={searchParams} />
       </Suspense>
     </div>
   );
 }
 
-async function Directory() {
-  const { people, teams } = await getTeamDirectory();
+const directoryTiers = ["admin", "leader", "member"] as const;
+
+async function Directory({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const { people: everyone, teams } = await getTeamDirectory();
+  const params = await searchParams;
+  const query = cleanQuery(params.q);
+  const show = toTierFilter(params.show);
+  const matched = everyone
+    .filter((p) => matchesQuery(query, [p.name, p.username, p.uid]))
+    .sort(byTierThenName);
+  const counts = countTiers(matched);
+  const people = show === "all" ? matched : matched.filter((p) => p.tier === show);
 
   return (
     <>
       <section aria-labelledby="people" className="py-10">
         <SectionHeading number="01" id="people">
-          People · {people.length}
+          People · {everyone.length}
         </SectionHeading>
+        <div className="mt-6">
+          <PeopleFilter
+            action="/workspace/team"
+            query={query}
+            show={show}
+            tiers={directoryTiers}
+            counts={counts}
+            total={matched.length}
+            placeholder="Name, username or ID"
+          />
+        </div>
+        {people.length === 0 ? (
+          <p className="text-muted mt-6">No one matches{query ? ` \u201c${query}\u201d` : ""}.</p>
+        ) : null}
         <ul className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {people.map((p) => (
             <li
@@ -45,14 +83,20 @@ async function Directory() {
               id={`person-${p.id}`}
               className="border-line bg-surface flex scroll-mt-24 flex-col border p-5"
             >
-              <p className="tracking-caps text-muted text-xs uppercase">
-                {p.platformRole} · since{" "}
-                <time dateTime={p.memberSince}>{formatDate(p.memberSince)}</time>
+              <p className="text-muted flex flex-wrap items-center gap-2 text-xs">
+                <span className={tierBadge[p.tier]}>{tierLabel[p.tier]}</span>
+                <span>
+                  since <time dateTime={p.memberSince}>{formatDate(p.memberSince)}</time>
+                </span>
               </p>
               <h3 className="mt-2 text-xl">
                 {p.name}
                 {p.isYou ? <span className="text-muted ml-2 text-sm">(you)</span> : null}
               </h3>
+              <p className="text-muted font-mono text-xs">
+                {p.uid}
+                {p.username ? ` \u00b7 @${p.username}` : ""}
+              </p>
               <div className="mt-3">
                 <Stars value={p.overall} />
                 <p className="text-muted mt-1 text-xs">

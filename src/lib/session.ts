@@ -16,6 +16,9 @@ export type CurrentUser = {
   email: string;
   image: string | null;
   role: Role;
+  /** Permanent account ID, e.g. CAV00012. */
+  uid: string;
+  username: string | null;
 };
 
 /** The signed-in user, or null. Deduplicated per request. */
@@ -32,6 +35,8 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
     email: u.email,
     image: u.image ?? null,
     role: toRole((u as { role?: unknown }).role),
+    uid: String((u as { uid?: unknown }).uid ?? ""),
+    username: ((u as { username?: unknown }).username as string | null | undefined) ?? null,
   };
 });
 

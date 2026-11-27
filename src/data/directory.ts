@@ -4,6 +4,7 @@ import type { Position } from "@/lib/project-rules";
 import { averageRating } from "@/lib/ratings";
 
 const rank: Record<Position, number> = { leader: 0, co_leader: 1, member: 2 };
+import { tierOf, type Tier } from "@/lib/people";
 import { roleLabel, toRole } from "@/lib/roles";
 import { requireMember } from "@/lib/session";
 
@@ -13,7 +14,10 @@ import { requireMember } from "@/lib/session";
 
 export type DirectoryPerson = {
   id: string;
+  uid: string;
+  username: string | null;
   name: string;
+  tier: Tier;
   platformRole: string;
   memberSince: string;
   isYou: boolean;
@@ -53,6 +57,8 @@ export async function getTeamDirectory(): Promise<{
       orderBy: { name: "asc" },
       select: {
         id: true,
+        uid: true,
+        username: true,
         name: true,
         role: true,
         createdAt: true,
@@ -97,9 +103,15 @@ export async function getTeamDirectory(): Promise<{
 
   const people = users.map((u) => {
     const ratings = u.memberships.map((m) => m.rating);
+    const leads = u.memberships.some(
+      (m) => m.project.leaderId === u.id || m.position === "co_leader",
+    );
     return {
       id: u.id,
+      uid: u.uid,
+      username: u.username,
       name: u.name,
+      tier: tierOf(toRole(u.role), leads),
       platformRole: roleLabel[toRole(u.role)],
       memberSince: u.createdAt.toISOString(),
       isYou: u.id === viewer.id,

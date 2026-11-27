@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { JoinLink } from "./join-link";
 import { researchAreas } from "@/content/research";
 import { site } from "@/lib/site";
 
@@ -35,7 +36,6 @@ export function SiteFooter() {
               { href: "/team", label: "Team" },
               { href: "/publications", label: "Publications" },
               { href: "/news", label: "News" },
-              { href: "/apply", label: "Work with us" },
             ].map((l) => (
               <li key={l.href}>
                 <Link href={l.href} className={link}>
@@ -43,6 +43,11 @@ export function SiteFooter() {
                 </Link>
               </li>
             ))}
+            <li>
+              <JoinLink className={link} memberLabel="Workspace">
+                Work with us
+              </JoinLink>
+            </li>
           </ul>
         </nav>
         <div>

@@ -12,6 +12,7 @@ export async function AccountArea() {
     <AccountMenu
       name={user.name}
       email={user.email}
+      uid={user.uid}
       role={user.role}
       pendingApplications={pending}
       variant="desktop"
