@@ -5,6 +5,7 @@ import { useActionState, useId } from "react";
 import { FormField } from "@/components/form-field";
 import { ui } from "@/components/ui";
 import { OUTPUT_STATUSES, OUTPUT_TYPES } from "@/lib/admin-content";
+import { LICENCES } from "@/lib/citation";
 import type { ContentState } from "../content-state";
 
 export type PublicationValues = Record<
@@ -18,6 +19,9 @@ export type PublicationValues = Record<
   | "url"
   | "pdfUrl"
   | "doi"
+  | "codeUrl"
+  | "dataUrl"
+  | "licence"
   | "projectId",
   string
 >;
@@ -164,6 +168,51 @@ export function PublicationForm({
               placeholder="10.1234/abcd"
               className={ui.input}
             />
+          )}
+        </FormField>
+        <FormField id={f("codeUrl")} label="Code link (optional)" error={e.codeUrl}>
+          {(a) => (
+            <input
+              {...a}
+              name="codeUrl"
+              type="url"
+              defaultValue={v.codeUrl}
+              placeholder="https://github.com/…"
+              className={ui.input}
+            />
+          )}
+        </FormField>
+        <FormField
+          id={f("dataUrl")}
+          label="Data or replication package (optional)"
+          error={e.dataUrl}
+        >
+          {(a) => (
+            <input
+              {...a}
+              name="dataUrl"
+              type="url"
+              defaultValue={v.dataUrl}
+              placeholder="https://"
+              className={ui.input}
+            />
+          )}
+        </FormField>
+        <FormField
+          id={f("licence")}
+          label="Licence (optional)"
+          hint="Shown on the publication page and in its citation data."
+          error={e.licence}
+        >
+          {(a) => (
+            <select {...a} name="licence" defaultValue={v.licence} className={ui.input}>
+              <option value="">Not stated</option>
+              {Object.entries(LICENCES).map(([key, l]) => (
+                <option key={key} value={key}>
+                  {l.name}
+                </option>
+              ))}
+            </select>
           )}
         </FormField>
         <FormField

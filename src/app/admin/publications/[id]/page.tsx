@@ -56,6 +56,9 @@ async function Editor({ params }: { params: Promise<{ id: string }> }) {
             url: r.url ?? "",
             pdfUrl: r.pdfUrl ?? "",
             doi: r.doi ?? "",
+            codeUrl: r.codeUrl ?? "",
+            dataUrl: r.dataUrl ?? "",
+            licence: r.licence ?? "",
             projectId: r.projectId ?? "",
           }}
         />
