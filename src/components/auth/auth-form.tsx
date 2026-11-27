@@ -33,9 +33,14 @@ export function AuthForm({ mode, next, googleEnabled }: AuthFormProps) {
         ? await authClient.signUp.email({ name, email, password })
         : await authClient.signIn.email({ email, password });
       if (result.error) {
+        const code = (result.error as { code?: string }).code;
+        if (!isSignUp && (code === "INVALID_EMAIL_OR_PASSWORD" || code === "INVALID_EMAIL")) {
+          setError("Those sign-in details don't match an account. Check them and try again.");
+          return;
+        }
         setError(
           result.error.message ??
-            (isSignUp ? "Could not create the account." : "Email or password is incorrect."),
+            (isSignUp ? "Could not create the account." : "Those sign-in details are incorrect."),
         );
         return;
       }
@@ -85,10 +90,31 @@ export function AuthForm({ mode, next, googleEnabled }: AuthFormProps) {
             <input name="name" required autoComplete="name" className={inputClass} />
           </label>
         ) : null}
-        <label className="block">
-          <span className="text-muted tracking-caps text-xs uppercase">Email</span>
-          <input name="email" type="email" required autoComplete="email" className={inputClass} />
-        </label>
+        {isSignUp ? (
+          <label className="block">
+            <span className="text-muted tracking-caps text-xs uppercase">Email</span>
+            <input name="email" type="email" required autoComplete="email" className={inputClass} />
+          </label>
+        ) : (
+          <label className="block">
+            <span className="text-muted tracking-caps text-xs uppercase">
+              Email, username or ID
+            </span>
+            <input
+              name="email"
+              type="text"
+              required
+              autoComplete="username"
+              autoCapitalize="none"
+              spellCheck={false}
+              aria-describedby="identifier-hint"
+              className={inputClass}
+            />
+            <span id="identifier-hint" className="text-muted mt-1 block text-xs">
+              Your ID looks like CAV00012. You can find it and set a username on your account page.
+            </span>
+          </label>
+        )}
         <label className="block">
           <span className="text-muted tracking-caps text-xs uppercase">Password</span>
           <input

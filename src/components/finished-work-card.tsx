@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { JoinLink } from "./join-link";
 import type { Output } from "@/content/publications";
 import type { Programme } from "@/content/research";
 
@@ -79,12 +80,12 @@ export function FinishedWorkCard({ programmes, outputs }: FinishedWorkCardProps)
       </div>
 
       <footer className="border-line mt-auto border-t">
-        <Link
-          href="/apply"
-          className="tracking-caps text-primary hover:text-accent block px-4 py-3.5 text-xs uppercase transition-colors sm:px-5 lg:py-2.5"
+        <JoinLink
+          className="text-primary hover:text-accent block px-4 py-3.5 text-sm font-medium transition-colors sm:px-5 lg:py-2.5"
+          memberLabel="Open the workspace →"
         >
           Work with us →
-        </Link>
+        </JoinLink>
       </footer>
     </article>
   );

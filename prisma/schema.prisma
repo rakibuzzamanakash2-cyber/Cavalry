@@ -56,6 +56,10 @@ model User {
   emailVerified       Boolean              @default(false) @map("email_verified")
   image               String?
   role                String               @default("user")
+  /// Permanent account ID such as CAV00012, given at sign-up. Works for sign-in.
+  uid                 String               @unique @default(dbgenerated("('CAV'::text || lpad((nextval('user_uid_seq'::regclass))::text, 5, '0'::text))"))
+  /// Optional sign-in name the person chooses (lowercase). Works for sign-in.
+  username            String?              @unique
   sessions            Session[]
   accounts            Account[]
   applications        Application[]        @relation("applicant")

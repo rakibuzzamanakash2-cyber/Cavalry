@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
+import { JoinLink } from "@/components/join-link";
 import { PageHeader, SectionHeading } from "@/components/page-header";
 import { joiningNotes, type Person } from "@/content/team";
 import { getOpenRoles, getPeople } from "@/data/team";
@@ -157,12 +157,12 @@ export default async function TeamPage() {
             ))}
           </ul>
           <div className="md:col-span-4 md:text-right">
-            <Link
-              href="/apply"
-              className="bg-primary text-primary-foreground hover:bg-accent tracking-caps inline-block w-full px-5 py-3.5 text-center text-xs uppercase transition-colors md:w-auto"
+            <JoinLink
+              className="bg-primary text-primary-foreground hover:bg-accent inline-block w-full px-5 py-3 text-center text-sm font-medium transition-colors md:w-auto"
+              memberLabel={null}
             >
               Apply to join
-            </Link>
+            </JoinLink>
           </div>
         </div>
       </section>

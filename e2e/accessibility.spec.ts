@@ -61,6 +61,10 @@ const privatePages = [
   { path: "/admin/users", role: "admin" as const },
   { path: "/admin/applications", role: "admin" as const },
   { path: "/apply", role: "user" as const },
+  { path: "/account", role: "user" as const },
+  { path: "/account", role: "member" as const },
+  { path: "/", role: "member" as const },
+  { path: "/admin/users?show=member", role: "admin" as const },
 ];
 
 for (const { path, role } of privatePages) {

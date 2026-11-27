@@ -9,6 +9,8 @@ import type { Role } from "@/lib/roles";
 type AccountMenuProps = {
   name: string;
   email: string;
+  /** Permanent account ID, e.g. CAV00012. */
+  uid: string;
   role: Role;
   /** Admins only: applications waiting for review. */
   pendingApplications?: number;
@@ -28,6 +30,7 @@ function initials(name: string) {
 export function AccountMenu({
   name,
   email,
+  uid,
   role,
   pendingApplications = 0,
   variant,
@@ -61,6 +64,7 @@ export function AccountMenu({
     });
 
   const links = [
+    { href: "/account", label: "Your account" },
     isMember ? { href: "/workspace", label: "Workspace" } : null,
     isMember ? { href: "/workspace/team", label: "Team & ratings" } : null,
     isMember ? { href: "/workspace/datasets", label: "Datasets" } : null,
@@ -83,6 +87,7 @@ export function AccountMenu({
       <div className="border-line mt-6 border-t pt-6">
         <p className="font-medium">{name}</p>
         <p className="text-muted text-sm">{email}</p>
+        {uid ? <p className="text-muted font-mono text-xs">ID {uid}</p> : null}
         <ul className="mt-4 space-y-3">
           {links.map((l) => (
             <li key={l.href}>
@@ -127,6 +132,7 @@ export function AccountMenu({
           <div className="border-line border-b px-2 pt-1 pb-2">
             <p className="truncate font-medium">{name}</p>
             <p className="text-muted truncate text-xs">{email}</p>
+            {uid ? <p className="text-muted mt-0.5 font-mono text-xs">ID {uid}</p> : null}
           </div>
           {links.map((l) => (
             <Link
