@@ -3,12 +3,28 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { APIError, createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
+import { emailOTP } from "better-auth/plugins";
 import { after } from "next/server";
 import { getDb } from "./db";
 import { identifierKind, normalizeUid, normalizeUsername, usernameProblem } from "./identity";
 import { sendAccountCreated } from "./mail/account-created";
+import {
+  RESET_CODE_MINUTES,
+  sendPasswordChanged,
+  sendPasswordResetCode,
+} from "./mail/password-reset";
 import { isAdminEmail } from "./roles";
 import { authUrl, trustedOrigins } from "./urls";
+
+// Email-code endpoints we don't use (sign-in or email change by code).
+const CLOSED_OTP_PATHS = new Set([
+  "/sign-in/email-otp",
+  "/email-otp/send-verification-otp",
+  "/email-otp/verify-email",
+  "/forget-password/email-otp",
+  "/email-otp/request-email-change",
+  "/email-otp/change-email",
+]);
 
 function createAuth() {
   const google =
@@ -40,6 +56,11 @@ function createAuth() {
       minPasswordLength: 8,
       maxPasswordLength: 72,
       autoSignIn: true,
+      // Like Ru'sAuth: a reset signs out every device and sends a notice.
+      revokeSessionsOnPasswordReset: true,
+      onPasswordReset: async ({ user }) => {
+        await sendPasswordChanged({ name: user.name, email: user.email });
+      },
     },
     socialProviders: google,
     user: {
@@ -59,6 +80,15 @@ function createAuth() {
       // "invalid email or password" as a wrong password and reveals nothing.
       before: createAuthMiddleware(async (ctx) => {
         const body = (ctx.body ?? {}) as Record<string, unknown>;
+
+        // Only the password-reset parts of the email-code plugin are used.
+        // Signing in or verifying by emailed code is switched off.
+        if (CLOSED_OTP_PATHS.has(ctx.path)) {
+          throw new APIError("NOT_FOUND", { message: "Not found." });
+        }
+        if (ctx.path === "/email-otp/check-verification-otp" && body.type !== "forget-password") {
+          throw new APIError("BAD_REQUEST", { message: "Not supported." });
+        }
 
         // Sign-up: check the username (format and free) before the account exists.
         if (ctx.path === "/sign-up/email") {
@@ -128,7 +158,21 @@ function createAuth() {
         },
       },
     },
-    plugins: [nextCookies()],
+    plugins: [
+      // Forgot password: a 6-digit code by email, then a new password
+      // (Ru'sAuth's flow). Codes are stored hashed, expire, and allow 5 tries.
+      emailOTP({
+        otpLength: 6,
+        expiresIn: RESET_CODE_MINUTES * 60,
+        allowedAttempts: 5,
+        storeOTP: "hashed",
+        disableSignUp: true,
+        async sendVerificationOTP({ email, otp, type }) {
+          if (type === "forget-password") await sendPasswordResetCode(email, otp);
+        },
+      }),
+      nextCookies(),
+    ],
   });
 }
 
