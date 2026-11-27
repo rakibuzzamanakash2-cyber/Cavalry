@@ -67,13 +67,13 @@ async function ApplyContent() {
         </p>
         <div className="mt-5 flex flex-col gap-3 sm:flex-row">
           <Link
-            href="/sign-up?next=/apply"
+            href="/registration?next=/apply"
             className="bg-primary text-primary-foreground hover:bg-accent tracking-caps px-5 py-3.5 text-center text-xs uppercase transition-colors"
           >
             Create an account
           </Link>
           <Link
-            href="/sign-in?next=/apply"
+            href="/login?next=/apply"
             className="border-primary text-primary hover:border-accent hover:text-accent tracking-caps border px-5 py-3.5 text-center text-xs uppercase transition-colors"
           >
             Sign in

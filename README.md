@@ -45,7 +45,8 @@ npm run db:seed      # copies src/content into the database (safe to re-run)
 1. Set `BETTER_AUTH_SECRET` (32+ random characters) and `BETTER_AUTH_URL` in `.env.local`.
 2. Put the founders' emails in `ADMIN_EMAILS` (comma-separated).
 3. Optional, Google sign-in: create an OAuth client in Google Cloud Console with the redirect URI `<site URL>/api/auth/callback/google`, then set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
-4. Sign up on the site. Founders who sign in with Google become admins automatically; otherwise run `npm run user:role -- you@example.com admin`.
+4. Optional, email: set `EMAIL_USER` (a Gmail address) and `EMAIL_PASS` (a Gmail App Password) to send the account-created confirmation and newsletter emails.
+5. Sign up on the site. Founders who sign in with Google become admins automatically; otherwise run `npm run user:role -- you@example.com admin`.
 
 | Role     | Sees                                                         |
 | -------- | ------------------------------------------------------------ |
@@ -85,7 +86,7 @@ Add `DATABASE_URL` (pooled), `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` and `NEXT_P
 ## Deploying to Vercel
 
 1. Import the GitHub repo in Vercel (framework: Next.js). `vercel.json` sets the Singapore region and the build command.
-2. Add environment variables (Settings → Environment Variables), for **Production**: `DATABASE_URL` (Neon pooled), `DIRECT_URL` (Neon direct), `BETTER_AUTH_SECRET` (32+ characters), `ADMIN_EMAILS`, and optionally `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` and `NEXT_PUBLIC_CONTACT_EMAIL`. For **Preview**, use the same keys but point the database at a separate Neon branch.
+2. Add environment variables (Settings → Environment Variables), for **Production**: `DATABASE_URL` (Neon pooled), `DIRECT_URL` (Neon direct), `BETTER_AUTH_SECRET` (32+ characters), `ADMIN_EMAILS`, and optionally `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`, `EMAIL_USER` / `EMAIL_PASS` and `NEXT_PUBLIC_CONTACT_EMAIL`. For **Preview**, use the same keys but point the database at a separate Neon branch.
 3. Deploy. Builds apply migrations automatically, production to the live database and previews to the preview database.
 4. After the first deploy, run `npm run db:seed` once against production from your machine if the database is new, and add `<your URL>/api/auth/callback/google` to the Google OAuth client.
 5. With a custom domain, set `NEXT_PUBLIC_SITE_URL` (and `BETTER_AUTH_URL`) to it and redeploy.
@@ -110,7 +111,7 @@ docs/decisions/   architecture decision records
 
 The logo files are `public/brand/cavalry-logo.svg` (with tagline) and `public/brand/cavalry-wordmark.svg` (without). `src/components/logo.tsx` draws them as a CSS mask over the text colour, so they recolour with `text-*` classes and both themes. Use `<Logo withTagline={false} />` where space is tight.
 
-Palette — deep teal and ochre on paper, with warm gray and slate blue (ADR 0013), in light and dark themes. Type — Source Serif 4 for headings, Inter for text (ADR 0014). Every account has a permanent ID (CAV00012) and can sign in with its email, username or ID (ADR 0015). Published work has its own page with BibTeX, RIS and Google Scholar tags (ADR 0017). The theme follows the visitor's system setting until they pick one with the toggle (saved in `localStorage`). Use the semantic Tailwind classes, never raw hex values; both themes are defined only in `src/app/globals.css`.
+Palette — deep teal and ochre on paper, with warm gray and slate blue (ADR 0013), in light and dark themes. Type — Source Serif 4 for headings, Inter for text (ADR 0014). Every account has a permanent ID (CAV00012) and can sign in with its email, username or ID (ADR 0015). Published work has its own page with BibTeX, RIS and Google Scholar tags (ADR 0017). Login and sign-up follow Ru'sAuth; there is a public data catalogue and a newsletter (ADR 0018). The theme follows the visitor's system setting until they pick one with the toggle (saved in `localStorage`). Use the semantic Tailwind classes, never raw hex values; both themes are defined only in `src/app/globals.css`.
 
 | Token           | Light     | Dark      | Use                     |
 | --------------- | --------- | --------- | ----------------------- |

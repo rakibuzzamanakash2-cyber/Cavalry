@@ -20,8 +20,10 @@ export const PUBLIC_PAGES = [
   "/team/rubayet",
   "/news",
   "/contact",
+  "/data",
+  "/newsletter",
 ];
-export const AUTH_PAGES = ["/sign-in", "/sign-up", "/members-only", "/apply"];
+export const AUTH_PAGES = ["/login", "/registration", "/members-only", "/apply"];
 
 /** Text that must never appear on a public page while the flagship is in progress. */
 export const CONFIDENTIAL =
@@ -125,8 +127,34 @@ export async function addToProject(
   await page.getByRole("status").filter({ hasText: "Member added." }).waitFor();
 }
 
+/** A username nobody else has, for sign-up forms. */
+export function uniqueUsername(prefix = "user") {
+  return `${prefix}_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+}
+
 /** An account's permanent ID (e.g. CAV00012), read from the database. */
 export async function getUid(email: string): Promise<string> {
   const r = await db().query(`SELECT uid FROM "user" WHERE email = $1`, [email]);
   return r.rows[0].uid as string;
+}
+
+/** Emails the test server "sent" to `to` (written to .mail-outbox), newest last. */
+export async function mailTo(
+  to: string,
+  { wait = 5000 }: { wait?: number } = {},
+): Promise<{ to: string; subject: string; text: string; html: string }[]> {
+  const fs = await import("node:fs/promises");
+  const path = await import("node:path");
+  const dir = path.resolve(".mail-outbox");
+  const deadline = Date.now() + wait;
+  for (;;) {
+    const files = await fs.readdir(dir).catch(() => [] as string[]);
+    const mails = [];
+    for (const f of files.sort()) {
+      const m = JSON.parse(await fs.readFile(path.join(dir, f), "utf8").catch(() => "{}"));
+      if (m.to === to) mails.push(m);
+    }
+    if (mails.length > 0 || Date.now() > deadline) return mails;
+    await new Promise((r) => setTimeout(r, 200));
+  }
 }

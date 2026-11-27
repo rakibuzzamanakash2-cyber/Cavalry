@@ -18,10 +18,10 @@ test.describe("account IDs and usernames", () => {
 
     for (const identifier of [uid.toLowerCase(), `@${username}`, email]) {
       await context.clearCookies();
-      await page.goto("/sign-in?next=/account");
+      await page.goto("/login?next=/account");
       await page.getByLabel("Email, username or ID").fill(identifier);
-      await page.getByLabel("Password").fill(PASSWORD);
-      await page.getByRole("button", { name: "Sign in" }).click();
+      await page.getByLabel("Password", { exact: true }).fill(PASSWORD);
+      await page.getByRole("button", { name: "Login", exact: true }).click();
       await page.waitForURL((u) => u.pathname === "/account");
       await expect(page.getByTestId("account-uid")).toHaveText(uid);
     }
@@ -29,10 +29,10 @@ test.describe("account IDs and usernames", () => {
   });
 
   test("an unknown username fails the same way as a wrong password", async ({ page }) => {
-    await page.goto("/sign-in");
+    await page.goto("/login");
     await page.getByLabel("Email, username or ID").fill("nobody_by_this_name");
-    await page.getByLabel("Password").fill(PASSWORD);
-    await page.getByRole("button", { name: "Sign in" }).click();
+    await page.getByLabel("Password", { exact: true }).fill(PASSWORD);
+    await page.getByRole("button", { name: "Login", exact: true }).click();
     await expect(
       page.getByRole("alert").filter({ hasText: /don.t match an account/ }),
     ).toBeVisible();

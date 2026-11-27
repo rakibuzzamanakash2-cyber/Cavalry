@@ -1,6 +1,6 @@
 "use server";
 
-import { refresh } from "next/cache";
+import { refresh, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getDb } from "@/lib/db";
@@ -94,6 +94,7 @@ export async function updateDataset(
   }
 
   await getDb().dataset.update({ where: { id }, data: { ...data, projectId: projectId || null } });
+  updateTag("datasets-public");
   redirect(`/workspace/datasets#dataset-${id}`);
 }
 
@@ -102,6 +103,7 @@ export async function deleteDataset(formData: FormData): Promise<void> {
   const user = await requireMember("/workspace/datasets");
   if (!(await editable(id, user))) return;
   await getDb().dataset.delete({ where: { id } });
+  updateTag("datasets-public");
   refresh();
   redirect("/workspace/datasets");
 }

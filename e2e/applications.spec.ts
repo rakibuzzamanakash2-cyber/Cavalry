@@ -22,7 +22,7 @@ test("visitors are asked to sign in before applying", async ({ page }) => {
   await expect(page.getByText("Sign in to apply")).toBeVisible();
   await expect(page.getByRole("link", { name: "Create an account" })).toHaveAttribute(
     "href",
-    "/sign-up?next=/apply",
+    "/registration?next=/apply",
   );
 });
 

@@ -24,7 +24,7 @@ export async function AccountArea() {
 export function SignInLink() {
   return (
     <Link
-      href="/sign-in"
+      href="/login"
       className="border-primary text-primary hover:bg-sand border px-3 py-1.5 text-sm font-medium transition-colors"
     >
       Sign in

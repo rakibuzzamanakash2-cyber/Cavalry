@@ -1,3 +1,4 @@
+import path from "node:path";
 import { defineConfig, devices } from "@playwright/test";
 
 const PORT = 3100;
@@ -22,5 +23,7 @@ export default defineConfig({
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,
+    // Emails are written here instead of being sent (src/lib/mail/transporter.ts).
+    env: { MAIL_OUTBOX_DIR: path.resolve(".mail-outbox") },
   },
 });

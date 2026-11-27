@@ -49,3 +49,6 @@ next-env.d.ts
 
 # Prisma generated client
 /src/generated/
+
+# Emails written by the test server
+.mail-outbox/

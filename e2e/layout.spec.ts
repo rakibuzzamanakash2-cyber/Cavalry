@@ -24,8 +24,8 @@ const innerPages = [
   "/team",
   "/news",
   "/contact",
-  "/sign-in",
-  "/sign-up",
+  "/login",
+  "/registration",
   "/members-only",
 ];
 
