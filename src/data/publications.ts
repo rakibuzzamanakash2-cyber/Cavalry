@@ -47,10 +47,17 @@ async function listOutputs(scope: "public" | "all"): Promise<Output[]> {
       r.project && (scope === "all" || r.project.status === "completed")
         ? r.project.slug
         : undefined,
+    doi: r.doi ?? undefined,
+    pdfUrl: r.pdfUrl ?? undefined,
+    codeUrl: r.codeUrl ?? undefined,
+    dataUrl: r.dataUrl ?? undefined,
+    licence: r.licence ?? undefined,
     links: [
       r.url ? { label: "Read", href: r.url } : null,
       r.pdfUrl ? { label: "PDF", href: r.pdfUrl } : null,
       r.doi ? { label: "DOI", href: `https://doi.org/${r.doi}` } : null,
+      r.codeUrl ? { label: "Code", href: r.codeUrl } : null,
+      r.dataUrl ? { label: "Data", href: r.dataUrl } : null,
     ].filter((l): l is { label: string; href: string } => l !== null),
   }));
 }
@@ -58,6 +65,11 @@ async function listOutputs(scope: "public" | "all"): Promise<Output[]> {
 /** Published outputs, for everyone. */
 export function getPublicOutputs() {
   return listOutputs("public");
+}
+
+/** One published output, or undefined. */
+export async function getPublicOutput(slug: string): Promise<Output | undefined> {
+  return (await listOutputs("public")).find((o) => o.slug === slug);
 }
 
 /** All outputs, including work in preparation. Members only. */

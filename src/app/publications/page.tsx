@@ -26,7 +26,18 @@ function OutputRow({
         <span className="text-accent-strong tracking-caps text-xs uppercase">{o.status}</span>
       </div>
       <div className="md:col-span-9">
-        <h3 className="text-xl leading-snug">{o.title}</h3>
+        <h3 className="text-xl leading-snug">
+          {o.status === "Published" ? (
+            <Link
+              href={`/publications/${o.slug}`}
+              className="hover:text-accent-strong transition-colors"
+            >
+              {o.title}
+            </Link>
+          ) : (
+            o.title
+          )}
+        </h3>
         <p className="text-muted mt-1 text-sm">
           <Byline authors={o.authors} people={people} />
           {o.year ? ` · ${o.year}` : ""}
@@ -41,7 +52,7 @@ function OutputRow({
                 href={l.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary hover:text-accent tracking-caps text-xs uppercase transition-colors"
+                className="text-primary hover:text-accent text-sm font-medium transition-colors"
               >
                 {l.label}
                 <span className="sr-only">: {o.title} (opens in a new tab)</span>{" "}

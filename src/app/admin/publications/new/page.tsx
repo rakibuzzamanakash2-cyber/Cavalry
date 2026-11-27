@@ -45,6 +45,9 @@ async function Form() {
         url: "",
         pdfUrl: "",
         doi: "",
+        codeUrl: "",
+        dataUrl: "",
+        licence: "",
         projectId: "",
       }}
     />

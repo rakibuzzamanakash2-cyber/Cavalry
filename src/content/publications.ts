@@ -17,6 +17,12 @@ export type Output = {
   abstract: string;
   programmeSlug?: string;
   links?: { label: string; href: string }[];
+  doi?: string;
+  pdfUrl?: string;
+  codeUrl?: string;
+  dataUrl?: string;
+  /** Key into LICENCES (src/lib/citation.ts). */
+  licence?: string;
 };
 
 export const outputs: Output[] = [

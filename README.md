@@ -110,7 +110,7 @@ docs/decisions/   architecture decision records
 
 The logo files are `public/brand/cavalry-logo.svg` (with tagline) and `public/brand/cavalry-wordmark.svg` (without). `src/components/logo.tsx` draws them as a CSS mask over the text colour, so they recolour with `text-*` classes and both themes. Use `<Logo withTagline={false} />` where space is tight.
 
-Palette — deep teal and ochre on paper, with warm gray and slate blue (ADR 0013), in light and dark themes. Type — Source Serif 4 for headings, Inter for text (ADR 0014). Every account has a permanent ID (CAV00012) and can sign in with its email, username or ID (ADR 0015). The theme follows the visitor's system setting until they pick one with the toggle (saved in `localStorage`). Use the semantic Tailwind classes, never raw hex values; both themes are defined only in `src/app/globals.css`.
+Palette — deep teal and ochre on paper, with warm gray and slate blue (ADR 0013), in light and dark themes. Type — Source Serif 4 for headings, Inter for text (ADR 0014). Every account has a permanent ID (CAV00012) and can sign in with its email, username or ID (ADR 0015). Published work has its own page with BibTeX, RIS and Google Scholar tags (ADR 0017). The theme follows the visitor's system setting until they pick one with the toggle (saved in `localStorage`). Use the semantic Tailwind classes, never raw hex values; both themes are defined only in `src/app/globals.css`.
 
 | Token           | Light     | Dark      | Use                     |
 | --------------- | --------- | --------- | ----------------------- |

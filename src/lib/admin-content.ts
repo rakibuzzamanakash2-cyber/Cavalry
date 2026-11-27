@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { LICENCES } from "./citation";
 
 const text = (label: string, max: number, min = 1) =>
   z
@@ -78,6 +79,12 @@ export const publicationSchema = z.object({
   abstract: text("Abstract", 3000, 20),
   url: optionalUrl("Link"),
   pdfUrl: optionalUrl("PDF link"),
+  codeUrl: optionalUrl("Code link"),
+  dataUrl: optionalUrl("Data link"),
+  licence: z
+    .string()
+    .trim()
+    .refine((v) => v === "" || v in LICENCES, "Choose a licence from the list."),
   doi: z
     .string()
     .trim()

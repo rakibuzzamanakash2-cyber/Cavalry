@@ -21,6 +21,9 @@ const KEYS = [
   "url",
   "pdfUrl",
   "doi",
+  "codeUrl",
+  "dataUrl",
+  "licence",
   "projectId",
 ] as const;
 
@@ -35,6 +38,9 @@ type PublicationData = {
   url: string | null;
   pdfUrl: string | null;
   doi: string | null;
+  codeUrl: string | null;
+  dataUrl: string | null;
+  licence: string | null;
   projectId: string | null;
 };
 
@@ -81,6 +87,9 @@ async function parse(formData: FormData): Promise<Parsed> {
       url: d.url || null,
       pdfUrl: d.pdfUrl || null,
       doi: d.doi || null,
+      codeUrl: d.codeUrl || null,
+      dataUrl: d.dataUrl || null,
+      licence: d.licence || null,
       projectId: d.projectId || null,
     },
   };

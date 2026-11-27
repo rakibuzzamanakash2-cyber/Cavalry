@@ -115,7 +115,14 @@ export default async function PersonPage({ params }: PageProps<"/team/[slug]">) 
                   {o.type}
                   {o.year ? ` · ${o.year}` : ""}
                 </p>
-                <h3 className="mt-1 text-lg leading-snug">{o.title}</h3>
+                <h3 className="mt-1 text-lg leading-snug">
+                  <Link
+                    href={`/publications/${o.slug}`}
+                    className="hover:text-accent-strong transition-colors"
+                  >
+                    {o.title}
+                  </Link>
+                </h3>
                 <p className="text-muted mt-1 text-sm">
                   <Byline authors={o.authors} people={people} />
                   {o.venue ? ` · ${o.venue}` : ""}
