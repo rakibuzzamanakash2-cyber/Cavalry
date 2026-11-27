@@ -1,8 +1,8 @@
 import { expect, type Browser, type BrowserContext } from "@playwright/test";
 import { fillApplication, signedInContext, test, visitorHeaders } from "./helpers";
 
-// Every access level against the main areas of the site (ADR 0019). Mirrors
-// the "who can see what" table in src/content/access.ts.
+// Every access level against the main areas of the site (ADR 0019). The map
+// of who can see what is kept here, in the tests, not on the site.
 
 type Level = "visitor" | "user" | "member" | "admin";
 const LEVELS: Level[] = ["visitor", "user", "member", "admin"];
@@ -62,9 +62,8 @@ test.describe("access levels", () => {
         await page.goto("/account");
       }
       await expect(page.getByTestId("access-level")).toHaveText(LEVEL_NAME[level]);
-      await expect(
-        page.getByRole("table", { name: "Who can see what on the CAVALRY site" }),
-      ).toBeVisible();
+      // …but not shown the map of the whole site.
+      await expect(page.getByRole("table")).toHaveCount(0);
       await context.close();
     });
   }
@@ -98,12 +97,10 @@ test.describe("access levels", () => {
     await context.close();
   });
 
-  test("the public table on How we work lists all four levels", async ({ page }) => {
+  test("the site doesn't publish a map of who can see what", async ({ page }) => {
     await page.goto("/how-we-work");
-    const table = page.getByRole("table", { name: "Who can see what on the CAVALRY site" });
-    for (const name of Object.values(LEVEL_NAME)) {
-      await expect(table.getByRole("columnheader", { name })).toBeVisible();
-    }
-    await expect(table.getByRole("rowheader", { name: /Project details/ })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Evidence you can check" })).toBeVisible();
+    await expect(page.getByText("Who can see what")).toHaveCount(0);
+    await expect(page.getByRole("table")).toHaveCount(0);
   });
 });
