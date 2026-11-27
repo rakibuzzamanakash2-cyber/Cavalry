@@ -78,12 +78,17 @@ export function LoginClient({ next, googleEnabled }: { next: string; googleEnabl
           hint="Your ID looks like CAV00012. Find it on your account page."
           required
         />
-        <PasswordField
-          name="password"
-          placeholder="Enter password"
-          autoComplete="current-password"
-          required
-        />
+        <div className="flex flex-col gap-2">
+          <PasswordField
+            name="password"
+            placeholder="Enter password"
+            autoComplete="current-password"
+            required
+          />
+          <Link href="/forgot-password" className={`mt-2 self-center ${linkClass}`}>
+            Forgot password?
+          </Link>
+        </div>
       </div>
 
       <button type="submit" disabled={isPending} className={primaryButtonClass}>

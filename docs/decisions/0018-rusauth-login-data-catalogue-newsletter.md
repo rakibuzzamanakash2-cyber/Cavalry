@@ -12,7 +12,7 @@ Rubayet's [Ru'sAuth](https://github.com/rubayet-off/Ru-sAuth) is a complete auth
 
 **Login and sign-up.** Ru'sAuth's login and sign-up code is ported: `AuthCard`, `IconField`, `PasswordField` (with show/hide), `GoogleButton`, `OrDivider`, its toasts (Zustand) and validation rules (8–72 characters for passwords), its `@mynaui/icons-react` icons and Google logo, and its pages at `/login` and `/registration` (old `/sign-in` and `/sign-up` addresses redirect, keeping `?next=`). Colours use our tokens, and every field has a screen-reader label.
 
-Better Auth stays the engine underneath: sessions, roles, invites, Google OAuth, rate limits and the ID/username sign-in hook keep working, and accounts don't change. Ru'sAuth's other features (email codes, password reset, sessions list, single admin, photos) are not part of this change. Admin remains a role, so several people can be admins.
+Better Auth stays the engine underneath: sessions, roles, invites, Google OAuth, rate limits and the ID/username sign-in hook keep working, and accounts don't change. Ru'sAuth's other features (sessions list, single admin, photos) are not part of this change. Admin remains a role, so several people can be admins.
 
 Sign-up asks for full name, username, email and password. The username is checked on the server before the account is created and can't be changed through the auth API afterwards (only on `/account`).
 
@@ -26,3 +26,7 @@ Sign-up asks for full name, username, email and password. The username is checke
 
 - Production needs `EMAIL_USER` and `EMAIL_PASS` for emails to go out.
 - Tests write emails to `.mail-outbox/` (`MAIL_OUTBOX_DIR`) and read them back.
+
+## Update: forgot password
+
+Ru'sAuth's password reset is ported too: `/forgot-password` (email), `/otp-verification` (6-digit code) and `/new-password`, linked from the login page. Underneath it is Better Auth's email-OTP plugin, limited to password reset: codes are stored hashed, expire after 10 minutes, allow 5 tries and are rate-limited; the reply is the same whether or not the email has an account. A reset signs out every device and emails a "your password was changed" notice. Signing in or verifying by emailed code is switched off. A Google-only account that resets gets a password as well.
