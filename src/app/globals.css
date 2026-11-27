@@ -82,11 +82,11 @@
 
 @theme {
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
-  /* Display serif for big headings (h1, h2); a sturdier text serif for
-     smaller headings, where Cormorant's thin strokes get hard to read. */
-  --font-serif: "Cormorant Garamond Variable", ui-serif, Georgia, serif;
-  --font-text-serif: "Source Serif 4 Variable", ui-serif, Georgia, serif;
-  --tracking-caps: 0.28em;
+  /* Headlines: Source Serif 4 with optical sizes (finer at display sizes,
+     sturdier when small). Interface and body text: Inter. (ADR 0014) */
+  --font-serif: "Source Serif 4 Variable", ui-serif, Georgia, serif;
+  /* Small uppercase labels only (eyebrows, metadata). */
+  --tracking-caps: 0.12em;
 }
 
 @layer base {
@@ -108,14 +108,20 @@
   h2,
   h3 {
     font-family: var(--font-serif);
-    font-weight: 600;
+    font-weight: 560;
+    font-optical-sizing: auto;
+    letter-spacing: -0.012em;
     color: var(--color-primary);
     text-wrap: balance;
   }
 
   h3 {
-    font-family: var(--font-text-serif);
-    letter-spacing: -0.01em;
+    font-weight: 600;
+  }
+
+  /* Comfortable long-form reading: used on articles and news posts. */
+  .prose-measure {
+    max-width: 68ch;
   }
 
   a {

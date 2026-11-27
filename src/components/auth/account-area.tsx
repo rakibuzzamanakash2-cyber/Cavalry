@@ -24,7 +24,7 @@ export function SignInLink() {
   return (
     <Link
       href="/sign-in"
-      className="border-primary text-primary hover:border-accent hover:text-accent tracking-caps border px-3 py-1.5 text-xs uppercase transition-colors"
+      className="border-primary text-primary hover:bg-sand border px-3 py-1.5 text-sm font-medium transition-colors"
     >
       Sign in
     </Link>

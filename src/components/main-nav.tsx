@@ -68,7 +68,7 @@ function MainNavView({ pathname }: { pathname: string | null }) {
   return (
     <>
       <nav aria-label="Main" className="hidden lg:block">
-        <ul className="tracking-caps flex items-center gap-x-1 text-xs uppercase">
+        <ul className="flex items-center gap-x-1 text-[0.9375rem]">
           {site.nav.map((item) => {
             const active = isActive(pathname, item.href);
             return (
@@ -76,8 +76,8 @@ function MainNavView({ pathname }: { pathname: string | null }) {
                 <Link
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={`hover:text-accent block px-2 py-2 transition-colors ${
-                    active ? "text-accent-strong" : "text-ink"
+                  className={`hover:text-primary decoration-accent block px-2.5 py-2 decoration-2 underline-offset-[0.6em] transition-colors ${
+                    active ? "text-primary font-medium underline" : "text-ink"
                   }`}
                 >
                   {item.label}

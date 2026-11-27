@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/inter";
-import "@fontsource-variable/cormorant-garamond";
-import "@fontsource-variable/source-serif-4";
+import "@fontsource-variable/source-serif-4/opsz.css";
+import "@fontsource-variable/source-serif-4/opsz-italic.css";
 import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";

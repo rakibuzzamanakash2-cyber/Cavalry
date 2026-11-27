@@ -17,11 +17,11 @@ export const site = {
     { label: "GitHub", href: process.env.NEXT_PUBLIC_GITHUB_URL ?? "" },
   ].filter((l) => l.href),
   nav: [
-    { href: "/about", label: "About" },
     { href: "/research", label: "Research" },
     { href: "/publications", label: "Publications" },
-    { href: "/team", label: "Team" },
     { href: "/news", label: "News" },
+    { href: "/team", label: "Team" },
+    { href: "/about", label: "About" },
     { href: "/contact", label: "Contact" },
   ],
 };
