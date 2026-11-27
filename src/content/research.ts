@@ -2,33 +2,103 @@
 // Programmes are seeded into the database (npm run db:seed) and read through
 // src/data; this file is also the fallback when no database is configured.
 
-/** Research areas. `tone` is the area's fixed colour, reused in charts. */
+/**
+ * Research areas, each with its own topic page at /research/areas/<slug>.
+ * `tone` is the area's fixed colour, reused in charts. Keep this copy general:
+ * research in progress is confidential and must not be described here.
+ */
 export const researchAreas = [
   {
+    slug: "public-finance",
     title: "Public finance",
     tone: "chart-1",
     detail: "How governments allocate and reallocate spending",
     long: "How governments decide what to spend on, and how those priorities shift when budgets come under pressure.",
+    intro: [
+      "Budgets are where a government's priorities become concrete. We study how spending is divided between sectors such as health, education, social protection and infrastructure, and how that division changes over time.",
+      "We are most interested in moments of pressure: when revenue falls, costs rise suddenly or new obligations arrive. Those moments show which commitments a government protects and which it lets go.",
+    ],
+    questions: [
+      "Which kinds of spending are protected when budgets tighten, and which are cut first?",
+      "How long do changes in spending priorities last after a shock has passed?",
+      "Do countries with more fiscal space respond differently from those with less?",
+    ],
+    methods: [
+      "Harmonised cross-country spending data, with every source and definition documented.",
+      "Panel methods that compare a country with itself before and after an event.",
+      "Results reported as shares of the budget as well as levels, so priorities stay visible.",
+    ],
   },
   {
+    slug: "climate-and-disaster-risk",
     title: "Climate & disaster risk",
     tone: "chart-2",
     detail: "Physical hazards and their economic aftermath",
     long: "Cyclones, floods and droughts measured by their physical intensity, and what follows for economies and public services.",
+    intro: [
+      "Disasters are often measured by the damage they cause, but damage depends on how prepared a place was. We prefer to start from the physical hazard itself: wind speed, rainfall, flood extent or drought severity.",
+      "Measuring the hazard separately from its impact lets us ask what a storm or flood of a given strength does to an economy, and why the same event hurts some places far more than others.",
+    ],
+    questions: [
+      "What follows, economically and fiscally, from a hazard of a given physical intensity?",
+      "Why do similar events lead to very different losses in different places?",
+      "How do public services and budgets adjust in the years after a disaster?",
+    ],
+    methods: [
+      "Hazard measures built from physical records rather than reported losses.",
+      "Careful matching of events to the places and years they affected.",
+      "Checks that results hold when thresholds and definitions change.",
+    ],
   },
   {
+    slug: "causal-inference",
     title: "Causal inference",
     tone: "chart-3",
     detail: "Credible estimates from observational data",
     long: "Research designs that separate cause from coincidence when experiments are impossible, with pre-trend and placebo checks.",
+    intro: [
+      "Most policy questions cannot be answered with an experiment. Nobody can assign disasters, recessions or reforms at random, so the evidence has to come from what actually happened.",
+      "Our work in this area is about designs that make such evidence credible: being explicit about what is compared with what, testing the assumptions that comparison relies on, and saying plainly when they fail.",
+    ],
+    questions: [
+      "What is the right comparison for a country or region that experienced an event?",
+      "Were treated and untreated units already on different paths before the event?",
+      "Do the results survive placebo tests and alternative specifications?",
+    ],
+    methods: [
+      "Estimands and identifying assumptions written into the protocol before analysis.",
+      "Event-study and difference-in-differences designs with pre-trend checks.",
+      "Placebo tests, leave-one-out checks and honest reporting of uncertainty.",
+    ],
   },
   {
+    slug: "machine-learning-for-policy",
     title: "Machine learning for policy",
     tone: "chart-4",
     detail: "Forecasts with honest uncertainty",
     long: "Predictive models judged against simple baselines and reported with calibrated intervals, kept distinct from causal claims.",
+    intro: [
+      "Machine learning is useful for prediction: anticipating needs, spotting risks early and filling gaps in data. It is not, by itself, a way to learn what causes what, and we keep the two kinds of claim apart.",
+      "A forecast is only useful if people know how far to trust it. We judge models against simple baselines, test them on data they have not seen and report how often their intervals contain the truth.",
+    ],
+    questions: [
+      "Does a complex model actually beat a simple baseline on data it has not seen?",
+      "Are the model's uncertainty intervals well calibrated?",
+      "Which forecasts are reliable enough to support real decisions?",
+    ],
+    methods: [
+      "Out-of-sample and time-respecting evaluation, never tuning on the test set.",
+      "Comparison with simple, transparent baselines.",
+      "Calibrated prediction intervals and clear statements of where a model should not be used.",
+    ],
   },
 ] as const;
+
+export type ResearchArea = (typeof researchAreas)[number];
+
+export function getResearchArea(slug: string): ResearchArea | undefined {
+  return researchAreas.find((a) => a.slug === slug);
+}
 
 /** Fields people can apply to work in: the research areas, plus engineering and other. */
 export const applicationFields = [
@@ -44,6 +114,47 @@ export const programmeProcess = [
   { name: "Dataset", detail: "A versioned dataset that rebuilds from raw data with one command." },
   { name: "Analysis", detail: "Estimates, robustness and uncertainty, all generated by code." },
   { name: "Publication", detail: "Paper, open code and a replication package." },
+] as const;
+
+/** What has to exist before a programme moves past each stage (How we work page). */
+export const stageGates = [
+  "A written protocol with the question, estimands and analysis plan, reviewed by the team.",
+  "A coverage report for every data source, and a decision on scope based on it.",
+  "A versioned dataset that rebuilds from raw data, with automated checks passing.",
+  "Main results, robustness checks and uncertainty, all produced by code in the repository.",
+  "A paper, the code and a replication package that someone outside the team can run.",
+] as const;
+
+/** Longer explanations of the principles (How we work page). */
+export const principleDetails = [
+  "Every programme starts with a written protocol: the question, what exactly we will estimate, the data we expect to use and how we will analyse it. Writing it down first stops the analysis drifting towards whatever looks interesting.",
+  "Code lives in version control from day one, and every number in a paper is produced by that code from raw data. When we publish, we share the code and data so anyone can check the work.",
+  "We report intervals, not just point estimates, run robustness checks and state the limitations of each result. A finding that only holds under one specification is reported that way.",
+  "When a finding is validated, we look for ways to turn it into something people can use, such as a dataset, a dashboard or a tool, and we build it with the same care as the research.",
+] as const;
+
+/** Working standards (How we work page). */
+export const standards = [
+  {
+    title: "Data",
+    detail:
+      "Every source is recorded with its version, licence and coverage. Changes to data are made by code, never by hand, so the dataset can always be rebuilt.",
+  },
+  {
+    title: "Code",
+    detail:
+      "One shared repository per programme, reviewed changes and automated checks. Results that cannot be regenerated from the repository are not reported.",
+  },
+  {
+    title: "Causal and predictive claims",
+    detail:
+      "We say clearly whether a result is a causal estimate or a prediction. Forecasts are never presented as evidence of cause and effect.",
+  },
+  {
+    title: "Review",
+    detail:
+      "Each stage ends with a review by the team against its gate. Moving on depends on the output existing and holding up, not on a date arriving.",
+  },
 ] as const;
 
 export const principles = [

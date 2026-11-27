@@ -126,7 +126,14 @@ export default async function HomePage() {
             {researchAreas.map((area) => (
               <li key={area.title} className="flex flex-col">
                 <span aria-hidden className={`block h-1 w-12 ${toneBg[area.tone]}`} />
-                <h3 className="mt-4 text-xl leading-snug">{area.title}</h3>
+                <h3 className="mt-4 text-xl leading-snug">
+                  <Link
+                    href={`/research/areas/${area.slug}`}
+                    className="hover:text-accent-strong transition-colors"
+                  >
+                    {area.title}
+                  </Link>
+                </h3>
                 <p className="text-muted mt-2 leading-relaxed">{area.long}</p>
               </li>
             ))}
@@ -150,8 +157,8 @@ export default async function HomePage() {
               not when a date arrives.
             </p>
             <p className="mt-6">
-              <Link href="/research#process" className={textLink}>
-                How a programme runs →
+              <Link href="/how-we-work" className={textLink}>
+                How we work →
               </Link>
             </p>
           </div>

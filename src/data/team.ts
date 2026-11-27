@@ -28,6 +28,11 @@ export async function getPeople(): Promise<Person[]> {
   }));
 }
 
+/** One active person's public profile, or undefined. */
+export async function getPerson(slug: string): Promise<Person | undefined> {
+  return (await getPeople()).find((p) => p.slug === slug);
+}
+
 export async function getOpenRoles(): Promise<OpenRole[]> {
   "use cache";
   cacheLife("hours");

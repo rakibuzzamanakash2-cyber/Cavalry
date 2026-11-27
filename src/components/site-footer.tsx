@@ -21,7 +21,7 @@ export function SiteFooter() {
           <ul className="mt-3 space-y-2">
             {researchAreas.map((a) => (
               <li key={a.title}>
-                <Link href="/research#areas" className={link}>
+                <Link href={`/research/areas/${a.slug}`} className={link}>
                   {a.title}
                 </Link>
               </li>
@@ -33,6 +33,7 @@ export function SiteFooter() {
           <ul className="mt-3 space-y-2">
             {[
               { href: "/about", label: "About" },
+              { href: "/how-we-work", label: "How we work" },
               { href: "/team", label: "Team" },
               { href: "/publications", label: "Publications" },
               { href: "/news", label: "News" },

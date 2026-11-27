@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Byline } from "@/components/byline";
 import { PageHeader, SectionHeading } from "@/components/page-header";
 import { outputKinds, type Output } from "@/content/publications";
 import { getPublicOutputs } from "@/data/publications";
+import { getPeople } from "@/data/team";
 
 export const metadata: Metadata = {
   title: "Publications",
@@ -10,7 +12,13 @@ export const metadata: Metadata = {
     "Papers, datasets, code and briefs from CAVALRY research, with the honest status of each.",
 };
 
-function OutputRow({ output: o }: { output: Output }) {
+function OutputRow({
+  output: o,
+  people,
+}: {
+  output: Output;
+  people: { name: string; slug: string }[];
+}) {
   return (
     <li className="grid gap-3 py-5 md:grid-cols-12 md:gap-6">
       <div className="flex flex-wrap items-start gap-2 md:col-span-3 md:flex-col">
@@ -20,7 +28,7 @@ function OutputRow({ output: o }: { output: Output }) {
       <div className="md:col-span-9">
         <h3 className="text-xl leading-snug">{o.title}</h3>
         <p className="text-muted mt-1 text-sm">
-          {o.authors}
+          <Byline authors={o.authors} people={people} />
           {o.year ? ` · ${o.year}` : ""}
           {o.venue ? ` · ${o.venue}` : ""}
         </p>
@@ -56,7 +64,7 @@ function OutputRow({ output: o }: { output: Output }) {
 }
 
 export default async function PublicationsPage() {
-  const published = await getPublicOutputs();
+  const [published, people] = await Promise.all([getPublicOutputs(), getPeople()]);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6">
@@ -79,7 +87,7 @@ export default async function PublicationsPage() {
         ) : (
           <ul className="border-line divide-line mt-6 divide-y border-y">
             {published.map((o) => (
-              <OutputRow key={o.slug} output={o} />
+              <OutputRow key={o.slug} output={o} people={people} />
             ))}
           </ul>
         )}
